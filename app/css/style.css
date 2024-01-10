@@ -1,0 +1,94 @@
+* {
+    margin: 0; 
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;  
+}
+
+
+/* GENERAL */
+div, nav, header, footer {
+    border: 1px solid black; 
+}
+
+header {
+    height: 10vw; 
+}
+
+nav > ul > li {
+    display: inline-block; 
+}
+
+
+/* HEADER */
+header {
+    display: flex; 
+    align-items: end; 
+    justify-content: flex-end; 
+}
+
+/* FOOTER */
+footer {
+    height: 5vw; 
+}
+
+/* PAGE  */
+.content, .left-bar, .right-bar {
+    display: inline-block; 
+}
+
+.full-page {
+    display: flex; 
+    justify-content: center;
+}
+
+.content {
+    width: 75%;
+}
+
+.left-bar {
+    width: 10%; 
+}
+
+.right-bar {
+    width: 15%;
+}
+
+
+/* LEFT BAR */
+.left-bar > div > img {
+    width: 100%; 
+}
+
+/* CONTENT */
+.inner-content {
+    display: flex; 
+    align-items: start; 
+}
+
+.main, .side {
+    display: inline-block; 
+}
+
+.main {
+    width: 75%; 
+}
+
+.side {
+    width: 25%; 
+}
+
+
+/* RIGHT BAR */
+.links {
+    margin-left: 4vw; 
+}
+
+
+/* WORD OF THE DAY */
+.synonyms > li, .antonyms > li {
+    margin-left: 4vw; 
+}
+
+.word-type {
+    text-decoration: underline; 
+}
