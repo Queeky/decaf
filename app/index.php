@@ -8,9 +8,11 @@
     </head>
     <body>
         <header>
+            <img src="images/logoBlue.png">
+            <div class="header-triangle"></div>
             <form action="index.php" method="GET">
                 <input class='search-bar' type="text">
-                <button type='submit'>Search</button>
+                <a type='submit' href="index.php"><img src="images/search-icon.png"></a>
             </form>
         </header>
         <nav>
@@ -46,25 +48,27 @@
                         </div>
                     </div>
                     <div class='side'>
-                        <div>
+                        <div class='daily-vocab'>
                             <h3>WORD OF THE DAY</h3>
-                            <p class='word'>LYCANTHROPY</p>
-                            <p class='word-type'>noun</p>
-                            <p class='word-def'>A delusion that one has become a wolf; the assumption of the form and characteristics of a wolf held to be possible by witchcraft or magic.</p>
-                            <ul class='synonyms'>
-                                <p>Synonyms:</p>
-                                <li><a href="#">zoanthropy</a></li>
-                                <li><a href="#">zoanthropy</a></li>
-                                <li><a href="#">zoanthropy</a></li>
-                                <li><a href="#">zoanthropy</a></li>
-                            </ul>
-                            <ul class='antonyms'>
-                                <p>Antonyms:</p>
-                                <li><a href="#">zoanthropy</a></li>
-                                <li><a href="#">zoanthropy</a></li>
-                                <li><a href="#">zoanthropy</a></li>
-                                <li><a href="#">zoanthropy</a></li>
-                            </ul>
+                            <div>
+                                <p class='word'>LYCANTHROPY</p>
+                                <p class='word-type'>noun</p>
+                                <p class='word-def'>A delusion that one has become a wolf; the assumption of the form and characteristics of a wolf held to be possible by witchcraft or magic.</p>
+                                <ul class='synonyms'>
+                                    <p>Synonyms:</p>
+                                    <li><a href="#">zoanthropy</a></li>
+                                    <li><a href="#">zoanthropy</a></li>
+                                    <li><a href="#">zoanthropy</a></li>
+                                    <li><a href="#">zoanthropy</a></li>
+                                </ul>
+                                <ul class='antonyms'>
+                                    <p>Antonyms:</p>
+                                    <li><a href="#">zoanthropy</a></li>
+                                    <li><a href="#">zoanthropy</a></li>
+                                    <li><a href="#">zoanthropy</a></li>
+                                    <li><a href="#">zoanthropy</a></li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -79,6 +83,7 @@
         </div>
         <footer>
             Hey there
+            <div> Icons made by <a href="https://www.flaticon.com/authors/creatype" title="Creatype"> Creatype </a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
         </footer>
     </body>
 </html>
