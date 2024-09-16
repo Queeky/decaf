@@ -17,9 +17,6 @@
 }
 
 /* GENERAL */
-div, footer {
-    /* border: 1px solid black;  */
-}
 
 body {
     width: 100%; 
@@ -104,8 +101,8 @@ nav > ul {
 
 nav > ul > li {
     display: inline-block; 
-    margin-right: 0.5%; 
-    margin-left: 0.5%; 
+    margin-right: 0.7%; 
+    margin-left: 0.7%; 
 }
 
 nav > ul > li > a {
@@ -148,14 +145,18 @@ footer > div, footer > div > a {
     width: 75%;
 }
 
-.splash {
+.upper-content {
     display: block; 
-    text-align: center; 
     padding-top: 1%; 
     padding-bottom: 1%; 
 }
 
-.splash > p > a:link, .splash > p > a:visited {
+.splash {
+    width: 100%; 
+    text-align: center; 
+}
+
+.splash > a:link, .splash > a:visited {
     color: blue; 
 }
 
@@ -220,6 +221,14 @@ footer > div, footer > div > a {
     width: 25%; 
 }
 
+
+/* RIGHT BAR */
+.links {
+    margin-left: 7.4%; 
+}
+
+
+/* WORD OF THE DAY */
 .side > .daily-vocab {
     width: 100%; 
     border-left: 0.2vw solid var(--blue1); 
@@ -263,18 +272,11 @@ footer > div, footer > div > a {
     width: 100%; 
 }
 
-
-/* RIGHT BAR */
-.links {
-    margin-left: 7.4%; 
-}
-
-
-/* WORD OF THE DAY */
 .synonyms > li, .antonyms > li {
     margin-left: 24%; 
 }
 
-.word-type {
-    text-decoration: underline; 
+.synonyms > li:first-child, .antonyms > li:first-child {
+    list-style: none; 
+    margin-left: 0; 
 }
