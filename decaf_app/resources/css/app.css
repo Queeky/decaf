@@ -1,0 +1,282 @@
+* {
+    margin: 0; 
+    padding: 0;
+    min-width: 0; 
+    min-height: 0; 
+    /* font-family: Arial, Helvetica, sans-serif;  */
+    font-family: monospace; 
+    font-size: 1.1vw; 
+    color: var(--blue2); 
+    box-sizing: border-box; 
+}
+
+:root {
+    --yellow1: #f7db20; 
+    --blue1: #3a53b2; 
+    --blue2: #233370; 
+}
+
+/* GENERAL */
+
+body {
+    width: 100%; 
+    height: 100%; 
+}
+
+/* HEADER */
+header {
+    width: 100%; 
+    height: 7vw;  
+    display: flex; 
+    align-items: end; 
+    justify-content: flex-end; 
+    background-color: #f7db20; 
+}
+
+header > img {
+    position: absolute; 
+    left: 2%;  
+    margin-bottom: 0.5%; 
+    width: 14%; 
+}
+
+.header-triangle {
+    width: 3vw; 
+    height: 3vw; 
+    border: none; 
+    background-color: #3a53b2;
+    background-image: -webkit-linear-gradient(-45deg, #f7db20 50%, #3a53b2 50%);
+    /* border: 1px solid red;  */
+}
+
+/* NOTE: search form can have vw measurements because it 
+won't show up on mobile */
+
+header > form {
+    position: relative; 
+    /* align-items: top;  */
+    width: 20vw; 
+    height: 3vw; 
+    padding-left: 1vw; 
+    background-color: #3a53b2; 
+}
+
+header > form > input {
+    position: absolute; 
+    bottom: 0; 
+    outline: none; 
+    width: 13vw; 
+    height: 1.7vw; 
+}
+
+header > form > a {
+    position: absolute; 
+    bottom: 0; 
+    left: 15vw; 
+    display: inline-block; 
+    width: 1.7vw; 
+    height: 1.7vw; 
+}
+
+header > form > a > img {
+    display: block; 
+    width: 100%; 
+}
+
+/* NAV  */
+nav {
+    display: block;  
+    align-items: center; 
+    width: 100%; 
+    padding-left: 3%; 
+    padding-top: 0.7%; 
+    padding-bottom: 0.7%; 
+    background-color: #3a53b2; 
+}
+
+nav > ul { 
+    width: 100%; 
+    display: block; 
+}
+
+nav > ul > li {
+    display: inline-block; 
+    margin-right: 0.7%; 
+    margin-left: 0.7%; 
+}
+
+nav > ul > li > a {
+    display: block; 
+    color: white; 
+    text-decoration: none; 
+    font-family: monospace; 
+    font-size: 1.2vw; 
+    font-weight: bold; 
+}
+
+nav > ul > li > a:hover {
+    text-decoration: underline; 
+}
+
+/* FOOTER */
+footer {
+    width: 100%; 
+    padding-top: 1.5%; 
+    padding-bottom: 1.5%; 
+    background-color: var(--blue1); 
+    color: white; 
+}
+
+footer > div, footer > div > a {
+    color: white; 
+}
+
+/* PAGE  */
+.content, .left-bar, .right-bar {
+    display: inline-block; 
+}
+
+.full-page {
+    display: flex; 
+    justify-content: center;
+}
+
+.content {
+    width: 75%;
+}
+
+.upper-content {
+    display: block; 
+    padding-top: 1%; 
+    padding-bottom: 1%; 
+}
+
+.splash {
+    width: 100%; 
+    text-align: center; 
+}
+
+.splash > a:link, .splash > a:visited {
+    color: blue; 
+}
+
+.left-bar {
+    width: 10%; 
+    border-right: 0.2vw solid var(--blue1); 
+}
+
+.right-bar {
+    width: 15%;
+    background-color: var(--blue1); 
+}
+
+.right-bar > ul {
+    margin-left: 15%; 
+    margin-right: 7%; 
+}
+
+.right-bar > .links > li, .right-bar > .links > li > a {
+    color: white; 
+}
+
+
+/* LEFT BAR */
+.left-bar > div > img {
+    width: 100%; 
+}
+
+/* CONTENT */
+.inner-content {
+    display: flex; 
+    align-items: start; 
+}
+
+.main, .side {
+    display: inline-block; 
+}
+
+.main {
+    width: 75%; 
+}
+
+.main > div {
+    width: 100%; 
+    background-color: #fffdf4; 
+}
+
+.main > div > h3 {
+    padding-top: 1.225%; 
+    padding-bottom: 1.225%; 
+    background-color: var(--blue1); 
+    color: white; 
+    font-size: 1.2vw; 
+    text-align: center; 
+}
+
+.main > div > p {
+    padding: 1.75%; 
+}
+
+.side {
+    width: 25%; 
+}
+
+
+/* RIGHT BAR */
+.links {
+    margin-left: 7.4%; 
+}
+
+
+/* WORD OF THE DAY */
+.side > .daily-vocab {
+    width: 100%; 
+    border-left: 0.2vw solid var(--blue1); 
+    padding-bottom: 8.75%; 
+}
+
+.side > .daily-vocab > h3 {
+    padding-top: 3.625%; 
+    padding-bottom: 3.625%; 
+    background-color: var(--blue1); 
+    color: white; 
+    font-size: 1.2vw; 
+    text-align: center; 
+}
+
+.side > .daily-vocab > div {
+    width: 100%; 
+    padding: 6%; 
+}
+
+.word {
+    margin-bottom: 6%; 
+    text-transform: uppercase; 
+    font-weight: bold; 
+}
+
+.word-type {
+    margin-bottom: 6%; 
+    text-decoration: underline; 
+}
+
+.word-def {
+    margin-bottom: 6%; 
+}
+
+.synonyms {
+    margin-bottom: 6%; 
+}
+
+.synonyms, .antonyms {
+    width: 100%; 
+}
+
+.synonyms > li, .antonyms > li {
+    margin-left: 24%; 
+}
+
+.synonyms > li:first-child, .antonyms > li:first-child {
+    list-style: none; 
+    margin-left: 0; 
+}

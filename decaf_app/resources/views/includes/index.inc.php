@@ -1,5 +1,11 @@
 <?php 
-function showSplash() {
+function showSplash($splash) {
+    echo $splash["SPLASH_TEXT"]; 
+    foreach ($splash as $s) {
+        echo var_dump($s) . "<br>"; 
+        // echo $s["SPLASH_TEXT"] . "<br>"; 
+    }
+
     echo "<p class='splash'>I put the za in <a target='_blank' href='https://zamboni.com/product/model-552ac/'>Model 522AC Zamboni</a>.</p>"; 
 }
 

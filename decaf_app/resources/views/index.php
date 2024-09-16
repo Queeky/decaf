@@ -1,3 +1,12 @@
+<?php 
+// Eventually do a select random
+$sql = "SELECT `SPLASH`.`SPLASH_TEXT`, `LINK`.`LINK_TEXT`, `LINK`.`LINK_URL` "; 
+$sql .= "FROM `SPLASH` "; 
+$sql .= "JOIN `LINK` ON `SPLASH`.`LINK_ID` = `LINK`.`LINK_ID` "; 
+
+$splash = DB::select($sql)[0]; 
+var_dump($splash); 
+?>
 <!DOCTYPE html>
 <html>
     <head>
@@ -8,9 +17,9 @@
     </head>
     <body>
         <?php 
-        include("includes/headNav.inc.php"); 
-        include("includes/bars.inc.php"); 
-        include("includes/index.inc.php"); 
+        include_once("includes/headNav.inc.php"); 
+        include_once("includes/bars.inc.php"); 
+        include_once("includes/index.inc.php"); 
 
         showHead(); 
         showNav(); 
@@ -19,7 +28,7 @@
             <?php showLeft(); ?>
             <div class='content'>
                 <div class='upper-content'>
-                    <?php showSplash(); ?>
+                    <?php showSplash($splash); ?>
                 </div>
                 <div class='inner-content'>
                     <?php 
