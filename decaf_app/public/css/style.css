@@ -280,3 +280,84 @@ footer > div, footer > div > a {
     list-style: none; 
     margin-left: 0; 
 }
+
+/* 1-WORD PAGE  */
+
+.join-game {
+    display: block; 
+    width: 100%; 
+    text-align: center; 
+    padding-top: 1%; 
+    padding-bottom: 1%; 
+}
+
+.join-game > p {
+    display: inline-block;
+    margin-left: 1%; 
+    margin-right: 1%; 
+}
+
+.join-game > p > a {
+    text-decoration: none; 
+}
+
+.join-game > p > a:hover {
+    text-decoration: underline; 
+}
+
+.join-form {
+    display: flex; 
+    width: 100%; 
+    justify-content: center; 
+    margin-top: 3%; 
+}
+
+.join-form > div {
+    display: block; 
+}
+
+.join-form > div > label, .join-form > div > input {
+    display: block; 
+}
+
+.game-info { 
+    display: block; 
+    width: 100%; 
+}
+
+.game-info > div {
+    display: inline-block; 
+    padding-top: 1%; 
+    padding-bottom: 1%; 
+    text-align: center; 
+}
+
+.game-info > .word-limit, .game-info > .users-connected {
+    border-right: 0.2vw solid var(--blue1); 
+}
+
+.game-info > .word-limit {
+    width: 15%; 
+}
+
+.game-info > .users-connected {
+    width: 60%; 
+    text-align: left; 
+    padding-left: 2%; 
+}
+
+.game-info > .room-key {
+    width: 25%; 
+}
+
+.game-info > h3 {
+    display: block; 
+    width: 100%; 
+    background-color: var(--blue1); 
+    color: white; 
+    font-weight: bold; 
+    text-align: center; 
+    font-size: 1.2vw; 
+    padding-top: 1%; 
+    padding-bottom: 1%; 
+}

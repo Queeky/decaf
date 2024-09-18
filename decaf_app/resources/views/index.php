@@ -1,11 +1,5 @@
 <?php 
-// Eventually do a select random
-$sql = "SELECT `SPLASH`.`SPLASH_TEXT`, `LINK`.`LINK_TEXT`, `LINK`.`LINK_URL` "; 
-$sql .= "FROM `SPLASH` "; 
-$sql .= "JOIN `LINK` ON `SPLASH`.`LINK_ID` = `LINK`.`LINK_ID` "; 
-
-$splash = DB::select($sql)[0]; 
-var_dump($splash); 
+session_start(); 
 ?>
 <!DOCTYPE html>
 <html>
@@ -28,7 +22,7 @@ var_dump($splash);
             <?php showLeft(); ?>
             <div class='content'>
                 <div class='upper-content'>
-                    <?php showSplash($splash); ?>
+                    <?php showSplash(); ?>
                 </div>
                 <div class='inner-content'>
                     <?php 

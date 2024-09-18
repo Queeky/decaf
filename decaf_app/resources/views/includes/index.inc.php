@@ -1,12 +1,18 @@
 <?php 
-function showSplash($splash) {
-    echo $splash["SPLASH_TEXT"]; 
-    foreach ($splash as $s) {
-        echo var_dump($s) . "<br>"; 
-        // echo $s["SPLASH_TEXT"] . "<br>"; 
-    }
+function showSplash() {
+    // ADD LIMIT LATER -- should only select ONE splash row
+    $splash = DB::table("SPLASH")
+                ->join("LINK", "SPLASH.LINK_ID", "=", "LINK.LINK_ID")
+                ->select("SPLASH.SPLASH_TEXT", "LINK.LINK_TEXT", "LINK.LINK_URL")
+                ->get();
 
-    echo "<p class='splash'>I put the za in <a target='_blank' href='https://zamboni.com/product/model-552ac/'>Model 522AC Zamboni</a>.</p>"; 
+    // $splash->transform(function ($item) {
+    //     return (array)$item; 
+    // });
+
+    $splash = json_decode(json_encode($splash, true), true);
+
+    echo str_replace("[LINK]", "<a target='_blank' href='{$splash[0]["LINK_URL"]}'>{$splash[0]["LINK_TEXT"]}</a>", "<p class='splash'>{$splash[0]["SPLASH_TEXT"]}.</p>"); 
 }
 
 function showMain() {
