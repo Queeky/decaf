@@ -11,7 +11,7 @@ session_start();
     </head>
     <body>
         <?php 
-        include_once("includes/headNav.inc.php"); 
+        include_once("includes/headNavFoot.inc.php"); 
         include_once("includes/bars.inc.php"); 
         include_once("includes/index.inc.php"); 
 
@@ -33,9 +33,6 @@ session_start();
             </div>
             <?php showRight(); ?>
         </div>
-        <footer>
-            Hey there
-            <div> Icons made by <a href="https://www.flaticon.com/authors/creatype" title="Creatype"> Creatype </a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
-        </footer>
+        <?php showFoot(); ?>
     </body>
 </html>

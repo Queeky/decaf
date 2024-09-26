@@ -22,4 +22,31 @@ function showGameInfo() {
 
     echo "</div>"; 
 }
+
+function showJoinForm() {
+    if ($_GET["join"] == "private") {
+        echo "<form class='join-form' action='oneWord.php' method='GET'>"; 
+        echo "<div>"; 
+        echo "<label for='key'>Room Key:</label>"; 
+        echo "<input type='text' name='key'>"; 
+        echo "<label for='pass'>Password:</label>"; 
+        echo "<input type='password' name='pass'>"; 
+        echo "<button type='submit'>Submit</button>"; 
+        echo "</div>"; 
+        echo "</form>"; 
+    }
+}
+
+function showGameMain() {
+    $text = DB::table("STORY")
+                ->select("STORY_TEXT")
+                ->get();
+
+    $text = json_decode(json_encode($text, true), true); 
+
+    echo "<div class='story-says'>"; 
+    echo "<p><strong>The story says: </strong>{$text[0]["STORY_TEXT"]}</p>"; 
+    echo "</div>"; 
+}
+        
 ?>

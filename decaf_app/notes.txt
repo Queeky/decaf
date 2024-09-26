@@ -1,0 +1,34 @@
+DECAF NOTES: 
+
+FOR STORY GAME
+- while loop that acts as event listener; checks players joined, 
+- checks if turn has been completed, will STOP running if USER's turn 
+- and once game begins (no more extra players joining)
+
+checks if begin is true or false (stored in SQL) once host begins, 0 -> 1
+if begin, check if your turn (also needs to be stored in GAME)
+    Make a specific subset of GAME (inherits attributes) for story
+while !begin || turn 
+    
+
+
+
+- PASSWORD PROBLEM! GET shows the password in url. To solve this, 
+    encrypt the passcode
+    ALSO use POST instead, because pass will still show otherwise
+
+- Players joining screen can have a stupid little GIF running
+- Host can decide when to start the game
+
+- Players are given turn # based on random int generated 0 - (num of players)
+
+- STORY_TEXT needs to have a default value of "" (can chars be appended?)
+
+SELECT SUBSTRING_INDEX(
+    (SELECT STORY_TEXT FROM STORY), 
+    " ", 
+    -1
+); 
+    
+SELECT LENGTH(STORY_TEXT) - LENGTH(REPLACE(STORY_TEXT, ' ', '')) + 1 FROM STORY;
+(^^^ Store this in a variable, pass it to the procedure)

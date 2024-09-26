@@ -35,7 +35,7 @@ if ((isset($_GET["key"])) && (isset($_GET["pass"]))) {
     </head>
     <body>
         <?php 
-        include_once("includes/headNav.inc.php"); 
+        include_once("includes/headNavFoot.inc.php"); 
         include_once("includes/bars.inc.php"); 
         include_once("includes/oneWord.inc.php"); 
 
@@ -52,27 +52,16 @@ if ((isset($_GET["key"])) && (isset($_GET["pass"]))) {
                 </div>
                 <div class='inner-content'>
                     <?php 
-                        if ((isset($_GET["join"])) && $_GET["join"] == "private") {
-                            echo "<form class='join-form' action='oneWord.php' method='GET'>"; 
-                            echo "<div>"; 
-                            echo "<label for='key'>Room Key:</label>"; 
-                            echo "<input type='text' name='key'>"; 
-                            echo "<label for='pass'>Password:</label>"; 
-                            echo "<input type='text' name='pass'>"; 
-                            echo "<button type='submit'>Submit</button>"; 
-                            echo "</div>"; 
-                            echo "</form>"; 
+                        if ((isset($_GET["join"]))) {
+                            showJoinForm(); 
                         } else if ($gameAvail) {
-
+                            showGameMain(); 
                         }
                     ?>
                 </div>
             </div>
             <?php showRight(); ?>
         </div>
-        <footer>
-            Hey there
-            <div> Icons made by <a href="https://www.flaticon.com/authors/creatype" title="Creatype"> Creatype </a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
-        </footer>
+        <?php showFoot(); ?>
     </body>
 </html>
