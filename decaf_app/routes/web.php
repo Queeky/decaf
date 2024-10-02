@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Log;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,10 +15,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// Default doesn't have a name
 Route::get('/', function () {
     return view('index');
 });
 
-Route::get('/oneWord.php', function () {
-    return view('oneWord');
-});
+Route::get('/story.php', function () {
+    return view('story');
+})->name("storyGet");
+
+Route::post('/story.php', [UserController::class, 'appendStory'])->name("storyPost"); 

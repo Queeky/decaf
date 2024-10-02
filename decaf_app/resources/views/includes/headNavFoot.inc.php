@@ -19,7 +19,7 @@ function showNav() {
     echo "<li><a href='index.php'>HOME</a></li>";
     echo "<li><a href='index.php'>ABOUT</a></li>";
     echo "<li><a href='index.php'>MADLIBS</a></li>";
-    echo "<li><a href='oneWord.php'>1-WORD</a></li>";
+    echo "<li><a href='story.php'>1-WORD</a></li>";
     // echo "<li><a href='index.php'>COLORING BOOK</a></li>";
     echo "</ul>"; 
 

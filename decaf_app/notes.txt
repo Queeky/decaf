@@ -1,17 +1,22 @@
 DECAF NOTES: 
 
+NOTE: Added a procedure!
+
 FOR STORY GAME
 - while loop that acts as event listener; checks players joined, 
 - checks if turn has been completed, will STOP running if USER's turn 
 - and once game begins (no more extra players joining)
+
+RULES should be in the join page, and then under rules are recent stories
+    or something of the like
+
+IF YOU LEAVE GAME, $_SESSION game stats need to be destroyed
 
 checks if begin is true or false (stored in SQL) once host begins, 0 -> 1
 if begin, check if your turn (also needs to be stored in GAME)
     Make a specific subset of GAME (inherits attributes) for story
 while !begin || turn 
     
-
-
 
 - PASSWORD PROBLEM! GET shows the password in url. To solve this, 
     encrypt the passcode
@@ -32,3 +37,6 @@ SELECT SUBSTRING_INDEX(
     
 SELECT LENGTH(STORY_TEXT) - LENGTH(REPLACE(STORY_TEXT, ' ', '')) + 1 FROM STORY;
 (^^^ Store this in a variable, pass it to the procedure)
+
+GIF IDEAS: 
+- carbonation bubbles rising upward, light blue drink, fizzy (inner content side banner)

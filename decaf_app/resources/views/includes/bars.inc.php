@@ -25,6 +25,13 @@ function showRight() {
     echo "<li><a target='_blank' href='https://classicreload.com/the-lost-treasures-of-infocom-volume-i.html'>The Lost Treasures of Infocom</a></li>"; 
     echo "<li><a target='_blank' href='https://archive.org/'>Internet Archive</a></li>"; 
     echo "<li><a target='_blank' href='https://libgen.li/'>Library Genesis</a></li>"; 
+    echo "<li><a target='_blank' href='https://www.caffeineinformer.com/death-by-caffeine'>Caffeine Calculator</a></li>"; 
+    echo "<li><a target='_blank' href='fakenamegenerator.com'>Fake Name Generator</a></li>"; 
+    echo "<li><a target='_blank' href='teleworm.us'>Teleworm</a></li>"; 
+    echo "<li><a target='_blank' href='https://www.dafont.com/'>DaFont</a></li>";  
+    echo "<li><a target='_blank' href='https://pastebin.com/'>Paste Bin</a></li>";
+    echo "<li><a target='_blank' href='https://pointerpointer.com/'>Pointer Pointer</a></li>";  
+    echo "<li><a target='_blank' href='https://pinfruit.com/'>pinfruit</a></li>"; 
 
     echo "</ul>"; 
 

@@ -14,6 +14,7 @@
     --yellow1: #f7db20; 
     --blue1: #3a53b2; 
     --blue2: #233370; 
+    --blue3: #60779c; 
 }
 
 /* GENERAL */
@@ -314,10 +315,68 @@ footer > div, footer > div > a {
 
 .join-form > div {
     display: block; 
+    width: 30%; 
+    border: 0.2vw solid var(--blue1); 
 }
 
-.join-form > div > label, .join-form > div > input {
+.join-form > div > .outer-div {
+    display: flex; 
+    justify-content: center;
+}
+
+.join-form > div > div > .inner-div {
     display: block; 
+    width: 70%; 
+    padding-top: 5%; 
+    padding-bottom: 5%; 
+}
+
+.join-form > div > .outer-div > .inner-div > label, .join-form > div > .outer-div > .inner-div > input {
+    display: block; 
+    width: 100%; 
+}
+
+.join-form > div > .outer-div > .inner-div > input {
+    margin-bottom: 5%; 
+    outline: none; 
+}
+
+.join-form > div > .outer-div > .inner-div > label {
+    margin-bottom: 1%; 
+}
+
+.join-form button {
+    background-color: var(--blue1); 
+    padding-right: 5%; 
+    padding-left: 5%; 
+    padding-top: 3%; 
+    padding-bottom: 3%; 
+    float: right; 
+    color: white; 
+    border: none; 
+}
+
+.join-form button:hover {
+    background-color: var(--blue2); 
+}
+
+.create-username {
+    display: flex; 
+    justify-content: center;
+    background-color: var(--blue1); 
+    padding-top: 5%; 
+}
+
+.create-username > div > label {
+    display: block; 
+    color: white; 
+}
+
+.create-username > div > input {
+    display: block; 
+    outline: none; 
+    margin-top: 5%; 
+    margin-bottom: 10%; 
 }
 
 .game-info { 
@@ -344,6 +403,8 @@ footer > div, footer > div > a {
     width: 60%; 
     text-align: left; 
     padding-left: 2%; 
+    padding-right: 2%; 
+    overflow: none; 
 }
 
 .game-info > .room-key {
@@ -361,3 +422,45 @@ footer > div, footer > div > a {
     padding-top: 1%; 
     padding-bottom: 1%; 
 }
+
+.story-says {
+    margin: 3%; 
+    width: 100%; 
+}
+
+.story-says > form {
+    width: 100%; 
+}
+
+.story-says > form > textarea {
+    display: block; 
+    padding: 1%; 
+    margin-top: 1%; 
+    margin-bottom: 1%; 
+    width: 100%; 
+    height: 15vw; 
+    outline: none; 
+    color: var(--blue3); 
+}
+
+.story-says > form > button {
+    background-color: var(--blue1); 
+    padding-right: 2.5%; 
+    padding-left: 2.5%; 
+    padding-top: 1%; 
+    padding-bottom: 1%; 
+    margin-left: 1%; 
+    float: right; 
+    color: white; 
+    border: none; 
+}
+
+.story-says > form > .leave-button {
+    float: left; 
+    margin: 0; 
+}
+
+.story-says > form > button:hover {
+    background-color: var(--blue2); 
+}
+
