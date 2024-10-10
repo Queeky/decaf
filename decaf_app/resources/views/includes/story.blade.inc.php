@@ -6,12 +6,13 @@ function showJoinOptions() {
     echo "<p>|</p>"; 
     echo "<p><a href='" . route("storyGet") . "?join=private'>Join private game</a></p>"; 
     echo "<p>|</p>"; 
-    echo "<p><a href='#'>Host game</a></p>"; 
+    echo "<p><a href='" . route("storyGet") . "?join=host'>Host game</a></p>"; 
 
     echo "</div>"; 
 }
 
 function showGameInfo() {
+    // To do order by most recent, would need PLAY_ID (and redo all composite keys)
     $players = DB::select("SELECT PLAY_USER FROM PLAYER WHERE GAME_ID = ?", [$_SESSION["GAME_ID"]]); 
 
     $players = json_decode(json_encode($players, true), true);
@@ -56,33 +57,79 @@ function showJoinForm() {
         echo "</div>"; 
         echo "</div>"; 
         echo "</form>"; 
+    } else if ($_GET["join"] == "host") {
+        echo "<form class='join-form' action='" . route('storyPost') . "' method='POST'>";
+        echo csrf_field();
+        echo "<div>"; 
+        echo "<div class='create-username'>"; 
+        echo "<div>"; 
+        echo "<label for='user'>Create your username</label>"; 
+        echo "<input type='text' name='user'>"; 
+        echo "</div>"; 
+        echo "</div>"; 
+        echo "<div class='outer-div'>"; 
+        echo "<div class='inner-div'>"; 
+        echo "<label for='key'>Set Room Key:</label>"; 
+        echo "<input type='text' name='key'>"; 
+        echo "<label for='pass'>Set Password:</label>"; 
+        echo "<input type='password' name='pass'>"; 
+        echo "<label for='title'>Set Story Title:</label>"; 
+        echo "<input type='text' name='title'>"; 
+        echo "<label for='starter-text'>Begin the story:</label>"; 
+        echo "<textarea name='starter-text'>Once upon a time...</textarea>"; 
+        echo "<label for='limit'>Set Word Limit:</label>"; 
+        echo "<input type='number' name='limit'>"; 
+        echo "<input type='hidden' name='session' value='{$_SESSION["SESSION_ID"]}'>"; 
+        echo "<button type='submit'>Submit</button>"; 
+        echo "</div>"; 
+        echo "</div>"; 
+        echo "</div>"; 
+        echo "</form>"; 
     }
+}
+
+function test() {
+    echo "TIME: " . time(); 
+    header("Refresh:0");
 }
 
 function showGameMain() {
     // Edit this later to let last n amount of words/chars
-    $text = DB::table("STORY")
-                ->select("STORY_TEXT")
-                ->get();
+    if ($_SESSION["GAME_ID"] == 1) {
+        echo "<div class='story-says'>"; 
+        echo "<form action='" . route('storyPost') . "' method='POST'>"; 
+        echo csrf_field(); 
+        echo "<p>You are in the admin view</p>"; 
+        echo "<p>Wow, there's nothing to see!</p>"; 
+        echo "<button type='submit' class='leave-button' name='leave' value=true>Leave Game</button>"; 
+        echo "</form>"; 
+        echo "</div>"; 
+    } else {
+        // $text = DB::select("SELECT STORY_TEXT FROM STORY WHERE GAME_ID = ?", [$_SESSION["GAME_ID"]]); 
+        $text = DB::select("SELECT SUBSTRING_INDEX((SELECT STORY_TEXT FROM STORY WHERE GAME_ID = ?), ' ', -?) AS STORY_TEXT; ", [$_SESSION["GAME_ID"], $_SESSION["STORY_TURN_LIMIT"]]);
 
-    $text = json_decode(json_encode($text, true), true); 
+        $text = json_decode(json_encode($text, true), true); 
 
-    // Setting up a random placeholder (suggestion text)
-    $json = json_decode(file_get_contents("json/placeholder.json"), true); 
-    $range1 = count($json["placeholder"]["first"]) - 1; 
-    $range2 = count($json["placeholder"]["second"]) - 1; 
+        // var_dump($text); 
 
-    $placeholder = $json["placeholder"]["first"][rand(0, $range1)] . " " . $json["placeholder"]["second"][rand(0, $range2)]; 
+        // Setting up a random placeholder (suggestion text)
+        $json = json_decode(file_get_contents("json/placeholder.json"), true); 
+        $range1 = count($json["placeholder"]["first"]) - 1; 
+        $range2 = count($json["placeholder"]["second"]) - 1; 
 
-    echo "<div class='story-says'>"; 
-    echo "<p><strong>The story says: </strong>{$text[0]["STORY_TEXT"]}</p>"; 
-    echo "<form action='" . route('storyPost') . "' method='POST'>"; 
-    echo csrf_field(); 
-    echo "<textarea name='new-text'>{$placeholder}</textarea>"; 
-    echo "<button type='submit' name='game-id' value='{$_SESSION["GAME_ID"]}'>Submit</button>"; 
-    echo "<button type='submit' name='redo' value=true>Redo</button>"; 
-    echo "<button type='submit' class='leave-button' name='leave' value=true>Leave Game</button>"; 
-    echo "</form>"; 
-    echo "</div>"; 
+        $placeholder = $json["placeholder"]["first"][rand(0, $range1)] . " " . $json["placeholder"]["second"][rand(0, $range2)]; 
+
+        echo "<div class='story-says'>"; 
+        echo "<p><strong>The story says: </strong>{$text[0]["STORY_TEXT"]}</p>"; 
+        echo "<form action='" . route('storyPost') . "' method='POST'>"; 
+        echo csrf_field(); 
+        echo "<textarea name='new-text'>{$placeholder}</textarea>"; 
+        echo "<button type='submit' name='game-id' value='{$_SESSION["GAME_ID"]}'>Submit</button>"; 
+        echo "<button type='submit' name='redo' value=true>Redo</button>"; 
+        echo "<button type='submit' class='leave-button' name='leave' value=true>Leave Game</button>"; 
+        echo "<input type='hidden' name='turn-limit' value={$_SESSION["STORY_TURN_LIMIT"]}>"; 
+        echo "</form>"; 
+        echo "</div>"; 
+    }
 }
 ?>

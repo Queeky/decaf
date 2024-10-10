@@ -1,11 +1,26 @@
 DECAF NOTES: 
 
 NOTE: Added a procedure!
+NOTE: Dropping STORY_FIN column because GAME_RUN tracks same thing
+NOTE: Writing collab mode! Authors can see the entire story and 
+    write as much as they want; whenever they're done, they end their 
+    turn and pass it onto the next person / "Writer's Circle" 
+    *** Also should be a way to download story as .txt file
+
+HOST should be able to see key and pass
+ADMIN CONTROLS can be accessed by logging into a PRIVATE GAME 
+(this game also stores all previous games)
+
+SPEND A DAY writing error messages -- because they ARE NECESSARY! Your code 
+WILL BREAK
+
 
 FOR STORY GAME
 - while loop that acts as event listener; checks players joined, 
 - checks if turn has been completed, will STOP running if USER's turn 
 - and once game begins (no more extra players joining)
+
+ADD limit to GAME_KEY (only certain chars/nums and length < 6)
 
 RULES should be in the join page, and then under rules are recent stories
     or something of the like
@@ -13,10 +28,77 @@ RULES should be in the join page, and then under rules are recent stories
 IF YOU LEAVE GAME, $_SESSION game stats need to be destroyed
 
 checks if begin is true or false (stored in SQL) once host begins, 0 -> 1
+NOTE: Don't check "begin," check if game is running or not (0/1), because 
+    bool can then be used to register the game is done
 if begin, check if your turn (also needs to be stored in GAME)
     Make a specific subset of GAME (inherits attributes) for story
+    OR give PLAYER a PLAY_TURN bool
+    OR give GAME a PLAY_TURN with PLAYER id ***
 while !begin || turn 
-    
+
+REWRITE PLAYER so composite key is PLAY_USER & PLAY_SESSION
+and see if fk will let that slide, lol
+
+WHEN CREATING GAME, create PLAYER first!!
+This means PLAYER's GAME_ID can be null, because creating PLAYER before GAME
+
+ALTER TABLE GAME 
+ADD CONSTRAINT fk_game_host FOREIGN KEY (GAME_HOST) REFERENCES PLAYER (PLAY_USER, GAME_ID); 
+
+***
+How to check turn? 
+Collects all PLAYER ids, assign each one a random number (within len of all ids)
+Happens when game starts, so when in waiting limbo this hasn't happened yet
+(needs all players at once)
+Which means that my test game won't work -- fix test game first, make hosting 
+GAME needs GAME_HOST = PLAY_ID, if host leaves, game is destroyed
+ERROR -- STORY NEEDS GAME_ID
+Possible fix: create new table STORY_DONE that stores the finished stories, 
+then rm the STORY and GAME (in that order)
+    Also have AUTHORS column that can be left blank and filled in w/ random name -- example: Missy Clarinet (ghost writer)    
+IF you are the first player to go and STORY_TEXT has nothing, shows prompt saying
+you're the first person to write the story
+Every refresh checks GAME for GAME_PLAY_TURN
+
+How to save turn order? 
+- Collect all PLAYER ids when game starts
+- Assign each PLAYER to random number corresponding to id array length
+    (can this be done in SQL or need to be in the script?)
+    (it would need to be in the db, because otherwise multiple scripts
+    would send back different versions -- unless only the host sends back)
+    (actually yes, only the host's script should do this to prevent procedure
+    from running multiple times for no reason)
+- Each PLAYER has PLAY_ORDER recording their turn order
+- Each script selects these play orders in key value pair (order => player id)
+    (should this been saved in SESSION, too? yes)
+- while loop cycles through ids until game is over
+FOREACH WON'T WORK -- WILL RUN EVERYTHING AT ONCE UNLESS ALLOWED TO WAIT FOR FORM
+- if while is going, maybe don't refresh? just have a sleep function
+
+NOTE FROM FUTURE: while loops are a BAD IDEA!
+
+in story file: 
+get GAME info (GAME_RUN, GAME_PLAY_TURN, PLAY_ID) GAME_PLAY_TURN default 0
+players = all ids
+
+create GAME, if GAME_RUN == 0 && GAME_HOST != null --> then wait for players
+
+if !isset($_SESSION[player id]) && GAME_RUN == 1
+    $_SESSION[player id] = [turn order, your id]
+    collect all PLAYER ids and organize
+    alter PLAYER_TURN appropriately
+
+if GAME_PLAY_TURN == $_SESSION[player id][0]
+    if !isset POST data
+        show POST form
+    else 
+        if GAME_PLAY_TURN + 1 > count(players) then GAME_PLAY_TURN = 0 (resetting)
+        else GAME_PLAY_TURN += 1
+        refresh
+else 
+    waiting for player # (do not give name, just turn #)
+
+
 
 - PASSWORD PROBLEM! GET shows the password in url. To solve this, 
     encrypt the passcode
@@ -40,3 +122,6 @@ SELECT LENGTH(STORY_TEXT) - LENGTH(REPLACE(STORY_TEXT, ' ', '')) + 1 FROM STORY;
 
 GIF IDEAS: 
 - carbonation bubbles rising upward, light blue drink, fizzy (inner content side banner)
+
+SPLASH IDEAS: 
+- I put the hippo in Hippocratic Oath

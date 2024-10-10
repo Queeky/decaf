@@ -20,8 +20,14 @@ Route::get('/', function () {
     return view('index');
 });
 
+Route::get('/about.php', function () {
+    return view('about');
+})->name("aboutGet");
+
 Route::get('/story.php', function () {
     return view('story');
 })->name("storyGet");
 
-Route::post('/story.php', [UserController::class, 'appendStory'])->name("storyPost"); 
+Route::post('/story.php', [UserController::class, 'storyPost'])->name("storyPost"); 
+
+// Route::post('/story.php', [UserController::class, 'createStory'])->name("createStory"); 

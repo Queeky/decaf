@@ -1,5 +1,7 @@
 <?php
 function showHead() {
+    if (!isset($_SESSION["SESSION_ID"])) $_SESSION["SESSION_ID"] = session_id(); 
+
     echo "<header>"; 
 
     echo "<img src='images/logoBlue.png'>"; 
@@ -17,7 +19,7 @@ function showNav() {
 
     echo "<ul>"; 
     echo "<li><a href='index.php'>HOME</a></li>";
-    echo "<li><a href='index.php'>ABOUT</a></li>";
+    echo "<li><a href='about.php'>ABOUT</a></li>";
     echo "<li><a href='index.php'>MADLIBS</a></li>";
     echo "<li><a href='story.php'>1-WORD</a></li>";
     // echo "<li><a href='index.php'>COLORING BOOK</a></li>";
@@ -35,5 +37,11 @@ function showFoot() {
     echo "</div>"; 
 
     echo "</footer>"; 
+}
+
+function showError($message) {
+    echo "<div class='error-message'>"; 
+    echo "<p>{$message}</p>"; 
+    echo "</div>"; 
 }
 ?>

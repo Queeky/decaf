@@ -13,7 +13,6 @@ session_start();
         <?php 
         include_once("includes/headNavFoot.inc.php"); 
         include_once("includes/bars.inc.php"); 
-        include_once("includes/index.inc.php"); 
 
         showHead(); 
         showNav(); 
@@ -28,14 +27,8 @@ session_start();
                     showError("You're coming back... right? (You are currently <strong>in a game</strong>.)"); 
                 }
                 ?>
-                <div class='upper-content'>
-                    <?php showSplash(); ?>
-                </div>
-                <div class='inner-content'>
-                    <?php 
-                    showMain();
-                    showSide(); 
-                    ?>
+                <div style="display: flex; justify-content: center; align-items: center; height: 35vw;">
+                    <img src="images/me.jpg" alt="" style="width: 20vw;">
                 </div>
             </div>
             <?php showRight(); ?>

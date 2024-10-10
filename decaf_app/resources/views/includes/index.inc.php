@@ -8,7 +8,7 @@ function showSplash() {
 
     $splash = json_decode(json_encode($splash, true), true);
 
-    echo str_replace("[LINK]", "<a target='_blank' href='{$splash[0]["LINK_URL"]}'>{$splash[0]["LINK_TEXT"]}</a>", "<p class='splash'>{$splash[0]["SPLASH_TEXT"]}.</p>"); 
+    echo str_replace("[LINK]", "<a target='_blank' href='{$splash[1]["LINK_URL"]}'>{$splash[1]["LINK_TEXT"]}</a>", "<p class='splash'>{$splash[1]["SPLASH_TEXT"]}</p>"); 
 }
 
 function showMain() {
