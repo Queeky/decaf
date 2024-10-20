@@ -31,6 +31,13 @@ function showGameInfo() {
     echo "</p></div>"; 
     echo "<div class='room-key'><p><strong>Room Key: </strong>{$_SESSION["GAME_KEY"]}</p></div>"; 
 
+    if ($_SESSION["PLAY_USER"]["host"]) {
+        // Resetting style
+        echo "<style>.game-info > .users-connected {width: 35%;}</style>"; 
+
+        echo "<div class='room-key' style='border-left: 0.2vw solid var(--blue1);'><p><strong>Password: </strong>{$_SESSION["GAME_PASS"]}</p></div>";
+    }
+
     echo "<h3>Story: {$_SESSION["STORY_TITLE"]}</h3>"; 
 
     echo "</div>"; 
@@ -94,8 +101,10 @@ function test() {
 }
 
 function showGameMain() {
-    // Edit this later to let last n amount of words/chars
+    // Need to eventually organize these by priority
+    // So script isn't going through all of them all the time
     if ($_SESSION["GAME_ID"] == 1) {
+        // Admin view
         echo "<div class='story-says'>"; 
         echo "<form action='" . route('storyPost') . "' method='POST'>"; 
         echo csrf_field(); 
@@ -104,8 +113,23 @@ function showGameMain() {
         echo "<button type='submit' class='leave-button' name='leave' value=true>Leave Game</button>"; 
         echo "</form>"; 
         echo "</div>"; 
-    } else {
-        // $text = DB::select("SELECT STORY_TEXT FROM STORY WHERE GAME_ID = ?", [$_SESSION["GAME_ID"]]); 
+    } else if ($_SESSION["GAME_RUN"] == 0) {
+        if ($_SESSION["PLAY_USER"]["host"]) {
+            echo "<form action='" . route('storyPost') . "' method='POST'>"; 
+            echo csrf_field();
+            echo "<button type='submit' name='start-game' value={$_SESSION["GAME_ID"]}>Start Game</button>"; 
+            echo "</form>"; 
+        } else {
+            // If I have refresh, will it send POST? Cause that's what needs to 
+            // happen unless I do something else...
+            echo "<div class='waiting-turn'><p>Waiting for game to begin.</p></div>";
+            echo "<form action='" . route('storyPost') . "' method='POST'>"; 
+            echo csrf_field(); 
+            echo "<button type='submit' class='leave-button' name='leave' value=true>Leave Game</button>"; 
+            echo "</form>"; 
+        }
+    } else if (($_SESSION["GAME_RUN"] == 1) && ($_SESSION["PLAY_USER"]["turn"] == $_SESSION["GAME_TURN"])) {
+        // Active game, player's turn
         $text = DB::select("SELECT SUBSTRING_INDEX((SELECT STORY_TEXT FROM STORY WHERE GAME_ID = ?), ' ', -?) AS STORY_TEXT; ", [$_SESSION["GAME_ID"], $_SESSION["STORY_TURN_LIMIT"]]);
 
         $text = json_decode(json_encode($text, true), true); 
@@ -130,6 +154,8 @@ function showGameMain() {
         echo "<input type='hidden' name='turn-limit' value={$_SESSION["STORY_TURN_LIMIT"]}>"; 
         echo "</form>"; 
         echo "</div>"; 
+    } else {
+        echo "<div class='waiting-turn'><p>Waiting for your turn.</p></div>"; 
     }
 }
 ?>

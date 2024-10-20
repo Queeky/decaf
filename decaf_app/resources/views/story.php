@@ -2,12 +2,14 @@
 session_start(); 
 use Illuminate\Support\Facades\Log;
 
+// Log::info("SESSION: " . var_dump($_SESSION)); 
+
 // NOTE: make this a controller at some point
 // If GAME_ID is already set, won't run this 
 // (prevents re-adding user after hard refresh)
 if ((isset($_GET["key"])) && (isset($_GET["pass"])) && (isset($_GET["user"])) && (!isset($_SESSION["GAME_ID"]))) {
     $gameAvail = DB::table("GAME")
-            ->select("GAME.GAME_ID", "GAME.GAME_KEY", "GAME.GAME_PASS", "STORY.STORY_TITLE", "STORY.STORY_TEXT", "STORY.STORY_TURN_LIMIT")
+            ->select("GAME.GAME_ID", "GAME.GAME_KEY", "GAME.GAME_PASS", "GAME.GAME_RUN", "GAME.GAME_TURN", "STORY.STORY_TITLE", "STORY.STORY_TEXT", "STORY.STORY_TURN_LIMIT")
             ->join("STORY", "GAME.GAME_ID", "=", "STORY.GAME_ID")
             ->where("GAME_KEY", $_GET["key"])
             ->where("GAME_PASS", $_GET["pass"])
@@ -21,17 +23,20 @@ if ((isset($_GET["key"])) && (isset($_GET["pass"])) && (isset($_GET["user"])) &&
         $_SESSION["GAME_ID"] = $gameAvail[0]["GAME_ID"]; 
         $_SESSION["GAME_KEY"] = $gameAvail[0]["GAME_KEY"]; 
         $_SESSION["GAME_PASS"] = $gameAvail[0]["GAME_PASS"]; 
+        $_SESSION["GAME_RUN"] = $gameAvail[0]["GAME_RUN"]; 
+        $_SESSION["GAME_TURN"] = $gameAvail[0]["GAME_TURN"]; 
         $_SESSION["STORY_TITLE"] = $gameAvail[0]["STORY_TITLE"]; 
         $_SESSION["STORY_TEXT"] = $gameAvail[0]["STORY_TEXT"]; 
         // ^^ This will need to update every turn 
         // (not really a point in having this session var, then)
         $_SESSION["STORY_TURN_LIMIT"] = $gameAvail[0]["STORY_TURN_LIMIT"]; 
-        $_SESSION["PLAY_USER"] = ["username" => $_GET["user"], "turn" => 0, "host" => false]; 
+        $_SESSION["PLAY_USER"] = ["username" => $_GET["user"], "turn" => 1, "host" => false]; 
 
         DB::insert("INSERT INTO PLAYER (PLAY_USER, GAME_ID, PLAY_SESSION) VALUES (?, ?, ?)", ["{$_GET["user"]}", $_SESSION["GAME_ID"], "{$_SESSION["SESSION_ID"]}"]); 
     }
 }
 
+// Why is this not handled in the controller??
 if (isset($_POST["leave"])) {
     if ($_SESSION["PLAY_USER"]["host"]) {
         // Either change SQL to delete from multiple tables at once, 
@@ -54,18 +59,29 @@ if (isset($_POST["leave"])) {
         Log::info($_SESSION["PLAY_USER"]["username"] . " left game");
     } 
 
-    unset($_SESSION["GAME_ID"], $_SESSION["GAME_KEY"], $_SESSION["GAME_PASS"], $_SESSION["STORY_TITLE"], $_SESSION["STORY_TEXT"], $_SESSION["STORY_TURN_LIMIT"], $_SESSION["PLAY_USER"]); 
+    unset($_SESSION["GAME_ID"], $_SESSION["GAME_KEY"], $_SESSION["GAME_PASS"], $_SESSION["GAME_RUN"], $_SESSION["GAME_TURN"], $_SESSION["STORY_TITLE"], $_SESSION["STORY_TEXT"], $_SESSION["STORY_TURN_LIMIT"], $_SESSION["PLAY_USER"]); 
 } 
 
-// make these else ifs? 
 if (isset($gameId)) {
     $_SESSION["GAME_ID"] = $gameId[0]["@gameId := GAME_ID"]; 
     $_SESSION["GAME_KEY"] = $_POST["key"]; 
     $_SESSION["GAME_PASS"] = $_POST["pass"]; 
+    $_SESSION["GAME_RUN"] = 0; 
+    // $_SESSION["GAME_TURN"] = 1; // may not need this at all, can just local
     $_SESSION["STORY_TITLE"] = $_POST["title"]; 
     $_SESSION["STORY_TEXT"] = $_POST["starter-text"]; 
     $_SESSION["STORY_TURN_LIMIT"] = $_POST["limit"]; 
-    $_SESSION["PLAY_USER"] = ["username" => $_POST["user"], "turn" => 0, "host" => true]; 
+    $_SESSION["PLAY_USER"] = ["username" => $_POST["user"], "turn" => 1, "host" => true]; 
+} else if (isset($turns)) {
+    foreach ($turns as $turn) {
+        if (($turn["PLAY_USER"] == $_SESSION["PLAY_USER"]["username"]) && ($turn["PLAY_SESSION"] == $_SESSION["SESSION_ID"])) {
+            $_SESSION["PLAY_USER"]["turn"] = $turn["PLAY_TURN"]; 
+            break; 
+        }
+    }
+
+    $_SESSION["GAME_RUN"] = 1; 
+    $_SESSION["GAME_TURN_RANGE"] = $turns[count($turns) - 1]["PLAY_TURN"]; 
 }
 ?>
 <!DOCTYPE html>

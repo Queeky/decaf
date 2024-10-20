@@ -25,6 +25,38 @@ body {
     height: 100%; 
 }
 
+.web-login {
+    width: 100%; 
+    height: 100vh; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+}
+
+.web-login > div {
+    display: block; 
+    /* border: 1px solid red;  */
+    width: 20%; 
+    overflow: none; 
+}
+
+.web-login > div > form {
+    width: 100%; 
+    padding: 5%; 
+    border: 1px solid var(--blue2); 
+}
+
+.web-login > div > p {
+    text-align: center; 
+    margin-bottom: 20%; 
+}
+
+.web-login > div > form > input {
+    outline: none; 
+    width: 100%; 
+    margin-bottom: 5%; 
+}
+
 .error-message {
     display: flex; 
     justify-content: center; 
@@ -405,8 +437,8 @@ footer > div, footer > div > a {
     text-align: center; 
 }
 
-.game-info > .word-limit, .game-info > .users-connected {
-    border-right: 0.2vw solid var(--blue1); 
+.game-info > * {
+    overflow: none; 
 }
 
 .game-info > .word-limit {
@@ -418,7 +450,8 @@ footer > div, footer > div > a {
     text-align: left; 
     padding-left: 2%; 
     padding-right: 2%; 
-    overflow: none; 
+    border-right: 0.2vw solid var(--blue1); 
+    border-left: 0.2vw solid var(--blue1);
 }
 
 .game-info > .room-key {
@@ -476,5 +509,21 @@ footer > div, footer > div > a {
 
 .story-says > form > button:hover {
     background-color: var(--blue2); 
+}
+
+.waiting-turn { 
+    display: flex; 
+    width: 100%; 
+    justify-content: center; 
+    align-items: center; 
+    padding-top: 12%; 
+    padding-bottom: 12%; 
+}
+
+.waiting-turn > p {
+    display: block; 
+    padding: 5%; 
+    border: 0.2vw solid var(--blue2); 
+    background-color: var(--yellow2); 
 }
 

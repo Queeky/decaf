@@ -20,6 +20,16 @@ Route::get('/', function () {
     return view('index');
 });
 
+
+// Testing login when Decaf is live but not finished
+Route::get('/login.php', function () {
+    return view('login');
+})->name("loginGet"); 
+
+Route::post('/login.php', [UserController::class, 'loginPost'])->name("loginPost");
+
+
+
 Route::get('/about.php', function () {
     return view('about');
 })->name("aboutGet");

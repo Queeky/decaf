@@ -1,11 +1,16 @@
 DECAF NOTES: 
 
 NOTE: Added a procedure!
-NOTE: Dropping STORY_FIN column because GAME_RUN tracks same thing
 NOTE: Writing collab mode! Authors can see the entire story and 
     write as much as they want; whenever they're done, they end their 
     turn and pass it onto the next person / "Writer's Circle" 
     *** Also should be a way to download story as .txt file
+NOTE: NEED to prevent people from getting past login page by typing 
+domain/index.php -- validate the pass or something
+NOTE: Make username/room keys/etc NOT case sensitive
+
+Make the game information a grid to avoid the weird 
+style issues I'm encountering
 
 HOST should be able to see key and pass
 ADMIN CONTROLS can be accessed by logging into a PRIVATE GAME 
@@ -13,6 +18,10 @@ ADMIN CONTROLS can be accessed by logging into a PRIVATE GAME
 
 SPEND A DAY writing error messages -- because they ARE NECESSARY! Your code 
 WILL BREAK
+
+TESTS 
+- overflow for game info (make really long room keys and passwords, usernames, etc)
+- SQL injection for join form and story text
 
 
 FOR STORY GAME
@@ -27,14 +36,52 @@ RULES should be in the join page, and then under rules are recent stories
 
 IF YOU LEAVE GAME, $_SESSION game stats need to be destroyed
 
-checks if begin is true or false (stored in SQL) once host begins, 0 -> 1
-NOTE: Don't check "begin," check if game is running or not (0/1), because 
-    bool can then be used to register the game is done
-if begin, check if your turn (also needs to be stored in GAME)
-    Make a specific subset of GAME (inherits attributes) for story
-    OR give PLAYER a PLAY_TURN bool
-    OR give GAME a PLAY_TURN with PLAYER id ***
-while !begin || turn 
+
+SELECT FLOOR( RAND() * (max - min) + min ) // maybe use this? 
+
+use DB::unprepared
+
+SET @count := 0; 
+UPDATE PLAYER 
+SET PLAY_TURN = @count := @count + 1
+WHERE GAME_ID = ?
+ORDER BY RAND(); 
+SELECT PLAY_USER, PLAY_SESSION, PLAY_TURN FROM PLAYER 
+WHERE GAME_ID = ? 
+ORDER BY PLAY_TURN ASC; 
+^^^ THIS WORKS
+
+SELECT * FROM PLAYER ORDER BY RAND() -> INSERT into temp table, increment TURN column
+Table name = GAME + GAME_ID
+(Scrap the temporary table -- make a table TURN **or** give PLAYER a turn column)
+Save table name to session
+Need to alter GAME to add GAME_TURN default 1
+Automatically set all player turns to 1 when loading players
+When game begins, host script tells db to create randomized temp table 
+    and assigns all turns to player scripts
+    If GAME_RUN true and just began (how to check this?) then 
+    set PLAY_USER turn; maybe have a counter = int(counter / count(turn) = round #)
+When player successfully posts, checks if player turn + 1 > highest turn, 
+(save highest turn to session var? so we don't have to constantly query it)
+if true, turn = 1
+* SELECTING LAST item from data returned can figure out what the highest turn is!!
+
+NOTE: Temp tables are deleted automatically when script terminates db connection
+        Need to test this, delete when game ends
+        Does Laravel end the connection after each query? That would be a problem
+
+        We only need temp table to set up turn order, which will then all be saved in session, so its okay if it dies at the end of the script
+
+
+CREATE TABLE GAME_15 (
+    PLAY_TURN 	INT NOT NULL UNIQUE AUTO_INCREMENT, 
+    PRIMARY KEY (PLAY_TURN)
+) SELECT PLAY_USER, PLAY_SESSION FROM PLAYER WHERE GAME_ID = 15 ORDER BY RAND(); 
+
+SELECT * FROM GAME_15; 
+
+
+
 
 REWRITE PLAYER so composite key is PLAY_USER & PLAY_SESSION
 and see if fk will let that slide, lol
@@ -120,8 +167,28 @@ SELECT SUBSTRING_INDEX(
 SELECT LENGTH(STORY_TEXT) - LENGTH(REPLACE(STORY_TEXT, ' ', '')) + 1 FROM STORY;
 (^^^ Store this in a variable, pass it to the procedure)
 
+
+
+
+
 GIF IDEAS: 
 - carbonation bubbles rising upward, light blue drink, fizzy (inner content side banner)
 
 SPLASH IDEAS: 
 - I put the hippo in Hippocratic Oath
+
+CHARACTER CREATION: 
+- Everyone writes a name
+- FakeCharacter (FC) gets passed to random people
+- Everyone gives their FC one physical trait
+- Swap FCs 
+- Everyone gives FC one positive quality
+- Swap FCs
+- Everyone gives FC one negative quality 
+(etc)
+- Random category is assigned, then everyone has to vote which FC would win the category
+- Game Master mode where someone writes all the prompts
+
+
+LINKS: 
+- garfieldminusgarfield.net
