@@ -30,17 +30,37 @@ class UserController extends Controller
         $data = request()->post(); 
 
         // Login form will also be handled here (private and host)
+        // When using long if statements like this, need to write 
+        // priority list and eventually reorganize
 
         // TODO: CHECK if player posted but host left game 
-        if (!isset($data["leave"]) && isset($data["new-text"]) && ((substr_count($data["new-text"], " ") + 1) > $data["turn-limit"])) {
+        if (isset($data["leave"])) {
+            // Fix this later
+            return view('story'); 
+        } else if (isset($data["wait-turn"])) {
+            Log::info("Waiting for player's turn"); 
+
+            $gameTurn = DB::select("SELECT GAME_TURN FROM GAME WHERE GAME_ID = ?", [$data["wait-turn"]]); 
+            $gameTurn = json_decode(json_encode($gameTurn, true), true)[0];
+
+            return response()->json([
+                'html' => view('story', compact('gameTurn'))->render()
+            ]);
+        } else if (!isset($data["leave"]) && isset($data["new-text"]) && ((substr_count($data["new-text"], " ") + 1) > $data["turn-limit"])) {
             return view('story')->with("limitMessage", "Your message is too long! Write <strong>{$data["turn-limit"]} word(s)</strong> or less.");
         } else if (isset($data["new-text"]) && !isset($data["leave"]) && !isset($data["redo"])) {
             // Appending text to story
             $data["new-text"] = " " . $data["new-text"]; 
 
             DB::select("CALL updateStory(:newText, :gameId)", ["newText" => $data["new-text"], "gameId" => $data["game-id"]]); 
-
             Log::info("Text appended to story"); 
+
+            // Updating game turn
+            if (($data["player-turn"] + 1) <= $data["turn-range"]) {
+                DB::update("UPDATE GAME SET GAME_TURN = ? WHERE GAME_ID = ?", [$data["player-turn"] + 1, $data["game-id"]]); 
+            } else {
+                DB::update("UPDATE GAME SET GAME_TURN = 1 WHERE GAME_ID = ?", [$data["game-id"]]); 
+            }
         } else if (isset($data["user"]) && isset($data["key"]) && isset($data["pass"])) {
             // Creating new story
             Log::info("Creating new story..."); 
@@ -68,6 +88,15 @@ class UserController extends Controller
             $turns = json_decode(json_encode($turns, true), true);
 
             return view('story')->with('turns', $turns); 
+        } else if (isset($data["wait-game"])) {
+            Log::info("Waiting for game #" . $data["wait-game"] . " to begin"); 
+
+            $gameRun = DB::select("SELECT GAME_RUN FROM GAME WHERE GAME_ID = ?", [$data["wait-game"]]); 
+            $gameRun = json_decode(json_encode($gameRun, true), true)[0];
+
+            return response()->json([
+                'html' => view('story', compact('gameRun'))->render()
+            ]);
         }
 
         return view('story');

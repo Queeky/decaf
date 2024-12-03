@@ -19,6 +19,7 @@ function showMain() {
     echo "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Orci eu lobortis elementum nibh tellus. Orci sagittis eu volutpat odio. Purus sit amet luctus venenatis lectus magna fringilla. Aenean sed adipiscing diam donec adipiscing tristique risus nec. Leo integer malesuada nunc vel risus commodo viverra maecenas accumsan. Felis bibendum ut tristique et. Justo laoreet sit amet cursus sit amet dictum sit. Porttitor massa id neque aliquam vestibulum morbi blandit cursus risus. Vel elit scelerisque mauris pellentesque. Faucibus purus in massa tempor nec feugiat nisl pretium fusce. Sit amet venenatis urna cursus eget nunc scelerisque viverra. Sapien eget mi </p>";  
 
     echo "<p><a href='login.php' target='_blank'>Check login here</a></p>"; 
+    echo "<p><a href='test.php' target='_blank'>Test reverse ajax here</a></p>";
 
     echo "</div>"; 
     echo "</div>"; 

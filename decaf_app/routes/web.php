@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AjaxController;
 use Illuminate\Support\Facades\Log;
 
 /*
@@ -27,6 +28,13 @@ Route::get('/login.php', function () {
 })->name("loginGet"); 
 
 Route::post('/login.php', [UserController::class, 'loginPost'])->name("loginPost");
+
+// FOR TESTING PURPOSES
+Route::get('/test.php', function () {
+    return view('test'); 
+})->name('testGet'); 
+
+Route::post('/test.php', [AjaxController::class, 'testPost'])->name('testPost'); 
 
 
 

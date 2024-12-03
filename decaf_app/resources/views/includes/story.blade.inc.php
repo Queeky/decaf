@@ -115,47 +115,118 @@ function showGameMain() {
         echo "</div>"; 
     } else if ($_SESSION["GAME_RUN"] == 0) {
         if ($_SESSION["PLAY_USER"]["host"]) {
+            echo "<div class='story-wait'>"; 
             echo "<form action='" . route('storyPost') . "' method='POST'>"; 
             echo csrf_field();
+            echo "<img src='images/stupid-picture.png' alt='FREE ME'>"; 
+            echo "<div>"; 
             echo "<button type='submit' name='start-game' value={$_SESSION["GAME_ID"]}>Start Game</button>"; 
+            echo "</div>"; 
             echo "</form>"; 
+            echo "</div>"; 
         } else {
-            // If I have refresh, will it send POST? Cause that's what needs to 
-            // happen unless I do something else...
             echo "<div class='waiting-turn'><p>Waiting for game to begin.</p></div>";
-            echo "<form action='" . route('storyPost') . "' method='POST'>"; 
+            echo "<form action='" . route('storyPost') . "' method='POST' id='wait-game-form'>"; 
             echo csrf_field(); 
+            echo "<input type='hidden' name='wait-game' value={$_SESSION["GAME_ID"]}>"; 
             echo "<button type='submit' class='leave-button' name='leave' value=true>Leave Game</button>"; 
             echo "</form>"; 
+            ?>
+            <script>
+            function poll() {
+                $.ajax({
+                    type: 'POST',
+                    url: 'story.php',
+                    dataType: 'JSON',
+                    data: $('#wait-game-form').serialize(),
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        document.getElementById("body").innerHTML = response.html; 
+                        console.log("Waiting for game to begin"); 
+                        // console.log(response.html); 
+                    },
+                    error: function () {
+                        console.log("You goofed up somewhere, good luck finding where"); 
+                    }
+                });
+            }
+
+            $(document).ready(function () {
+                setInterval(poll, 5000);
+            }); 
+
+        </script>
+        <?php
         }
-    } else if (($_SESSION["GAME_RUN"] == 1) && ($_SESSION["PLAY_USER"]["turn"] == $_SESSION["GAME_TURN"])) {
-        // Active game, player's turn
-        $text = DB::select("SELECT SUBSTRING_INDEX((SELECT STORY_TEXT FROM STORY WHERE GAME_ID = ?), ' ', -?) AS STORY_TEXT; ", [$_SESSION["GAME_ID"], $_SESSION["STORY_TURN_LIMIT"]]);
+    } else if ($_SESSION["GAME_RUN"] == 1) {
+        if ($_SESSION["PLAY_USER"]["turn"] != $_SESSION["GAME_TURN"]) {
+            echo "<div class='waiting-turn'><p>Waiting for your turn.</p></div>"; 
 
-        $text = json_decode(json_encode($text, true), true); 
+            echo "<form action='" . route('storyPost') . "' method='POST' id='wait-turn-form'>"; 
+            echo csrf_field(); 
+            echo "<input type='hidden' name='wait-turn' value={$_SESSION["GAME_ID"]}>"; 
+            echo "<button type='submit' class='leave-button' name='leave' value=true>Leave Game</button>"; 
+            echo "</form>"; 
 
-        // var_dump($text); 
+            ?>
+            <script>
+            function poll() {
+                $.ajax({
+                    type: 'POST',
+                    url: 'story.php',
+                    dataType: 'JSON',
+                    data: $('#wait-turn-form').serialize(),
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        document.getElementById("body").innerHTML = response.html; 
+                        console.log("Waiting for player turn"); 
+                        // console.log(response.html); 
+                    },
+                    error: function () {
+                        console.log("You goofed up somewhere, good luck finding where"); 
+                    }
+                });
+            }
 
-        // Setting up a random placeholder (suggestion text)
-        $json = json_decode(file_get_contents("json/placeholder.json"), true); 
-        $range1 = count($json["placeholder"]["first"]) - 1; 
-        $range2 = count($json["placeholder"]["second"]) - 1; 
+            $(document).ready(function () {
+                setInterval(poll, 5000);
+            }); 
 
-        $placeholder = $json["placeholder"]["first"][rand(0, $range1)] . " " . $json["placeholder"]["second"][rand(0, $range2)]; 
+        </script>
+        <?php
+        } else {
+            // Active game, player's turn
+            $text = DB::select("SELECT SUBSTRING_INDEX((SELECT STORY_TEXT FROM STORY WHERE GAME_ID = ?), ' ', -?) AS STORY_TEXT; ", [$_SESSION["GAME_ID"], $_SESSION["STORY_TURN_LIMIT"]]);
 
-        echo "<div class='story-says'>"; 
-        echo "<p><strong>The story says: </strong>{$text[0]["STORY_TEXT"]}</p>"; 
-        echo "<form action='" . route('storyPost') . "' method='POST'>"; 
-        echo csrf_field(); 
-        echo "<textarea name='new-text'>{$placeholder}</textarea>"; 
-        echo "<button type='submit' name='game-id' value='{$_SESSION["GAME_ID"]}'>Submit</button>"; 
-        echo "<button type='submit' name='redo' value=true>Redo</button>"; 
-        echo "<button type='submit' class='leave-button' name='leave' value=true>Leave Game</button>"; 
-        echo "<input type='hidden' name='turn-limit' value={$_SESSION["STORY_TURN_LIMIT"]}>"; 
-        echo "</form>"; 
-        echo "</div>"; 
-    } else {
-        echo "<div class='waiting-turn'><p>Waiting for your turn.</p></div>"; 
-    }
+            $text = json_decode(json_encode($text, true), true); 
+
+            // var_dump($text); 
+
+            // Setting up a random placeholder (suggestion text)
+            $json = json_decode(file_get_contents("json/placeholder.json"), true); 
+            $range1 = count($json["placeholder"]["first"]) - 1; 
+            $range2 = count($json["placeholder"]["second"]) - 1; 
+
+            $placeholder = $json["placeholder"]["first"][rand(0, $range1)] . " " . $json["placeholder"]["second"][rand(0, $range2)]; 
+
+            echo "<div class='story-says'>"; 
+            echo "<p><strong>The story says: </strong>{$text[0]["STORY_TEXT"]}</p>"; 
+            echo "<form action='" . route('storyPost') . "' method='POST'>"; 
+            echo csrf_field(); 
+            echo "<textarea name='new-text'>{$placeholder}</textarea>"; 
+            echo "<button type='submit' name='game-id' value='{$_SESSION["GAME_ID"]}'>Submit</button>"; 
+            echo "<button type='submit' name='redo' value=true>Redo</button>"; 
+            echo "<button type='submit' class='leave-button' name='leave' value=true>Leave Game</button>"; 
+            echo "<input type='hidden' name='turn-limit' value={$_SESSION["STORY_TURN_LIMIT"]}>"; 
+            echo "<input type='hidden' name='turn-range' value={$_SESSION["GAME_TURN_RANGE"]}>"; 
+            echo "<input type='hidden' name='player-turn' value={$_SESSION["PLAY_USER"]["turn"]}>"; 
+            echo "</form>"; 
+            echo "</div>"; 
+        }
+    } 
 }
 ?>

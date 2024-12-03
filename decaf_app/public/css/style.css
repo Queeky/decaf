@@ -511,6 +511,43 @@ footer > div, footer > div > a {
     background-color: var(--blue2); 
 }
 
+.story-wait { 
+    width: 100%; 
+    display: flex; 
+    justify-content: center; 
+}
+
+.story-wait > form {
+    display: block; 
+    width: 30%; 
+    margin-top: 2%; 
+}
+
+.story-wait > form > div {
+    display: flex; 
+    width: 100%; 
+    justify-content: center; 
+}
+
+.story-wait > form > img {
+    width: 100%; 
+    margin-bottom: 10%; 
+}
+
+.story-wait > form > div > button {
+    background-color: var(--blue1); 
+    padding-right: 5%; 
+    padding-left: 5%; 
+    padding-top: 3%; 
+    padding-bottom: 3%; 
+    color: white; 
+    border: none; 
+}
+
+.story-wait > form > div > button:hover {
+    background-color: var(--blue2);
+}
+
 .waiting-turn { 
     display: flex; 
     width: 100%; 

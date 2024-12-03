@@ -24,7 +24,7 @@ if ((isset($_GET["key"])) && (isset($_GET["pass"])) && (isset($_GET["user"])) &&
         $_SESSION["GAME_KEY"] = $gameAvail[0]["GAME_KEY"]; 
         $_SESSION["GAME_PASS"] = $gameAvail[0]["GAME_PASS"]; 
         $_SESSION["GAME_RUN"] = $gameAvail[0]["GAME_RUN"]; 
-        $_SESSION["GAME_TURN"] = $gameAvail[0]["GAME_TURN"]; 
+        // $_SESSION["GAME_TURN"] = $gameAvail[0]["GAME_TURN"]; 
         $_SESSION["STORY_TITLE"] = $gameAvail[0]["STORY_TITLE"]; 
         $_SESSION["STORY_TEXT"] = $gameAvail[0]["STORY_TEXT"]; 
         // ^^ This will need to update every turn 
@@ -67,7 +67,7 @@ if (isset($gameId)) {
     $_SESSION["GAME_KEY"] = $_POST["key"]; 
     $_SESSION["GAME_PASS"] = $_POST["pass"]; 
     $_SESSION["GAME_RUN"] = 0; 
-    // $_SESSION["GAME_TURN"] = 1; // may not need this at all, can just local
+    $_SESSION["GAME_TURN"] = 1; 
     $_SESSION["STORY_TITLE"] = $_POST["title"]; 
     $_SESSION["STORY_TEXT"] = $_POST["starter-text"]; 
     $_SESSION["STORY_TURN_LIMIT"] = $_POST["limit"]; 
@@ -83,6 +83,13 @@ if (isset($gameId)) {
     $_SESSION["GAME_RUN"] = 1; 
     $_SESSION["GAME_TURN_RANGE"] = $turns[count($turns) - 1]["PLAY_TURN"]; 
 }
+
+// This cannot be in the includes folder! Will not run otherwise!
+if (isset($gameTurn)) {
+    $_SESSION["GAME_TURN"] = $gameTurn["GAME_TURN"]; 
+} else if (isset($gameRun)) { 
+    $_SESSION["GAME_RUN"] = $gameRun["GAME_RUN"]; 
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -91,8 +98,10 @@ if (isset($gameId)) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Homepage</title>
         <link rel="stylesheet" href="css/style.css">
+        <meta name="csrf-token" content="<?php echo csrf_token(); ?>">
+        <script type="text/javascript" src="js/jquery-3.7.1.min.js"></script>
     </head>
-    <body>
+    <body id="body">
         <?php 
         include_once("includes/headNavFoot.inc.php"); 
         include_once("includes/bars.inc.php"); 
@@ -114,7 +123,7 @@ if (isset($gameId)) {
                     !((isset($_SESSION["GAME_KEY"])) && (isset($_SESSION["GAME_PASS"]))) ? showJoinOptions() : showGameInfo(); 
                     ?>
                 </div>
-                <div class='inner-content'>
+                <div class='inner-content' id='inner-content'>
                     <?php 
                         if ((isset($_GET["join"]))) {
                             showJoinForm(); 
