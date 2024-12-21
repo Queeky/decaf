@@ -73,7 +73,7 @@ body {
 /* HEADER */
 header {
     width: 100%; 
-    height: 7vw;  
+    height: 6vw;  
     display: flex; 
     align-items: end; 
     justify-content: flex-end; 
@@ -84,7 +84,7 @@ header > img {
     position: absolute; 
     left: 2%;  
     margin-bottom: 0.5%; 
-    width: 14%; 
+    width: 12%; 
 }
 
 .header-triangle {
@@ -236,6 +236,7 @@ footer > div, footer > div > a {
 .inner-content {
     display: flex; 
     align-items: start; 
+    width: 100%; 
 }
 
 .main, .side {
@@ -426,15 +427,20 @@ footer > div, footer > div > a {
 }
 
 .game-info { 
-    display: block; 
+    display: grid; 
+    grid-template-columns: 25% 25% 50%;
     width: 100%; 
+    overflow: none; 
 }
 
 .game-info > div {
-    display: inline-block; 
-    padding-top: 1%; 
-    padding-bottom: 1%; 
+    display: inline-grid; 
+    padding-top: 2%; 
+    padding-bottom: 2%; 
+    padding-left: 1.5%; 
+    padding-right: 1.5%; 
     text-align: center; 
+    border: 0.2vw solid var(--blue1);
 }
 
 .game-info > * {
@@ -442,24 +448,37 @@ footer > div, footer > div > a {
 }
 
 .game-info > .word-limit {
-    width: 15%; 
+    grid-column-start: 1; 
+    grid-column-end: 2; 
+}
+
+.game-info > .word-limit > div, .game-info > .room-key > div {
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
 }
 
 .game-info > .users-connected {
-    width: 60%; 
+    grid-column-start: 3; 
+    grid-column-end: 4; 
     text-align: left; 
     padding-left: 2%; 
     padding-right: 2%; 
-    border-right: 0.2vw solid var(--blue1); 
-    border-left: 0.2vw solid var(--blue1);
+    padding-top: 1.5%; 
+    padding-bottom: 1.5%; 
 }
 
 .game-info > .room-key {
-    width: 25%; 
+    /* width: 25%;  */
+    grid-column-start: 2; 
+    grid-column-end: 3; 
 }
 
 .game-info > h3 {
-    display: block; 
+    /* display: block;  */
+    display: inline-grid; 
+    grid-column-start: 1; 
+    grid-column-end: 4; 
     width: 100%; 
     background-color: var(--blue1); 
     color: white; 
@@ -521,6 +540,7 @@ footer > div, footer > div > a {
     display: block; 
     width: 30%; 
     margin-top: 2%; 
+    margin-bottom: 2%; 
 }
 
 .story-wait > form > div {
@@ -553,14 +573,46 @@ footer > div, footer > div > a {
     width: 100%; 
     justify-content: center; 
     align-items: center; 
-    padding-top: 12%; 
-    padding-bottom: 12%; 
+    padding-top: 5%; 
+    padding-bottom: 5%; 
 }
 
-.waiting-turn > p {
+.waiting-turn > div {
+    display: block; 
+    width: 50%; 
+}
+
+.waiting-turn > div > .wait-box {
     display: block; 
     padding: 5%; 
     border: 0.2vw solid var(--blue2); 
     background-color: var(--yellow2); 
+    text-align: center; 
+}
+
+.waiting-turn > div > .wait-box > img {
+    width: 60%;
+    margin-top: 5%;  
+}
+
+#wait-game-form, #wait-turn-form {
+    width: 100%; 
+    display: flex; 
+    justify-content: center; 
+    margin-top: 5%; 
+}
+
+#wait-game-form > button, #wait-turn-form > button {
+    background-color: var(--blue1); 
+    padding-right: 5%; 
+    padding-left: 5%; 
+    padding-top: 3%; 
+    padding-bottom: 3%; 
+    color: white; 
+    border: none; 
+}
+
+#wait-game-form > button:hover, #wait-turn-form > button:hover {
+    background-color: var(--blue2);
 }
 

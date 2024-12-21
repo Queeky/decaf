@@ -29,13 +29,6 @@ Route::get('/login.php', function () {
 
 Route::post('/login.php', [UserController::class, 'loginPost'])->name("loginPost");
 
-// FOR TESTING PURPOSES
-Route::get('/test.php', function () {
-    return view('test'); 
-})->name('testGet'); 
-
-Route::post('/test.php', [AjaxController::class, 'testPost'])->name('testPost'); 
-
 
 
 Route::get('/about.php', function () {

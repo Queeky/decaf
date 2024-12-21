@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Log;
 // If GAME_ID is already set, won't run this 
 // (prevents re-adding user after hard refresh)
 if ((isset($_GET["key"])) && (isset($_GET["pass"])) && (isset($_GET["user"])) && (!isset($_SESSION["GAME_ID"]))) {
+    $_GET["key"] = strtoupper($_GET["key"]); 
+
     $gameAvail = DB::table("GAME")
             ->select("GAME.GAME_ID", "GAME.GAME_KEY", "GAME.GAME_PASS", "GAME.GAME_RUN", "GAME.GAME_TURN", "STORY.STORY_TITLE", "STORY.STORY_TEXT", "STORY.STORY_TURN_LIMIT")
             ->join("STORY", "GAME.GAME_ID", "=", "STORY.GAME_ID")
@@ -16,7 +18,6 @@ if ((isset($_GET["key"])) && (isset($_GET["pass"])) && (isset($_GET["user"])) &&
             ->get();
 
     $gameAvail = json_decode(json_encode($gameAvail, true), true);
-    // var_dump($gameAvail); 
 
     // Storing results in SESSION vars
     if ($gameAvail) {
@@ -24,7 +25,7 @@ if ((isset($_GET["key"])) && (isset($_GET["pass"])) && (isset($_GET["user"])) &&
         $_SESSION["GAME_KEY"] = $gameAvail[0]["GAME_KEY"]; 
         $_SESSION["GAME_PASS"] = $gameAvail[0]["GAME_PASS"]; 
         $_SESSION["GAME_RUN"] = $gameAvail[0]["GAME_RUN"]; 
-        // $_SESSION["GAME_TURN"] = $gameAvail[0]["GAME_TURN"]; 
+        $_SESSION["GAME_TURN"] = $gameAvail[0]["GAME_TURN"]; 
         $_SESSION["STORY_TITLE"] = $gameAvail[0]["STORY_TITLE"]; 
         $_SESSION["STORY_TEXT"] = $gameAvail[0]["STORY_TEXT"]; 
         // ^^ This will need to update every turn 
@@ -87,8 +88,9 @@ if (isset($gameId)) {
 // This cannot be in the includes folder! Will not run otherwise!
 if (isset($gameTurn)) {
     $_SESSION["GAME_TURN"] = $gameTurn["GAME_TURN"]; 
-} else if (isset($gameRun)) { 
-    $_SESSION["GAME_RUN"] = $gameRun["GAME_RUN"]; 
+} 
+if (isset($newTurn)) {
+    $_SESSION["GAME_TURN"] = $newTurn; 
 }
 ?>
 <!DOCTYPE html>

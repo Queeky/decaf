@@ -1,14 +1,9 @@
 <?php 
 function showSplash() {
-    // ADD LIMIT LATER -- should only select ONE splash row
-    $splash = DB::table("SPLASH")
-                ->join("LINK", "SPLASH.LINK_ID", "=", "LINK.LINK_ID")
-                ->select("SPLASH.SPLASH_TEXT", "LINK.LINK_TEXT", "LINK.LINK_URL")
-                ->get();
+    $json = json_decode(file_get_contents("json/splash.json"), true); 
+    $index = rand(0, count($json["splash"]["full-text"]) - 1); 
 
-    $splash = json_decode(json_encode($splash, true), true);
-
-    echo str_replace("[LINK]", "<a target='_blank' href='{$splash[1]["LINK_URL"]}'>{$splash[1]["LINK_TEXT"]}</a>", "<p class='splash'>{$splash[1]["SPLASH_TEXT"]}</p>"); 
+    echo str_replace("[LINK]", "<a target='_blank' href='{$json["splash"]["url"][$index]}'>{$json["splash"]["hyperlink-text"][$index]}</a>", "<p class='splash'>{$json["splash"]["full-text"][$index]}</p>"); 
 }
 
 function showMain() {
@@ -19,7 +14,6 @@ function showMain() {
     echo "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Orci eu lobortis elementum nibh tellus. Orci sagittis eu volutpat odio. Purus sit amet luctus venenatis lectus magna fringilla. Aenean sed adipiscing diam donec adipiscing tristique risus nec. Leo integer malesuada nunc vel risus commodo viverra maecenas accumsan. Felis bibendum ut tristique et. Justo laoreet sit amet cursus sit amet dictum sit. Porttitor massa id neque aliquam vestibulum morbi blandit cursus risus. Vel elit scelerisque mauris pellentesque. Faucibus purus in massa tempor nec feugiat nisl pretium fusce. Sit amet venenatis urna cursus eget nunc scelerisque viverra. Sapien eget mi </p>";  
 
     echo "<p><a href='login.php' target='_blank'>Check login here</a></p>"; 
-    echo "<p><a href='test.php' target='_blank'>Test reverse ajax here</a></p>";
 
     echo "</div>"; 
     echo "</div>"; 

@@ -1,5 +1,12 @@
 DECAF NOTES: 
 
+WHERE YOU LEFT OFF ***
+Too much extra space for story join screen, figure out what to do with it
+Default route should be login page, figure that out
+GAME_KEY should only have characters! No numbers!
+Eventually style the start game form same as wait game
+NEED a "host left the game" option that kicks out joined players
+
 NOTE: Added a procedure!
 NOTE: Writing collab mode! Authors can see the entire story and 
     write as much as they want; whenever they're done, they end their 
@@ -7,16 +14,25 @@ NOTE: Writing collab mode! Authors can see the entire story and
     *** Also should be a way to download story as .txt file
 NOTE: NEED to prevent people from getting past login page by typing 
 domain/index.php -- validate the pass or something
-NOTE: Make username/room keys/etc NOT case sensitive
-NOTE: Eventually put game ids into the logs
+NOTE: Eventually put game ids into the logs (in progress)
+NOTE: Create error messages for missing fields
+NOTE: Start game screen (for host) will need dynamic loading, too
+    (to see all the players joining)
+NOTE: left bar will be a button grid wall that randomly spawns different 
+puzzles, like correctly putting together a poem or something. 
+Only a 10% chance of seeing the puzzle, otherwise a carbonation gif. 
+NOTE: Wall of Shame. (Your parents would be disappointed.)
+        Wall of Sham. (This story is a ripoff of another story.)
+        Wall of Fowl Language. (You're a gizard, Harry!)
 
-Make the game information a grid to avoid the weird 
-style issues I'm encountering
+REMEMBER if you create a fake game from phpMyAdmin, make a fake story too
+or you won't be able to join anything!
+
+
 
 HTML can be shown without echo inside a PHP function, I am a giant moron
 ^^ Fix this later
 
-HOST should be able to see key and pass
 ADMIN CONTROLS can be accessed by logging into a PRIVATE GAME 
 (this game also stores all previous games)
 

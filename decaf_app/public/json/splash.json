@@ -1,0 +1,28 @@
+{
+    "splash" : {
+        "full-text" : [
+            "I put the za in [LINK].", 
+            "Do you or a loved one suffer from [LINK]?", 
+            "[LINK]? I hardly know her.", 
+            "Not now, [LINK]'s cyberbullying.", 
+            "[LINK]: I'm a teapot.", 
+            "\"Don't [LINK] everything you read on the internet.\" -- Abraham Lincoln"
+        ], 
+        "hyperlink-text" : [
+            "Model 522AC Zamboni", 
+            "rheumatoid arthritis", 
+            "Debugger", 
+            "Mommy", 
+            "Error 418", 
+            "believe"
+        ], 
+        "url" : [
+            "https://zamboni.com/product/model-552ac/", 
+            "https://www.mayoclinic.org/diseases-conditions/rheumatoid-arthritis/symptoms-causes/syc-20353648", 
+            "https://alluneedpest.com/locations/cape-coral-pest-control/", 
+            "images/deltarune_queen.jpg", 
+            "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/418", 
+            "images/believe.jpg"
+        ]
+    }
+}

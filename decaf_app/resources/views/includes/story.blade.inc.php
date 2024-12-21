@@ -19,7 +19,17 @@ function showGameInfo() {
 
     echo "<div class='game-info'>"; 
 
-    echo "<div class='word-limit'><p><strong>Word Limit: </strong>{$_SESSION["STORY_TURN_LIMIT"]}</p></div>"; 
+    echo "<div class='word-limit'><div><p><strong>Word Limit: </strong>{$_SESSION["STORY_TURN_LIMIT"]}</p></div></div>"; 
+    
+    echo "<div class='room-key'><div><p><strong>Room Key: </strong>{$_SESSION["GAME_KEY"]}</p></div></div>"; 
+
+    if ($_SESSION["PLAY_USER"]["host"]) {
+        // Resetting style
+        echo "<style>.game-info > .users-connected {grid-column-start: 1; grid-column-end: 4;} .game-info > h3 {grid-column-end: 4;}</style>";
+
+        echo "<div class='room-key' style='border-left: 0.2vw solid var(--blue1);grid-column-start: 3; grid-column-end: 4;'><p><strong>Password: </strong>{$_SESSION["GAME_PASS"]}</p></div>";
+    }
+
     echo "<div class='users-connected'><p><strong>Connected: </strong>"; 
 
     for ($player = 0; $player < count($players); $player++) {
@@ -29,14 +39,6 @@ function showGameInfo() {
     }
 
     echo "</p></div>"; 
-    echo "<div class='room-key'><p><strong>Room Key: </strong>{$_SESSION["GAME_KEY"]}</p></div>"; 
-
-    if ($_SESSION["PLAY_USER"]["host"]) {
-        // Resetting style
-        echo "<style>.game-info > .users-connected {width: 35%;}</style>"; 
-
-        echo "<div class='room-key' style='border-left: 0.2vw solid var(--blue1);'><p><strong>Password: </strong>{$_SESSION["GAME_PASS"]}</p></div>";
-    }
 
     echo "<h3>Story: {$_SESSION["STORY_TITLE"]}</h3>"; 
 
@@ -85,7 +87,7 @@ function showJoinForm() {
         echo "<label for='starter-text'>Begin the story:</label>"; 
         echo "<textarea name='starter-text'>Once upon a time...</textarea>"; 
         echo "<label for='limit'>Set Word Limit:</label>"; 
-        echo "<input type='number' name='limit'>"; 
+        echo "<input type='number' name='limit' min='1' value='3'>"; 
         echo "<input type='hidden' name='session' value='{$_SESSION["SESSION_ID"]}'>"; 
         echo "<button type='submit'>Submit</button>"; 
         echo "</div>"; 
@@ -93,11 +95,6 @@ function showJoinForm() {
         echo "</div>"; 
         echo "</form>"; 
     }
-}
-
-function test() {
-    echo "TIME: " . time(); 
-    header("Refresh:0");
 }
 
 function showGameMain() {
@@ -125,12 +122,20 @@ function showGameMain() {
             echo "</form>"; 
             echo "</div>"; 
         } else {
-            echo "<div class='waiting-turn'><p>Waiting for game to begin.</p></div>";
+            echo "<div class='waiting-turn'>";
+            echo "<div>"; 
+            echo "<div class='wait-box'>"; 
+            echo "<p>Waiting for game to begin.</p>"; 
+            echo "<img src='images/spongebob-waiting.gif' alt='Spongebob waiting'>";
+            echo "</div>";  
             echo "<form action='" . route('storyPost') . "' method='POST' id='wait-game-form'>"; 
             echo csrf_field(); 
             echo "<input type='hidden' name='wait-game' value={$_SESSION["GAME_ID"]}>"; 
+            // echo "<input type='hidden' name='wait-player' value={$_SESSION["PLAY_USER"]["username"]}>"; 
             echo "<button type='submit' class='leave-button' name='leave' value=true>Leave Game</button>"; 
             echo "</form>"; 
+            echo "</div>"; 
+            echo "</div>"; 
             ?>
             <script>
             function poll() {
@@ -145,7 +150,6 @@ function showGameMain() {
                     success: function(response) {
                         document.getElementById("body").innerHTML = response.html; 
                         console.log("Waiting for game to begin"); 
-                        // console.log(response.html); 
                     },
                     error: function () {
                         console.log("You goofed up somewhere, good luck finding where"); 
@@ -156,19 +160,26 @@ function showGameMain() {
             $(document).ready(function () {
                 setInterval(poll, 5000);
             }); 
-
         </script>
         <?php
         }
     } else if ($_SESSION["GAME_RUN"] == 1) {
         if ($_SESSION["PLAY_USER"]["turn"] != $_SESSION["GAME_TURN"]) {
-            echo "<div class='waiting-turn'><p>Waiting for your turn.</p></div>"; 
+            echo "<div class='waiting-turn'>"; 
+            echo "<div>"; 
+            echo "<div class='wait-box'>"; 
+            echo "<p>Waiting for your turn.</p>"; 
+            echo "<img src='images/cyberchase-hacker.gif' alt='Cyberchase Hacker being electrocuted'>"; 
+            echo "</div>"; 
 
             echo "<form action='" . route('storyPost') . "' method='POST' id='wait-turn-form'>"; 
             echo csrf_field(); 
             echo "<input type='hidden' name='wait-turn' value={$_SESSION["GAME_ID"]}>"; 
+            echo "<input type='hidden' name='wait-player' value={$_SESSION["PLAY_USER"]["username"]}>"; 
             echo "<button type='submit' class='leave-button' name='leave' value=true>Leave Game</button>"; 
             echo "</form>"; 
+            echo "</div>"; 
+            echo "</div>"; 
 
             ?>
             <script>
@@ -183,8 +194,7 @@ function showGameMain() {
                     },
                     success: function(response) {
                         document.getElementById("body").innerHTML = response.html; 
-                        console.log("Waiting for player turn"); 
-                        // console.log(response.html); 
+                        console.log("Waiting for player's turn"); 
                     },
                     error: function () {
                         console.log("You goofed up somewhere, good luck finding where"); 
@@ -195,7 +205,6 @@ function showGameMain() {
             $(document).ready(function () {
                 setInterval(poll, 5000);
             }); 
-
         </script>
         <?php
         } else {
@@ -203,8 +212,6 @@ function showGameMain() {
             $text = DB::select("SELECT SUBSTRING_INDEX((SELECT STORY_TEXT FROM STORY WHERE GAME_ID = ?), ' ', -?) AS STORY_TEXT; ", [$_SESSION["GAME_ID"], $_SESSION["STORY_TURN_LIMIT"]]);
 
             $text = json_decode(json_encode($text, true), true); 
-
-            // var_dump($text); 
 
             // Setting up a random placeholder (suggestion text)
             $json = json_decode(file_get_contents("json/placeholder.json"), true); 
