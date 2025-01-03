@@ -13,7 +13,7 @@ class UserController extends Controller
 
         if (isset($data["pass"]) && $data["pass"] == "c2hlIGJsaW5kZWQgbWUgd2l0aCBzY2llbmNl") {
             Log::info("Beta player login success"); 
-            return view('index'); 
+            return view('login')->with("loginTrue", [true]); 
         } else if (isset($data["pass"]) && $data["pass"] == "1234") {
             Log::info("Beta player login failure"); 
             return view('login')->with("message", ["Haha get rekt"]); 
@@ -27,6 +27,35 @@ class UserController extends Controller
         Log::info("Beta player login failure"); 
 
         return view('login')->with("message", ["Nope", "Try again", "I'm afraid that is incorrect", "So close, yet so far", "Have you tried '1234'", "Hello I'm your cousin James and I'm stuck in Mexico, please send your credit card # so I can book a flight home", "If that's your best guess, we might be here a while", "...could you rephrase that?", "Say pretty please", "Nah I'm not feeling it right now, come back later", "What did you say? <strong>{$pass}</strong>"]); 
+    }
+
+    public function storyGet() {
+        $data = request()->input(); 
+
+        // Private game login
+        if (isset($data["key"]) || isset($data["pass"]) || isset($data["user"])) {
+            if (isset($data["key"]) && isset($data["pass"]) && isset($data["user"])) {
+                $data["key"] = strtoupper($data["key"]); 
+
+                $avail = DB::select("SELECT GAME.GAME_ID, GAME.GAME_KEY, GAME.GAME_PASS, GAME.GAME_RUN, GAME.GAME_TURN, STORY.STORY_TITLE, STORY.STORY_TEXT, STORY.STORY_TURN_LIMIT FROM GAME JOIN STORY ON GAME.GAME_ID = STORY.GAME_ID WHERE GAME_KEY = ? AND GAME_PASS = ?", [$data["key"], $data["pass"]]); 
+
+                $avail = json_decode(json_encode($avail, true), true);
+
+                if ($avail) {
+                    return view('story')->with("avail", $avail[0]);
+                } else {
+                    $err = ["errCode" => "JP", "errMsg" => "This game does not exist."]; 
+
+                    return view('story')->with("err", $err);
+                }
+            } else {
+                $err = ["errCode" => "JP", "errMsg" => "You must fill out all fields."]; 
+
+                return view('story')->with("err", $err); 
+            }
+        }
+
+        return view('story'); 
     }
 
     public function storyPost() {
@@ -74,6 +103,17 @@ class UserController extends Controller
                 return view('story')->with("newTurn", 1); 
             }
         } else if (isset($data["user"]) && isset($data["key"]) && isset($data["pass"])) {
+            // Check if game key is valid
+            if (array_intersect(str_split("1234567890"), str_split($data["key"]))) {
+                $err = ["errCode" => "JH", "errMsg" => "Your room key cannot include numbers."]; 
+
+                return view('story')->with("err", $err); 
+            } else if ($data["limit"] < 1) {
+                $err = ["errCode" => "JH", "errMsg" => "Your word limit cannot be less than 1."]; 
+
+                return view('story')->with("err", $err); 
+            }
+
             // Creating new story
             Log::info("Creating new story..."); 
 

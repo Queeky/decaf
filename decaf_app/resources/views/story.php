@@ -2,39 +2,21 @@
 session_start(); 
 use Illuminate\Support\Facades\Log;
 
-// Log::info("SESSION: " . var_dump($_SESSION)); 
+// If game exists, sets SESSION
+if (isset($avail)) {
+    $_SESSION["GAME_ID"] = $avail["GAME_ID"]; 
+    $_SESSION["GAME_KEY"] = $avail["GAME_KEY"]; 
+    $_SESSION["GAME_PASS"] = $avail["GAME_PASS"]; 
+    $_SESSION["GAME_RUN"] = $avail["GAME_RUN"]; 
+    $_SESSION["GAME_TURN"] = $avail["GAME_TURN"]; 
+    $_SESSION["STORY_TITLE"] = $avail["STORY_TITLE"]; 
+    $_SESSION["STORY_TEXT"] = $avail["STORY_TEXT"]; 
+    // ^^ This will need to update every turn 
+    // (not really a point in having this session var, then)
+    $_SESSION["STORY_TURN_LIMIT"] = $avail["STORY_TURN_LIMIT"]; 
+    $_SESSION["PLAY_USER"] = ["username" => $_GET["user"], "turn" => 1, "host" => false]; 
 
-// NOTE: make this a controller at some point
-// If GAME_ID is already set, won't run this 
-// (prevents re-adding user after hard refresh)
-if ((isset($_GET["key"])) && (isset($_GET["pass"])) && (isset($_GET["user"])) && (!isset($_SESSION["GAME_ID"]))) {
-    $_GET["key"] = strtoupper($_GET["key"]); 
-
-    $gameAvail = DB::table("GAME")
-            ->select("GAME.GAME_ID", "GAME.GAME_KEY", "GAME.GAME_PASS", "GAME.GAME_RUN", "GAME.GAME_TURN", "STORY.STORY_TITLE", "STORY.STORY_TEXT", "STORY.STORY_TURN_LIMIT")
-            ->join("STORY", "GAME.GAME_ID", "=", "STORY.GAME_ID")
-            ->where("GAME_KEY", $_GET["key"])
-            ->where("GAME_PASS", $_GET["pass"])
-            ->get();
-
-    $gameAvail = json_decode(json_encode($gameAvail, true), true);
-
-    // Storing results in SESSION vars
-    if ($gameAvail) {
-        $_SESSION["GAME_ID"] = $gameAvail[0]["GAME_ID"]; 
-        $_SESSION["GAME_KEY"] = $gameAvail[0]["GAME_KEY"]; 
-        $_SESSION["GAME_PASS"] = $gameAvail[0]["GAME_PASS"]; 
-        $_SESSION["GAME_RUN"] = $gameAvail[0]["GAME_RUN"]; 
-        $_SESSION["GAME_TURN"] = $gameAvail[0]["GAME_TURN"]; 
-        $_SESSION["STORY_TITLE"] = $gameAvail[0]["STORY_TITLE"]; 
-        $_SESSION["STORY_TEXT"] = $gameAvail[0]["STORY_TEXT"]; 
-        // ^^ This will need to update every turn 
-        // (not really a point in having this session var, then)
-        $_SESSION["STORY_TURN_LIMIT"] = $gameAvail[0]["STORY_TURN_LIMIT"]; 
-        $_SESSION["PLAY_USER"] = ["username" => $_GET["user"], "turn" => 1, "host" => false]; 
-
-        DB::insert("INSERT INTO PLAYER (PLAY_USER, GAME_ID, PLAY_SESSION) VALUES (?, ?, ?)", ["{$_GET["user"]}", $_SESSION["GAME_ID"], "{$_SESSION["SESSION_ID"]}"]); 
-    }
+    DB::insert("INSERT INTO PLAYER (PLAY_USER, GAME_ID, PLAY_SESSION) VALUES (?, ?, ?)", ["{$_GET["user"]}", $_SESSION["GAME_ID"], "{$_SESSION["SESSION_ID"]}"]); 
 }
 
 // Why is this not handled in the controller??
@@ -89,8 +71,23 @@ if (isset($gameId)) {
 if (isset($gameTurn)) {
     $_SESSION["GAME_TURN"] = $gameTurn["GAME_TURN"]; 
 } 
+
 if (isset($newTurn)) {
     $_SESSION["GAME_TURN"] = $newTurn; 
+}
+
+if (isset($err)) {
+    switch ($err["errCode"]) {
+        case "JP": 
+            $_GET["join"] = "private"; 
+            break; 
+        case "JH": 
+            $_GET["join"] = "host"; 
+            break; 
+        case "JR": 
+            $_GET["join"] = "random"; 
+            break; 
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -102,6 +99,12 @@ if (isset($newTurn)) {
         <link rel="stylesheet" href="css/style.css">
         <meta name="csrf-token" content="<?php echo csrf_token(); ?>">
         <script type="text/javascript" src="js/jquery-3.7.1.min.js"></script>
+        <?php 
+        // Checking login
+        if (!isset($_SESSION["LOGIN_SUCCESS"])) {
+            echo "<meta http-equiv='refresh' content='0; url=http://127.0.0.1:8000/login.php'>"; 
+        }
+        ?>
     </head>
     <body id="body">
         <?php 
@@ -118,6 +121,8 @@ if (isset($newTurn)) {
                 <?php  
                 if (isset($limitMessage) && !isset($_POST["redo"])) {
                     showError($limitMessage); 
+                } else if (isset($err)) {
+                    showError($err["errMsg"]); 
                 }
                 ?>
                 <div class='upper-content' style='border-bottom: 0.2vw solid var(--blue1); padding: 0;'>
@@ -125,13 +130,44 @@ if (isset($newTurn)) {
                     !((isset($_SESSION["GAME_KEY"])) && (isset($_SESSION["GAME_PASS"]))) ? showJoinOptions() : showGameInfo(); 
                     ?>
                 </div>
-                <div class='inner-content' id='inner-content'>
+                <!-- Got rid of id inner content here -->
+                <div class='inner-content story-content'>
                     <?php 
                         if ((isset($_GET["join"]))) {
                             showJoinForm(); 
-                            // test(); 
                         } else if ((isset($_SESSION["GAME_KEY"])) && (isset($_SESSION["GAME_PASS"]))) {
                             showGameMain(); 
+                        } else {
+                            ?>
+                            <div class='game-instruct'>
+                                <p>
+                                    <strong>First time playing?</strong><br><br>
+                                    In Run-On Story, the goal is for you (and a group of friends) to collaborate on a story. The catch is that, each turn, you can only see the story's final few words and must add more based on the limited amount you know. <br><br>
+                                    You can either build a cohesive tale with context clues and teamwork, or you can make something really stupid. 
+                                </p>
+                                <p>
+                                    Every game begins with some starter text and a word limit of the host's choosing. Here's what a few turns may look like. <br><br>
+                                    <strong>Word Limit: </strong>
+                                    3 <br>
+                                    <strong>Story: </strong> 
+                                    I failed my driver's license exam, so I had to <br>
+                                    <strong class='player-1'>What player #1 sees: </strong>
+                                    I had to <br>
+                                    <strong class='player-1'>What player #1 writes: </strong>
+                                    walk my cat. <br>
+                                    <strong class='player-2'>What player #2 sees: </strong>
+                                    walk my cat. <br>
+                                    <strong class='player-2'>What player #2 writes: </strong>
+                                    I really love <br>
+                                    <strong class='player-3'>What player #3 sees: </strong>
+                                    I really love <br>
+                                    <strong class='player-3'>What player #3 writes: </strong>
+                                    to eat sand. <br>
+                                    <strong>Story: </strong>
+                                    I failed my driver's license exam, so I had to walk my cat. I really love to eat sand.
+                                </p>
+                            </div>
+                            <?php
                         }
                     ?>
                 </div>

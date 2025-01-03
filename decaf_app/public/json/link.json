@@ -1,0 +1,44 @@
+{
+    "rightbar-link": {
+        "text": [
+            "The Lost Treasures of Infocom", 
+            "Internet Archive", 
+            "Library Genesis", 
+            "Caffeine Calculator", 
+            "Fake Name Generator", 
+            "Teleworm", 
+            "DaFont", 
+            "Paste Bin", 
+            "Pointer Pointer", 
+            "pinfruit", 
+            "Geocaching Toolbox", 
+            "Tabletop Audio", 
+            "Report Fraud", 
+            "Browser Notepad", 
+            "Political Compass", 
+            "Boil the Frog", 
+            "Translunar Travelers Lounge", 
+            "Seventh Sanctum"
+        ], 
+        "url": [
+            "https://classicreload.com/the-lost-treasures-of-infocom-volume-i.html", 
+            "https://archive.org/", 
+            "https://libgen.li/", 
+            "https://www.caffeineinformer.com/death-by-caffeine", 
+            "fakenamegenerator.com", 
+            "teleworm.us", 
+            "https://www.dafont.com/", 
+            "https://pastebin.com/", 
+            "https://pointerpointer.com/", 
+            "https://pinfruit.com/", 
+            "https://www.geocachingtoolbox.com/", 
+            "https://tabletopaudio.com/", 
+            "https://reportfraud.ftc.gov/", 
+            "https://www.rapidtables.com/tools/notepad.html", 
+            "https://www.politicalcompass.org/", 
+            "http://boilthefrog.playlistmachinery.com/", 
+            "https://translunartravelerslounge.com/", 
+            "https://www.seventhsanctum.com/"
+        ]
+    }
+}

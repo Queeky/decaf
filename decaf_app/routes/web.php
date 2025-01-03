@@ -22,12 +22,17 @@ Route::get('/', function () {
 });
 
 
-// Testing login when Decaf is live but not finished
+// WHEN LIVE
 Route::get('/login.php', function () {
     return view('login');
 })->name("loginGet"); 
 
 Route::post('/login.php', [UserController::class, 'loginPost'])->name("loginPost");
+
+// Route::get('/index.php', function () {
+//     return view('index'); 
+// })->name("indexGet"); 
+
 
 
 
@@ -35,10 +40,11 @@ Route::get('/about.php', function () {
     return view('about');
 })->name("aboutGet");
 
-Route::get('/story.php', function () {
-    return view('story');
-})->name("storyGet");
+// Route::get('/story.php', function () {
+//     return view('story');
+// })->name("storyGet");
 
+Route::get('/story.php', [UserController::class, 'storyGet'])->name("storyGet"); 
 Route::post('/story.php', [UserController::class, 'storyPost'])->name("storyPost"); 
 
 // Route::post('/story.php', [UserController::class, 'createStory'])->name("createStory"); 

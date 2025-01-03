@@ -8,6 +8,12 @@ session_start();
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Homepage</title>
         <link rel="stylesheet" href="css/style.css">
+        <?php 
+        // Checking login
+        if (!isset($_SESSION["LOGIN_SUCCESS"])) {
+            echo "<meta http-equiv='refresh' content='0; url=http://127.0.0.1:8000/login.php'>"; 
+        }
+        ?>
     </head>
     <body>
         <?php 

@@ -1,11 +1,17 @@
 DECAF NOTES: 
 
 WHERE YOU LEFT OFF ***
-Too much extra space for story join screen, figure out what to do with it
-Default route should be login page, figure that out
-GAME_KEY should only have characters! No numbers!
+Fixed the login routing system, but might be able to make it more simple
 Eventually style the start game form same as wait game
+
+UPDATE log for story (player left GAME #?, etc)
+Message when login (for private game) fails
 NEED a "host left the game" option that kicks out joined players
+
+ADD FORM report bugs to my gmail
+^^^ Designed, now just need to add functionality -- send to gmail
+    Currently submit button crashes site cause no csrf
+Add notifs to home
 
 NOTE: Added a procedure!
 NOTE: Writing collab mode! Authors can see the entire story and 

@@ -1,6 +1,5 @@
 <?php 
-// session_start(); 
-use Illuminate\Support\Facades\Log;
+session_start(); 
 ?>
 <!DOCTYPE html>
 <html>
@@ -9,12 +8,20 @@ use Illuminate\Support\Facades\Log;
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Login</title>
         <link rel="stylesheet" href="css/style.css">
+        <?php 
+        // Checking login
+        if (isset($loginTrue)) {
+            $_SESSION["LOGIN_SUCCESS"] = true; 
+
+            echo "<meta http-equiv='refresh' content='0; url=http://127.0.0.1:8000/index.php'>"; 
+        }
+        ?>
     </head>
     <body>
         <?php 
         if (isset($message)) {
             echo "<p>{$message[rand(0, count($message) - 1)]}</p>";
-        }
+        } 
         ?>
         <div class='web-login'>
             <div>

@@ -29,14 +29,30 @@ function showNav() {
 }
 
 function showFoot() {
-    echo "<footer>"; 
-
-    echo "This will be a footer once I figure out what to put in it."; 
-    echo "<div>"; 
-    echo "Icons made by <a href='https://www.flaticon.com/authors/creatype' title='Creatype'> Creatype </a> from <a href='https://www.flaticon.com/' title='Flaticon'>www.flaticon.com</a>"; 
-    echo "</div>"; 
-
-    echo "</footer>"; 
+    ?>
+    <footer>
+        <div id='bug-form'>
+            <p>
+                <strong>Bugs? In <i>my</i> website? It's more likely than you think!</strong><br>
+                Hey beta testers -- if you find the site behaving strangely or flat out breaking, please let me know! In the form below, describe the issue and any steps I may need to replicate the problem. Muchas gracias. 
+            </p>
+            <form action="index.php" method="POST">
+                <div>
+                    <label for="bug-name">Name (can be fake):</label>
+                    <input type="text" name='bug-name'>
+                </div>
+                <div class='bug-msg'>
+                    <label for="bug-msg">Your message:</label>
+                    <textarea name="bug-msg" id="bug-msg" placeholder="Describe bug here"></textarea>
+                </div>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+        <div id='icons'>
+        Icons made by <a href='https://www.flaticon.com/authors/creatype' title='Creatype'> Creatype </a> from <a href='https://www.flaticon.com/' title='Flaticon'>www.flaticon.com</a>
+        </div>
+    </footer>
+    <?php
 }
 
 function showError($message) {
