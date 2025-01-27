@@ -4,9 +4,23 @@ WHERE YOU LEFT OFF ***
 Fixed the login routing system, but might be able to make it more simple
 Eventually style the start game form same as wait game
 
-UPDATE log for story (player left GAME #?, etc)
-Message when login (for private game) fails
+
+Broke db polling again :D Nothing works anymore
+CLARIFY: waiting for game polling when your turn, keeps reloading page
+        but not logging it
+        When you submit, returns page's HTML and does not change turn
+        ^^ not reaching correct part of controller, most likely
+        UPDATE: Something is wrong with the if gameRun["GAME_RUN"] == 1 portion of the 
+        wait game controller bit
+BREAKTHROUGH: Has something to do with the new GET controller and GET values left in. 
+            NEED TO REMOVE GET VALUES for ajax to work properly!!
+            NOPE
+            Seems like response.html shows the new code correctly but doesn't 
+            run the new Javascript
+
+
 NEED a "host left the game" option that kicks out joined players
+Player CAN'T join if game is in progress! ***
 
 ADD FORM report bugs to my gmail
 ^^^ Designed, now just need to add functionality -- send to gmail
@@ -14,6 +28,9 @@ ADD FORM report bugs to my gmail
 Add notifs to home
 
 NOTE: Added a procedure!
+NOTE: !isset($data["leave"]["user"]) checks whether or not user hit the leave button, 
+    because other leave is passed regardless, but ["leave"]["user"] only submits when 
+    hitting the button
 NOTE: Writing collab mode! Authors can see the entire story and 
     write as much as they want; whenever they're done, they end their 
     turn and pass it onto the next person / "Writer's Circle" 

@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Log;
 
 // If game exists, sets SESSION
 if (isset($avail)) {
+    $avail = $avail[0]; 
+
     $_SESSION["GAME_ID"] = $avail["GAME_ID"]; 
     $_SESSION["GAME_KEY"] = $avail["GAME_KEY"]; 
     $_SESSION["GAME_PASS"] = $avail["GAME_PASS"]; 
@@ -14,36 +16,17 @@ if (isset($avail)) {
     // ^^ This will need to update every turn 
     // (not really a point in having this session var, then)
     $_SESSION["STORY_TURN_LIMIT"] = $avail["STORY_TURN_LIMIT"]; 
-    $_SESSION["PLAY_USER"] = ["username" => $_GET["user"], "turn" => 1, "host" => false]; 
+    $_SESSION["PLAY_USER"] = ["username" => $joinUser, "turn" => 0, "host" => false]; 
 
-    DB::insert("INSERT INTO PLAYER (PLAY_USER, GAME_ID, PLAY_SESSION) VALUES (?, ?, ?)", ["{$_GET["user"]}", $_SESSION["GAME_ID"], "{$_SESSION["SESSION_ID"]}"]); 
+    DB::insert("INSERT INTO PLAYER (PLAY_USER, GAME_ID, PLAY_SESSION) VALUES (?, ?, ?)", ["{$joinUser}", $_SESSION["GAME_ID"], "{$_SESSION["SESSION_ID"]}"]); 
+
+    // Testing
+    // $url = strtok($url, '?');
 }
 
-// Why is this not handled in the controller??
-if (isset($_POST["leave"])) {
-    if ($_SESSION["PLAY_USER"]["host"]) {
-        // Either change SQL to delete from multiple tables at once, 
-        // or make a stored procedure
-
-        // Removing all non-host players
-        DB::delete("DELETE P FROM PLAYER P JOIN GAME G ON P.GAME_ID = G.GAME_ID WHERE P.GAME_ID = ? AND G.GAME_HOST != P.PLAY_USER AND G.GAME_SESSION != P.PLAY_SESSION", [$_SESSION["GAME_ID"]]); 
-        // Making host independent of game (so no constraint error will throw)
-        DB::update("UPDATE PLAYER SET GAME_ID = null WHERE GAME_ID = ?", [$_SESSION["GAME_ID"]]); 
-        // TODO: Give players the option to remove story from db once done
-        DB::update("UPDATE STORY SET GAME_ID = 1 WHERE GAME_ID = ?", [$_SESSION["GAME_ID"]]); 
-        // DB::delete("DELETE FROM STORY WHERE GAME_ID = ?", [$_SESSION["GAME_ID"]]); 
-        DB::delete("DELETE FROM GAME WHERE GAME_ID = ?", [$_SESSION["GAME_ID"]]);
-        DB::delete("DELETE FROM PLAYER WHERE GAME_ID IS NULL");  
-
-        Log::info("Host left game"); 
-    } else { 
-        DB::delete("DELETE FROM PLAYER WHERE PLAY_USER = ? AND PLAY_SESSION = ?", ["{$_SESSION["PLAY_USER"]["username"]}", "{$_SESSION["SESSION_ID"]}"]); 
-
-        Log::info($_SESSION["PLAY_USER"]["username"] . " left game");
-    } 
-
+if (isset($leftGame)) {
     unset($_SESSION["GAME_ID"], $_SESSION["GAME_KEY"], $_SESSION["GAME_PASS"], $_SESSION["GAME_RUN"], $_SESSION["GAME_TURN"], $_SESSION["STORY_TITLE"], $_SESSION["STORY_TEXT"], $_SESSION["STORY_TURN_LIMIT"], $_SESSION["PLAY_USER"]); 
-} 
+}
 
 if (isset($gameId)) {
     $_SESSION["GAME_ID"] = $gameId[0]["@gameId := GAME_ID"]; 
@@ -54,17 +37,22 @@ if (isset($gameId)) {
     $_SESSION["STORY_TITLE"] = $_POST["title"]; 
     $_SESSION["STORY_TEXT"] = $_POST["starter-text"]; 
     $_SESSION["STORY_TURN_LIMIT"] = $_POST["limit"]; 
-    $_SESSION["PLAY_USER"] = ["username" => $_POST["user"], "turn" => 1, "host" => true]; 
+    $_SESSION["PLAY_USER"] = ["username" => $_POST["user"], "turn" => 0, "host" => true]; 
 } else if (isset($turns)) {
+    Log::info("DEBUG 2 --> Inside turns else if"); 
     foreach ($turns as $turn) {
         if (($turn["PLAY_USER"] == $_SESSION["PLAY_USER"]["username"]) && ($turn["PLAY_SESSION"] == $_SESSION["SESSION_ID"])) {
             $_SESSION["PLAY_USER"]["turn"] = $turn["PLAY_TURN"]; 
+
+            Log::info("DEBUG 3 --> " . $_SESSION["PLAY_USER"]["username"] . " assigned " . $_SESSION["PLAY_USER"]["turn"]); 
             break; 
         }
     }
 
     $_SESSION["GAME_RUN"] = 1; 
     $_SESSION["GAME_TURN_RANGE"] = $turns[count($turns) - 1]["PLAY_TURN"]; 
+
+    Log::info("DEBUG 4 --> SESSION GAME_RUN = " . $_SESSION["GAME_RUN"]); 
 }
 
 // This cannot be in the includes folder! Will not run otherwise!

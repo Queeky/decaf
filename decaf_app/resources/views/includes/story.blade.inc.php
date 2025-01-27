@@ -1,4 +1,6 @@
 <?php 
+use Illuminate\Support\Facades\Log;
+
 function showJoinOptions() {
     echo "<div class='join-game'>"; 
 
@@ -47,52 +49,57 @@ function showGameInfo() {
 
 function showJoinForm() {
     if ($_GET["join"] == "private") {
-        echo "<form class='join-form' action='" . route("storyGet") . "' method='GET'>"; 
-        echo "<div>"; 
-        echo "<div class='create-username'>"; 
-        echo "<div>"; 
-        echo "<label for='user'>Create your username</label>"; 
-        echo "<input type='text' name='user'>"; 
-        echo "</div>"; 
-        echo "</div>"; 
-        echo "<div class='outer-div'>"; 
-        echo "<div class='inner-div'>"; 
-        echo "<label for='key'>Room Key:</label>"; 
-        echo "<input type='text' name='key'>"; 
-        echo "<label for='pass'>Password:</label>"; 
-        echo "<input type='password' name='pass'>"; 
-        echo "<button type='submit'>Submit</button>"; 
-        echo "</div>"; 
-        echo "</div>"; 
-        echo "</div>"; 
+        echo "<form class='join-form' action='" . route("storyPost") . "' method='POST'>";
+        echo csrf_field();  
+        ?>
+        <div>
+            <div class='create-username'>
+                <div>
+                    <label for='join-user'>Create your username</label>
+                    <input type='text' name='join-user'>
+                </div>
+            </div>
+            <div class='outer-div'>
+                <div class='inner-div'>
+                    <label for='join-key'>Room Key:</label> 
+                    <input type='text' name='join-key'>
+                    <label for='join-pass'>Password:</label>
+                    <input type='password' name='join-pass'>
+                    <button type='submit'>Submit</button> 
+                </div>
+            </div>
+        </div>
+        <?php
         echo "</form>"; 
     } else if ($_GET["join"] == "host") {
         echo "<form class='join-form' action='" . route('storyPost') . "' method='POST'>";
         echo csrf_field();
-        echo "<div>"; 
-        echo "<div class='create-username'>"; 
-        echo "<div>"; 
-        echo "<label for='user'>Create your username</label>"; 
-        echo "<input type='text' name='user'>"; 
-        echo "</div>"; 
-        echo "</div>"; 
-        echo "<div class='outer-div'>"; 
-        echo "<div class='inner-div'>"; 
-        echo "<label for='key'>Set Room Key:</label>"; 
-        echo "<input type='text' name='key'>"; 
-        echo "<label for='pass'>Set Password:</label>"; 
-        echo "<input type='password' name='pass'>"; 
-        echo "<label for='title'>Set Story Title:</label>"; 
-        echo "<input type='text' name='title'>"; 
-        echo "<label for='starter-text'>Begin the story:</label>"; 
-        echo "<textarea name='starter-text'>Once upon a time...</textarea>"; 
-        echo "<label for='limit'>Set Word Limit:</label>"; 
-        echo "<input type='number' name='limit' min='1' value='3'>"; 
-        echo "<input type='hidden' name='session' value='{$_SESSION["SESSION_ID"]}'>"; 
-        echo "<button type='submit'>Submit</button>"; 
-        echo "</div>"; 
-        echo "</div>"; 
-        echo "</div>"; 
+        ?>
+        <div>
+            <div class='create-username'>
+                <div>
+                    <label for='host-user'>Create your username</label>
+                    <input type='text' name='host-user'>
+                </div>
+            </div>
+            <div class='outer-div'>
+                <div class='inner-div'>
+                    <label for='host-key'>Set Room Key:</label>
+                    <input type='text' name='host-key'> 
+                    <label for='host-pass'>Set Password:</label>
+                    <input type='password' name='host-pass'> 
+                    <label for='host-title'>Set Story Title:</label> 
+                    <input type='text' name='host-title'> 
+                    <label for='starter-text'>Begin the story:</label>
+                    <textarea name='starter-text'>Once upon a time...</textarea> 
+                    <label for='host-limit'>Set Word Limit:</label> 
+                    <input type='number' name='host-limit' min='1' value='3'> 
+                    <input type='hidden' name='session' value='<?php $_SESSION["SESSION_ID"] ?>'> 
+                    <button type='submit'>Submit</button> 
+                </div>
+            </div>
+        </div>
+        <?php
         echo "</form>"; 
     }
 }
@@ -107,7 +114,11 @@ function showGameMain() {
         echo csrf_field(); 
         echo "<p>You are in the admin view</p>"; 
         echo "<p>Wow, there's nothing to see!</p>"; 
-        echo "<button type='submit' class='leave-button' name='leave' value=true>Leave Game</button>"; 
+        echo "<button type='submit' class='leave-button' name='leave[user]' value={$_SESSION["PLAY_USER"]["username"]}>Leave Game</button>"; 
+        echo "<input type='hidden' name='leave[id]' value={$_SESSION["GAME_ID"]}>"; 
+        if ($_SESSION["PLAY_USER"]["host"]) {
+            echo "<input type='hidden' name='leave[host]' value=true>";
+        } 
         echo "</form>"; 
         echo "</div>"; 
     } else if ($_SESSION["GAME_RUN"] == 0) {
@@ -122,6 +133,9 @@ function showGameMain() {
             echo "</form>"; 
             echo "</div>"; 
         } else {
+            // echo "GAME NOT RUNNING, WAIT GAME"; 
+            // var_dump($_SESSION); 
+
             echo "<div class='waiting-turn'>";
             echo "<div>"; 
             echo "<div class='wait-box'>"; 
@@ -129,10 +143,15 @@ function showGameMain() {
             echo "<img src='images/spongebob-waiting.gif' alt='Spongebob waiting'>";
             echo "</div>";  
             echo "<form action='" . route('storyPost') . "' method='POST' id='wait-game-form'>"; 
+            // echo "<form action='story.php' method='POST' id='wait-game-form'>"; 
             echo csrf_field(); 
             echo "<input type='hidden' name='wait-game' value={$_SESSION["GAME_ID"]}>"; 
             // echo "<input type='hidden' name='wait-player' value={$_SESSION["PLAY_USER"]["username"]}>"; 
-            echo "<button type='submit' class='leave-button' name='leave' value=true>Leave Game</button>"; 
+            echo "<button type='submit' class='leave-button' name='leave[user]' value={$_SESSION["PLAY_USER"]["username"]}>Leave Game</button>"; 
+            echo "<input type='hidden' name='leave[id]' value={$_SESSION["GAME_ID"]}>";
+            if ($_SESSION["PLAY_USER"]["host"]) {
+                echo "<input type='hidden' name='leave[host]' value=true>";
+            }  
             echo "</form>"; 
             echo "</div>"; 
             echo "</div>"; 
@@ -149,7 +168,8 @@ function showGameMain() {
                     },
                     success: function(response) {
                         document.getElementById("body").innerHTML = response.html; 
-                        console.log("Waiting for game to begin"); 
+                        console.log("Waiting for game to begin");
+                        console.log(response.html); 
                     },
                     error: function () {
                         console.log("You goofed up somewhere, good luck finding where"); 
@@ -158,29 +178,43 @@ function showGameMain() {
             }
 
             $(document).ready(function () {
-                setInterval(poll, 5000);
+                setInterval(poll, 10000);
             }); 
         </script>
         <?php
         }
     } else if ($_SESSION["GAME_RUN"] == 1) {
+        Log::info("DEBUG 5 --> Acknowledging that game is running"); 
+
+        // echo "GAME RUNNING WAIT TURN"; 
+        // var_dump($_SESSION); 
+
         if ($_SESSION["PLAY_USER"]["turn"] != $_SESSION["GAME_TURN"]) {
+            Log::info("DEBUG 6 --> Not your turn, wait form"); 
+
+            var_dump($_POST); 
+
             echo "<div class='waiting-turn'>"; 
             echo "<div>"; 
             echo "<div class='wait-box'>"; 
             echo "<p>Waiting for your turn.</p>"; 
             echo "<img src='images/cyberchase-hacker.gif' alt='Cyberchase Hacker being electrocuted'>"; 
             echo "</div>"; 
+            echo "{$_SESSION["GAME_ID"]} {$_SESSION["PLAY_USER"]["username"]}"; 
 
+            // echo "<form action='" . route('storyPost') . "' method='POST' id='wait-turn-form'>";  
             echo "<form action='" . route('storyPost') . "' method='POST' id='wait-turn-form'>"; 
             echo csrf_field(); 
             echo "<input type='hidden' name='wait-turn' value={$_SESSION["GAME_ID"]}>"; 
             echo "<input type='hidden' name='wait-player' value={$_SESSION["PLAY_USER"]["username"]}>"; 
-            echo "<button type='submit' class='leave-button' name='leave' value=true>Leave Game</button>"; 
+            echo "<button type='submit' class='leave-button' name='leave[user]' value={$_SESSION["PLAY_USER"]["username"]}>Leave Game</button>"; 
+            echo "<input type='hidden' name='leave[id]' value={$_SESSION["GAME_ID"]}>";
+            if ($_SESSION["PLAY_USER"]["host"]) {
+                echo "<input type='hidden' name='leave[host]' value=true>";
+            }  
             echo "</form>"; 
             echo "</div>"; 
-            echo "</div>"; 
-
+            echo "</div>";
             ?>
             <script>
             function poll() {
@@ -203,11 +237,14 @@ function showGameMain() {
             }
 
             $(document).ready(function () {
-                setInterval(poll, 5000);
+                setInterval(poll, 10000);
             }); 
         </script>
         <?php
         } else {
+            echo "{$_SESSION["PLAY_USER"]["turn"]} {$_SESSION["GAME_TURN"]}"; 
+            Log::info("DEBUG 7 --> It is your turn"); 
+
             // Active game, player's turn
             $text = DB::select("SELECT SUBSTRING_INDEX((SELECT STORY_TEXT FROM STORY WHERE GAME_ID = ?), ' ', -?) AS STORY_TEXT; ", [$_SESSION["GAME_ID"], $_SESSION["STORY_TURN_LIMIT"]]);
 
@@ -227,7 +264,11 @@ function showGameMain() {
             echo "<textarea name='new-text'>{$placeholder}</textarea>"; 
             echo "<button type='submit' name='game-id' value='{$_SESSION["GAME_ID"]}'>Submit</button>"; 
             echo "<button type='submit' name='redo' value=true>Redo</button>"; 
-            echo "<button type='submit' class='leave-button' name='leave' value=true>Leave Game</button>"; 
+            echo "<button type='submit' class='leave-button' name='leave[user]' value={$_SESSION["PLAY_USER"]["username"]}>Leave Game</button>"; 
+            echo "<input type='hidden' name='leave[id]' value={$_SESSION["GAME_ID"]}>";
+            if ($_SESSION["PLAY_USER"]["host"]) {
+                echo "<input type='hidden' name='leave[host]' value=true>";
+            }  
             echo "<input type='hidden' name='turn-limit' value={$_SESSION["STORY_TURN_LIMIT"]}>"; 
             echo "<input type='hidden' name='turn-range' value={$_SESSION["GAME_TURN_RANGE"]}>"; 
             echo "<input type='hidden' name='player-turn' value={$_SESSION["PLAY_USER"]["turn"]}>"; 
