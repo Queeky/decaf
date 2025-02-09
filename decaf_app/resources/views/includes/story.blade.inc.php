@@ -133,9 +133,6 @@ function showGameMain() {
             echo "</form>"; 
             echo "</div>"; 
         } else {
-            // echo "GAME NOT RUNNING, WAIT GAME"; 
-            // var_dump($_SESSION); 
-
             echo "<div class='waiting-turn'>";
             echo "<div>"; 
             echo "<div class='wait-box'>"; 
@@ -169,7 +166,11 @@ function showGameMain() {
                     success: function(response) {
                         document.getElementById("body").innerHTML = response.html; 
                         console.log("Waiting for game to begin");
-                        console.log(response.html); 
+
+                        // Temp solution maybe
+                        if (!document.getElementById("wait-game-form")) {
+                            location.replace("http://127.0.0.1:8000/story.php"); 
+                        }
                     },
                     error: function () {
                         console.log("You goofed up somewhere, good luck finding where"); 
@@ -178,29 +179,19 @@ function showGameMain() {
             }
 
             $(document).ready(function () {
-                setInterval(poll, 10000);
+                setInterval(poll, 5000);
             }); 
         </script>
         <?php
         }
     } else if ($_SESSION["GAME_RUN"] == 1) {
-        Log::info("DEBUG 5 --> Acknowledging that game is running"); 
-
-        // echo "GAME RUNNING WAIT TURN"; 
-        // var_dump($_SESSION); 
-
         if ($_SESSION["PLAY_USER"]["turn"] != $_SESSION["GAME_TURN"]) {
-            Log::info("DEBUG 6 --> Not your turn, wait form"); 
-
-            var_dump($_POST); 
-
             echo "<div class='waiting-turn'>"; 
             echo "<div>"; 
             echo "<div class='wait-box'>"; 
             echo "<p>Waiting for your turn.</p>"; 
             echo "<img src='images/cyberchase-hacker.gif' alt='Cyberchase Hacker being electrocuted'>"; 
             echo "</div>"; 
-            echo "{$_SESSION["GAME_ID"]} {$_SESSION["PLAY_USER"]["username"]}"; 
 
             // echo "<form action='" . route('storyPost') . "' method='POST' id='wait-turn-form'>";  
             echo "<form action='" . route('storyPost') . "' method='POST' id='wait-turn-form'>"; 
@@ -229,6 +220,11 @@ function showGameMain() {
                     success: function(response) {
                         document.getElementById("body").innerHTML = response.html; 
                         console.log("Waiting for player's turn"); 
+
+                        // Temp solution maybe
+                        if (!document.getElementById("wait-turn-form")) {
+                            location.replace("http://127.0.0.1:8000/story.php"); 
+                        }
                     },
                     error: function () {
                         console.log("You goofed up somewhere, good luck finding where"); 
@@ -237,14 +233,11 @@ function showGameMain() {
             }
 
             $(document).ready(function () {
-                setInterval(poll, 10000);
+                setInterval(poll, 5000);
             }); 
         </script>
         <?php
         } else {
-            echo "{$_SESSION["PLAY_USER"]["turn"]} {$_SESSION["GAME_TURN"]}"; 
-            Log::info("DEBUG 7 --> It is your turn"); 
-
             // Active game, player's turn
             $text = DB::select("SELECT SUBSTRING_INDEX((SELECT STORY_TEXT FROM STORY WHERE GAME_ID = ?), ' ', -?) AS STORY_TEXT; ", [$_SESSION["GAME_ID"], $_SESSION["STORY_TURN_LIMIT"]]);
 

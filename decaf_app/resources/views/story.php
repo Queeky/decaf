@@ -39,20 +39,15 @@ if (isset($gameId)) {
     $_SESSION["STORY_TURN_LIMIT"] = $_POST["limit"]; 
     $_SESSION["PLAY_USER"] = ["username" => $_POST["user"], "turn" => 0, "host" => true]; 
 } else if (isset($turns)) {
-    Log::info("DEBUG 2 --> Inside turns else if"); 
     foreach ($turns as $turn) {
         if (($turn["PLAY_USER"] == $_SESSION["PLAY_USER"]["username"]) && ($turn["PLAY_SESSION"] == $_SESSION["SESSION_ID"])) {
             $_SESSION["PLAY_USER"]["turn"] = $turn["PLAY_TURN"]; 
-
-            Log::info("DEBUG 3 --> " . $_SESSION["PLAY_USER"]["username"] . " assigned " . $_SESSION["PLAY_USER"]["turn"]); 
             break; 
         }
     }
 
     $_SESSION["GAME_RUN"] = 1; 
     $_SESSION["GAME_TURN_RANGE"] = $turns[count($turns) - 1]["PLAY_TURN"]; 
-
-    Log::info("DEBUG 4 --> SESSION GAME_RUN = " . $_SESSION["GAME_RUN"]); 
 }
 
 // This cannot be in the includes folder! Will not run otherwise!

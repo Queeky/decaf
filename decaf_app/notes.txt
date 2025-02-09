@@ -18,6 +18,9 @@ BREAKTHROUGH: Has something to do with the new GET controller and GET values lef
             Seems like response.html shows the new code correctly but doesn't 
             run the new Javascript
 
+            Async await (maybe)
+            SOLVED
+
 
 NEED a "host left the game" option that kicks out joined players
 Player CAN'T join if game is in progress! ***

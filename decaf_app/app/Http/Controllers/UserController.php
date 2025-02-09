@@ -186,15 +186,11 @@ class UserController extends Controller
         } else if (isset($data["wait-game"])) {
             Log::info("GAME #" . $data["wait-game"] . ": Waiting to begin"); 
 
-            Log::info("DEBUG 1 --> Wait game is running"); 
-
             $gameRun = DB::select("SELECT GAME_RUN FROM GAME WHERE GAME_ID = ?", [$data["wait-game"]]); 
             $gameRun = json_decode(json_encode($gameRun, true), true)[0];
 
             // Sending back turn data for all players
             if ($gameRun["GAME_RUN"] == 1) {
-                Log::info("DEBUG 2 --> GAME_RUN is now 1 (should only run once)"); 
-
                 $turns = DB::select("SELECT PLAY_USER, PLAY_SESSION, PLAY_TURN FROM PLAYER WHERE GAME_ID = ? ORDER BY PLAY_TURN ASC;", [$data["wait-game"]]); 
 
                 $turns = json_decode(json_encode($turns, true), true);
