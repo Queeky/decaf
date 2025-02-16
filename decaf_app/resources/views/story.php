@@ -19,9 +19,6 @@ if (isset($avail)) {
     $_SESSION["PLAY_USER"] = ["username" => $joinUser, "turn" => 0, "host" => false]; 
 
     DB::insert("INSERT INTO PLAYER (PLAY_USER, GAME_ID, PLAY_SESSION) VALUES (?, ?, ?)", ["{$joinUser}", $_SESSION["GAME_ID"], "{$_SESSION["SESSION_ID"]}"]); 
-
-    // Testing
-    // $url = strtok($url, '?');
 }
 
 if (isset($leftGame)) {
@@ -39,6 +36,8 @@ if (isset($gameId)) {
     $_SESSION["STORY_TURN_LIMIT"] = $_POST["limit"]; 
     $_SESSION["PLAY_USER"] = ["username" => $_POST["user"], "turn" => 0, "host" => true]; 
 } else if (isset($turns)) {
+    // Better way to index this without having to loop until getting to specific row?
+    // Index directly?
     foreach ($turns as $turn) {
         if (($turn["PLAY_USER"] == $_SESSION["PLAY_USER"]["username"]) && ($turn["PLAY_SESSION"] == $_SESSION["SESSION_ID"])) {
             $_SESSION["PLAY_USER"]["turn"] = $turn["PLAY_TURN"]; 
@@ -52,7 +51,7 @@ if (isset($gameId)) {
 
 // This cannot be in the includes folder! Will not run otherwise!
 if (isset($gameTurn)) {
-    $_SESSION["GAME_TURN"] = $gameTurn["GAME_TURN"]; 
+    $_SESSION["GAME_TURN"] = $gameTurn; 
 } 
 
 if (isset($newTurn)) {

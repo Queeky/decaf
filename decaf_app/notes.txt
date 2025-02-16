@@ -1,34 +1,21 @@
 DECAF NOTES: 
 
 WHERE YOU LEFT OFF ***
+** Fixed polling, but it does a weird double load or delayed load when switching
+from wait game to wait turn function. Need to look for better solutions eventually
 Fixed the login routing system, but might be able to make it more simple
-Eventually style the start game form same as wait game
+*** Added "host left game" feature, but the message quickly blips before 
+returning to default story page.  
 
-
-Broke db polling again :D Nothing works anymore
-CLARIFY: waiting for game polling when your turn, keeps reloading page
-        but not logging it
-        When you submit, returns page's HTML and does not change turn
-        ^^ not reaching correct part of controller, most likely
-        UPDATE: Something is wrong with the if gameRun["GAME_RUN"] == 1 portion of the 
-        wait game controller bit
-BREAKTHROUGH: Has something to do with the new GET controller and GET values left in. 
-            NEED TO REMOVE GET VALUES for ajax to work properly!!
-            NOPE
-            Seems like response.html shows the new code correctly but doesn't 
-            run the new Javascript
-
-            Async await (maybe)
-            SOLVED
-
-
-NEED a "host left the game" option that kicks out joined players
-Player CAN'T join if game is in progress! ***
-
-ADD FORM report bugs to my gmail
+TODO:
+- CHECK if player posted but host left game 
+- Simplify code by changing some PHP to HTML, removing echo statements.
+- ADD FORM report bugs to my gmail
 ^^^ Designed, now just need to add functionality -- send to gmail
     Currently submit button crashes site cause no csrf
-Add notifs to home
+- Add notifs to home
+
+Can I make different web routes for POST on the same page? Just for better organization
 
 NOTE: Added a procedure!
 NOTE: !isset($data["leave"]["user"]) checks whether or not user hit the leave button, 
@@ -38,9 +25,6 @@ NOTE: Writing collab mode! Authors can see the entire story and
     write as much as they want; whenever they're done, they end their 
     turn and pass it onto the next person / "Writer's Circle" 
     *** Also should be a way to download story as .txt file
-NOTE: NEED to prevent people from getting past login page by typing 
-domain/index.php -- validate the pass or something
-NOTE: Eventually put game ids into the logs (in progress)
 NOTE: Create error messages for missing fields
 NOTE: Start game screen (for host) will need dynamic loading, too
     (to see all the players joining)
@@ -54,189 +38,44 @@ NOTE: Wall of Shame. (Your parents would be disappointed.)
 REMEMBER if you create a fake game from phpMyAdmin, make a fake story too
 or you won't be able to join anything!
 
-
-
-HTML can be shown without echo inside a PHP function, I am a giant moron
-^^ Fix this later
-
 ADMIN CONTROLS can be accessed by logging into a PRIVATE GAME 
 (this game also stores all previous games)
 
 SPEND A DAY writing error messages -- because they ARE NECESSARY! Your code 
 WILL BREAK
 
-TESTS 
+
+
+
+PHPUNIT TESTS! YOU NEED TO MAKE THEM! QUINN! DO IT! PLEASE!
 - overflow for game info (make really long room keys and passwords, usernames, etc)
 - SQL injection for join form and story text
 
 
-WAITING YOUR TURN reloading issue
-1. Can I keep sending queries without reloading the page? 
-while result still doesn't equal expected, keep sending query. 
 
-- grab game turn, check if it matches with player turn
-- TEST grab test text and automatically change screen when text changes
+phpMyAdmin quick commands 
 
-dataType: 'JSON',
-data: $('#myform').serialize(),
-window.onload(function)
+Create new game and story: 
 
-<form id="testerForm" action="<?php route("testPost")?>" method="POST">
-            <?php 
-            // echo csrf_field();
-            $datetime = date("Y-m-d H:i:s"); 
-            echo $datetime; 
-            ?>
-            <input type="hidden" name="timestamp" value=<?php echo $datetime; ?>>
-            <input type="hidden" name="name" value="Quinn">
-            <!-- <button type="submit">Submit</button> -->
-        </form>
+INSERT INTO GAME (GAME_KEY, GAME_PASS)
+VALUES ("DELETEME", "123"); 
+SELECT @id := GAME_ID FROM GAME ORDER BY GAME_ID DESC LIMIT 1; 
+INSERT INTO PLAYER (GAME_ID, PLAY_USER, PLAY_SESSION) 
+VALUES (@id, "Mr. Host", "session1"); 
+UPDATE GAME SET GAME_HOST = "Mr. Host", GAME_SESSION = "session1" WHERE GAME_ID = @id; 
+INSERT INTO STORY (GAME_ID, STORY_TITLE, STORY_TEXT)
+VALUES (@id, "Delete me pls", "Starter text"); 
 
+Set turns: 
 
+SET @count := 0;
+UPDATE PLAYER SET PLAY_TURN = @count := @count + 1
+WHERE GAME_ID = ? ORDER BY RAND();
+UPDATE GAME SET GAME_RUN = 1 WHERE GAME_ID = ?; 
 
-FOR STORY GAME
-- while loop that acts as event listener; checks players joined, 
-- checks if turn has been completed, will STOP running if USER's turn 
-- and once game begins (no more extra players joining)
+Set game back to GAME_RUN = 0: 
 
-ADD limit to GAME_KEY (only certain chars/nums and length < 6)
-
-RULES should be in the join page, and then under rules are recent stories
-    or something of the like
-
-IF YOU LEAVE GAME, $_SESSION game stats need to be destroyed
-
-
-SELECT FLOOR( RAND() * (max - min) + min ) // maybe use this? 
-
-use DB::unprepared
-
-SET @count := 0; 
-UPDATE PLAYER 
-SET PLAY_TURN = @count := @count + 1
-WHERE GAME_ID = ?
-ORDER BY RAND(); 
-SELECT PLAY_USER, PLAY_SESSION, PLAY_TURN FROM PLAYER 
-WHERE GAME_ID = ? 
-ORDER BY PLAY_TURN ASC; 
-^^^ THIS WORKS
-
-SELECT * FROM PLAYER ORDER BY RAND() -> INSERT into temp table, increment TURN column
-Table name = GAME + GAME_ID
-(Scrap the temporary table -- make a table TURN **or** give PLAYER a turn column)
-Save table name to session
-Need to alter GAME to add GAME_TURN default 1
-Automatically set all player turns to 1 when loading players
-When game begins, host script tells db to create randomized temp table 
-    and assigns all turns to player scripts
-    If GAME_RUN true and just began (how to check this?) then 
-    set PLAY_USER turn; maybe have a counter = int(counter / count(turn) = round #)
-When player successfully posts, checks if player turn + 1 > highest turn, 
-(save highest turn to session var? so we don't have to constantly query it)
-if true, turn = 1
-* SELECTING LAST item from data returned can figure out what the highest turn is!!
-
-NOTE: Temp tables are deleted automatically when script terminates db connection
-        Need to test this, delete when game ends
-        Does Laravel end the connection after each query? That would be a problem
-
-        We only need temp table to set up turn order, which will then all be saved in session, so its okay if it dies at the end of the script
-
-
-CREATE TABLE GAME_15 (
-    PLAY_TURN 	INT NOT NULL UNIQUE AUTO_INCREMENT, 
-    PRIMARY KEY (PLAY_TURN)
-) SELECT PLAY_USER, PLAY_SESSION FROM PLAYER WHERE GAME_ID = 15 ORDER BY RAND(); 
-
-SELECT * FROM GAME_15; 
-
-
-
-
-REWRITE PLAYER so composite key is PLAY_USER & PLAY_SESSION
-and see if fk will let that slide, lol
-
-WHEN CREATING GAME, create PLAYER first!!
-This means PLAYER's GAME_ID can be null, because creating PLAYER before GAME
-
-ALTER TABLE GAME 
-ADD CONSTRAINT fk_game_host FOREIGN KEY (GAME_HOST) REFERENCES PLAYER (PLAY_USER, GAME_ID); 
-
-***
-How to check turn? 
-Collects all PLAYER ids, assign each one a random number (within len of all ids)
-Happens when game starts, so when in waiting limbo this hasn't happened yet
-(needs all players at once)
-Which means that my test game won't work -- fix test game first, make hosting 
-GAME needs GAME_HOST = PLAY_ID, if host leaves, game is destroyed
-ERROR -- STORY NEEDS GAME_ID
-Possible fix: create new table STORY_DONE that stores the finished stories, 
-then rm the STORY and GAME (in that order)
-    Also have AUTHORS column that can be left blank and filled in w/ random name -- example: Missy Clarinet (ghost writer)    
-IF you are the first player to go and STORY_TEXT has nothing, shows prompt saying
-you're the first person to write the story
-Every refresh checks GAME for GAME_PLAY_TURN
-
-How to save turn order? 
-- Collect all PLAYER ids when game starts
-- Assign each PLAYER to random number corresponding to id array length
-    (can this be done in SQL or need to be in the script?)
-    (it would need to be in the db, because otherwise multiple scripts
-    would send back different versions -- unless only the host sends back)
-    (actually yes, only the host's script should do this to prevent procedure
-    from running multiple times for no reason)
-- Each PLAYER has PLAY_ORDER recording their turn order
-- Each script selects these play orders in key value pair (order => player id)
-    (should this been saved in SESSION, too? yes)
-- while loop cycles through ids until game is over
-FOREACH WON'T WORK -- WILL RUN EVERYTHING AT ONCE UNLESS ALLOWED TO WAIT FOR FORM
-- if while is going, maybe don't refresh? just have a sleep function
-
-NOTE FROM FUTURE: while loops are a BAD IDEA!
-
-in story file: 
-get GAME info (GAME_RUN, GAME_PLAY_TURN, PLAY_ID) GAME_PLAY_TURN default 0
-players = all ids
-
-create GAME, if GAME_RUN == 0 && GAME_HOST != null --> then wait for players
-
-if !isset($_SESSION[player id]) && GAME_RUN == 1
-    $_SESSION[player id] = [turn order, your id]
-    collect all PLAYER ids and organize
-    alter PLAYER_TURN appropriately
-
-if GAME_PLAY_TURN == $_SESSION[player id][0]
-    if !isset POST data
-        show POST form
-    else 
-        if GAME_PLAY_TURN + 1 > count(players) then GAME_PLAY_TURN = 0 (resetting)
-        else GAME_PLAY_TURN += 1
-        refresh
-else 
-    waiting for player # (do not give name, just turn #)
-
-
-
-- PASSWORD PROBLEM! GET shows the password in url. To solve this, 
-    encrypt the passcode
-    ALSO use POST instead, because pass will still show otherwise
-
-- Players joining screen can have a stupid little GIF running
-- Host can decide when to start the game
-
-- Players are given turn # based on random int generated 0 - (num of players)
-
-- STORY_TEXT needs to have a default value of "" (can chars be appended?)
-
-SELECT SUBSTRING_INDEX(
-    (SELECT STORY_TEXT FROM STORY), 
-    " ", 
-    -1
-); 
-    
-SELECT LENGTH(STORY_TEXT) - LENGTH(REPLACE(STORY_TEXT, ' ', '')) + 1 FROM STORY;
-(^^^ Store this in a variable, pass it to the procedure)
-
+UPDATE GAME SET GAME_TURN = 1, GAME_RUN = 0 WHERE GAME_ID = ?;
 
 
 

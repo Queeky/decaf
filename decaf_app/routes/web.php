@@ -44,7 +44,4 @@ Route::get('/story.php', function () {
     return view('story');
 })->name("storyGet");
 
-// Route::get('/story.php', [UserController::class, 'storyGet'])->name("storyGet"); 
 Route::post('/story.php', [UserController::class, 'storyPost'])->name("storyPost"); 
-
-// Route::post('/story.php', [UserController::class, 'createStory'])->name("createStory"); 

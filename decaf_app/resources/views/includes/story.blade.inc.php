@@ -190,7 +190,7 @@ function showGameMain() {
             echo "<div>"; 
             echo "<div class='wait-box'>"; 
             echo "<p>Waiting for your turn.</p>"; 
-            echo "<img src='images/cyberchase-hacker.gif' alt='Cyberchase Hacker being electrocuted'>"; 
+            echo "<img src='images/cyberchase-hacker.gif' alt='Hacker from Cyberchase being electrocuted'>"; 
             echo "</div>"; 
 
             // echo "<form action='" . route('storyPost') . "' method='POST' id='wait-turn-form'>";  
