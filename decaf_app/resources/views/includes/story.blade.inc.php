@@ -2,15 +2,15 @@
 use Illuminate\Support\Facades\Log;
 
 function showJoinOptions() {
-    echo "<div class='join-game'>"; 
-
-    echo "<p><a href='#'>Join random game</a></p>"; 
-    echo "<p>|</p>"; 
-    echo "<p><a href='" . route("storyGet") . "?join=private'>Join private game</a></p>"; 
-    echo "<p>|</p>"; 
-    echo "<p><a href='" . route("storyGet") . "?join=host'>Host game</a></p>"; 
-
-    echo "</div>"; 
+    ?>
+    <div class='join-game'>
+        <p><a href='#'>Join random game</a></p>
+        <p>|</p>
+        <p><a href='story.php?join=private'>Join private game</a></p>
+        <p>|</p>
+        <p><a href='story.php?join=host'>Host game</a></p>
+    </div>
+    <?php
 }
 
 function showGameInfo() {
@@ -18,141 +18,151 @@ function showGameInfo() {
     $players = DB::select("SELECT PLAY_USER FROM PLAYER WHERE GAME_ID = ?", [$_SESSION["GAME_ID"]]); 
 
     $players = json_decode(json_encode($players, true), true);
-
-    echo "<div class='game-info'>"; 
-
-    echo "<div class='word-limit'><div><p><strong>Word Limit: </strong>{$_SESSION["STORY_TURN_LIMIT"]}</p></div></div>"; 
-    
-    echo "<div class='room-key'><div><p><strong>Room Key: </strong>{$_SESSION["GAME_KEY"]}</p></div></div>"; 
-
-    if ($_SESSION["PLAY_USER"]["host"]) {
-        // Resetting style
-        echo "<style>.game-info > .users-connected {grid-column-start: 1; grid-column-end: 4;} .game-info > h3 {grid-column-end: 4;}</style>";
-
-        echo "<div class='room-key' style='border-left: 0.2vw solid var(--blue1);grid-column-start: 3; grid-column-end: 4;'><p><strong>Password: </strong>{$_SESSION["GAME_PASS"]}</p></div>";
-    }
-
-    echo "<div class='users-connected'><p><strong>Connected: </strong>"; 
-
-    for ($player = 0; $player < count($players); $player++) {
-        echo $players[$player]["PLAY_USER"]; 
-
-        if (($player + 1) < count($players)) echo ", "; 
-    }
-
-    echo "</p></div>"; 
-
-    echo "<h3>Story: {$_SESSION["STORY_TITLE"]}</h3>"; 
-
-    echo "</div>"; 
+    ?>
+    <div class='game-info'>
+        <div class='word-limit'>
+            <div>
+                <p><strong>Word Limit: </strong><?php echo $_SESSION["STORY_TURN_LIMIT"]; ?></p>
+            </div>
+        </div>
+        <div class='room-key'>
+            <div>
+                <p><strong>Room Key: </strong><?php echo $_SESSION["GAME_KEY"]; ?></p>
+            </div>
+        </div>
+        <?php if ($_SESSION["PLAY_USER"]["host"]) { ?>
+            <style>
+                /* Resetting style if host */
+                .game-info > .users-connected {
+                    grid-column-start: 1; 
+                    grid-column-end: 4;
+                } 
+                .game-info > h3 {
+                    grid-column-end: 4;
+                }
+            </style>
+            <div class='room-key' style='border-left: 0.2vw solid var(--blue1);grid-column-start: 3; grid-column-end: 4;'>
+                <p><strong>Password: </strong><?php echo $_SESSION["GAME_PASS"]; ?></p>
+            </div>
+        <?php } ?>
+        <div class='users-connected'>
+            <p><strong>Connected: </strong>
+                <?php
+                for ($player = 0; $player < count($players); $player++) {
+                    echo $players[$player]["PLAY_USER"]; 
+            
+                    if (($player + 1) < count($players)) echo ", "; 
+                }
+                ?>
+            </p>
+        </div>
+        <h3>Story: <?php echo $_SESSION["STORY_TITLE"]; ?></h3>
+    </div>
+    <?php
 }
 
 function showJoinForm() {
-    if ($_GET["join"] == "private") {
-        echo "<form class='join-form' action='" . route("storyPost") . "' method='POST'>";
-        echo csrf_field();  
-        ?>
-        <div>
-            <div class='create-username'>
-                <div>
-                    <label for='join-user'>Create your username</label>
-                    <input type='text' name='join-user'>
+    if ($_GET["join"] == "private") { ?>
+        <form class='join-form' action='<?php route('storyPost') ?>' method='POST'>
+        <?php echo csrf_field(); ?>
+            <div>
+                <div class='create-username'>
+                    <div>
+                        <label for='join-user'>Create your username</label>
+                        <input type='text' name='join-user'>
+                    </div>
+                </div>
+                <div class='outer-div'>
+                    <div class='inner-div'>
+                        <label for='join-key'>Room Key:</label> 
+                        <input type='text' name='join-key'>
+                        <label for='join-pass'>Password:</label>
+                        <input type='password' name='join-pass'>
+                        <button type='submit'>Submit</button> 
+                    </div>
                 </div>
             </div>
-            <div class='outer-div'>
-                <div class='inner-div'>
-                    <label for='join-key'>Room Key:</label> 
-                    <input type='text' name='join-key'>
-                    <label for='join-pass'>Password:</label>
-                    <input type='password' name='join-pass'>
-                    <button type='submit'>Submit</button> 
+        </form>
+    <?php
+    } else if ($_GET["join"] == "host") { ?>
+        <form class='join-form' action='<?php route('storyPost') ?>' method='POST'>
+        <?php echo csrf_field(); ?>
+            <div>
+                <div class='create-username'>
+                    <div>
+                        <label for='host-user'>Create your username</label>
+                        <input type='text' name='host-user'>
+                    </div>
+                </div>
+                <div class='outer-div'>
+                    <div class='inner-div'>
+                        <label for='host-key'>Set Room Key:</label>
+                        <input type='text' name='host-key'> 
+                        <label for='host-pass'>Set Password:</label>
+                        <input type='password' name='host-pass'> 
+                        <label for='host-title'>Set Story Title:</label> 
+                        <input type='text' name='host-title'> 
+                        <label for='starter-text'>Begin the story:</label>
+                        <textarea name='starter-text'>Once upon a time...</textarea> 
+                        <label for='host-limit'>Set Word Limit:</label> 
+                        <input type='number' name='host-limit' min='1' value='3'> 
+                        <input type='hidden' name='session' value='<?php $_SESSION["SESSION_ID"] ?>'> 
+                        <button type='submit'>Submit</button> 
+                    </div>
                 </div>
             </div>
-        </div>
-        <?php
-        echo "</form>"; 
-    } else if ($_GET["join"] == "host") {
-        echo "<form class='join-form' action='" . route('storyPost') . "' method='POST'>";
-        echo csrf_field();
-        ?>
-        <div>
-            <div class='create-username'>
-                <div>
-                    <label for='host-user'>Create your username</label>
-                    <input type='text' name='host-user'>
-                </div>
-            </div>
-            <div class='outer-div'>
-                <div class='inner-div'>
-                    <label for='host-key'>Set Room Key:</label>
-                    <input type='text' name='host-key'> 
-                    <label for='host-pass'>Set Password:</label>
-                    <input type='password' name='host-pass'> 
-                    <label for='host-title'>Set Story Title:</label> 
-                    <input type='text' name='host-title'> 
-                    <label for='starter-text'>Begin the story:</label>
-                    <textarea name='starter-text'>Once upon a time...</textarea> 
-                    <label for='host-limit'>Set Word Limit:</label> 
-                    <input type='number' name='host-limit' min='1' value='3'> 
-                    <input type='hidden' name='session' value='<?php $_SESSION["SESSION_ID"] ?>'> 
-                    <button type='submit'>Submit</button> 
-                </div>
-            </div>
-        </div>
-        <?php
-        echo "</form>"; 
-    }
+        </form>
+    <?php }
 }
 
 function showGameMain() {
     // Need to eventually organize these by priority
     // So script isn't going through all of them all the time
-    if ($_SESSION["GAME_ID"] == 1) {
-        // Admin view
-        echo "<div class='story-says'>"; 
-        echo "<form action='" . route('storyPost') . "' method='POST'>"; 
-        echo csrf_field(); 
-        echo "<p>You are in the admin view</p>"; 
-        echo "<p>Wow, there's nothing to see!</p>"; 
-        echo "<button type='submit' class='leave-button' name='leave[user]' value={$_SESSION["PLAY_USER"]["username"]}>Leave Game</button>"; 
-        echo "<input type='hidden' name='leave[id]' value={$_SESSION["GAME_ID"]}>"; 
-        if ($_SESSION["PLAY_USER"]["host"]) {
-            echo "<input type='hidden' name='leave[host]' value=true>";
-        } 
-        echo "</form>"; 
-        echo "</div>"; 
-    } else if ($_SESSION["GAME_RUN"] == 0) {
-        if ($_SESSION["PLAY_USER"]["host"]) {
-            echo "<div class='story-wait'>"; 
-            echo "<form action='" . route('storyPost') . "' method='POST'>"; 
-            echo csrf_field();
-            echo "<img src='images/stupid-picture.png' alt='FREE ME'>"; 
-            echo "<div>"; 
-            echo "<button type='submit' name='start-game' value={$_SESSION["GAME_ID"]}>Start Game</button>"; 
-            echo "</div>"; 
-            echo "</form>"; 
-            echo "</div>"; 
-        } else {
-            echo "<div class='waiting-turn'>";
-            echo "<div>"; 
-            echo "<div class='wait-box'>"; 
-            echo "<p>Waiting for game to begin.</p>"; 
-            echo "<img src='images/spongebob-waiting.gif' alt='Spongebob waiting'>";
-            echo "</div>";  
-            echo "<form action='" . route('storyPost') . "' method='POST' id='wait-game-form'>"; 
-            // echo "<form action='story.php' method='POST' id='wait-game-form'>"; 
-            echo csrf_field(); 
-            echo "<input type='hidden' name='wait-game' value={$_SESSION["GAME_ID"]}>"; 
-            // echo "<input type='hidden' name='wait-player' value={$_SESSION["PLAY_USER"]["username"]}>"; 
-            echo "<button type='submit' class='leave-button' name='leave[user]' value={$_SESSION["PLAY_USER"]["username"]}>Leave Game</button>"; 
-            echo "<input type='hidden' name='leave[id]' value={$_SESSION["GAME_ID"]}>";
-            if ($_SESSION["PLAY_USER"]["host"]) {
-                echo "<input type='hidden' name='leave[host]' value=true>";
-            }  
-            echo "</form>"; 
-            echo "</div>"; 
-            echo "</div>"; 
-            ?>
+    if ($_SESSION["GAME_ID"] == 1) { ?>
+        <!-- Admin view -->
+        <div class='story-says'>
+            <form action="<?php route('storyPost') ?>" method='POST'>
+                <?php echo csrf_field(); ?>
+                <p>You are in the admin view</p>
+                <p>Wow, there's nothing to see!</p>
+                <button type='submit' class='leave-button' name='leave[user]' value='<?php echo $_SESSION["PLAY_USER"]["username"]; ?>'>Leave Game</button>
+                <input type='hidden' name='leave[id]' value=<?php echo $_SESSION["GAME_ID"]; ?>>
+                <?php if ($_SESSION["PLAY_USER"]["host"]) {
+                    echo "<input type='hidden' name='leave[host]' value=true>";
+                } ?>
+            </form>
+        </div>
+    <?php 
+    } else if ($_SESSION["GAME_RUN"] == 0) { 
+        if ($_SESSION["PLAY_USER"]["host"]) { ?>
+            <div class='story-wait'>
+                <form action="<?php route('storyPost') ?>" method='POST'>
+                    <?php echo csrf_field(); ?>
+                    <img src='images/stupid-picture.png' alt='FREE ME'>
+                    <div>
+                        <button type='submit' name='start-game' value=<?php echo $_SESSION["GAME_ID"]; ?>>Start Game</button>
+                    </div>
+                </form>
+            </div>
+        <?php } else { ?>
+            <div class='waiting-turn'>
+                <div>
+                    <div class='wait-box'>
+                        <p>Waiting for game to begin.</p>
+                        <img src='images/spongebob-waiting.gif' alt='Spongebob waiting'>
+                    </div>
+                    <form action="<?php route('storyPost') ?>" method='POST' id='wait-game-form'>
+                        <?php echo csrf_field(); ?>
+                        <input type='hidden' name='wait-game' value=<?php echo $_SESSION["GAME_ID"]; ?>>
+                        <input type='hidden' name='wait-player' value='<?php echo $_SESSION["PLAY_USER"]["username"]; ?>'>
+                        <button type='submit' class='leave-button' name='leave[user]' value='<?php echo $_SESSION["PLAY_USER"]["username"]; ?>'>Leave Game</button>
+                        <input type='hidden' name='leave[id]' value=<?php echo $_SESSION["GAME_ID"]; ?>>
+                        <?php if ($_SESSION["PLAY_USER"]["host"]) {
+                            echo "<input type='hidden' name='leave[host]' value=true>";
+                        } ?>
+                    </form>
+                </div>
+            </div>
             <script>
             function poll() {
                 $.ajax({
@@ -182,31 +192,28 @@ function showGameMain() {
                 setInterval(poll, 5000);
             }); 
         </script>
-        <?php
-        }
+        <?php }
     } else if ($_SESSION["GAME_RUN"] == 1) {
         if ($_SESSION["PLAY_USER"]["turn"] != $_SESSION["GAME_TURN"]) {
-            echo "<div class='waiting-turn'>"; 
-            echo "<div>"; 
-            echo "<div class='wait-box'>"; 
-            echo "<p>Waiting for your turn.</p>"; 
-            echo "<img src='images/cyberchase-hacker.gif' alt='Hacker from Cyberchase being electrocuted'>"; 
-            echo "</div>"; 
-
-            // echo "<form action='" . route('storyPost') . "' method='POST' id='wait-turn-form'>";  
-            echo "<form action='" . route('storyPost') . "' method='POST' id='wait-turn-form'>"; 
-            echo csrf_field(); 
-            echo "<input type='hidden' name='wait-turn' value={$_SESSION["GAME_ID"]}>"; 
-            echo "<input type='hidden' name='wait-player' value={$_SESSION["PLAY_USER"]["username"]}>"; 
-            echo "<button type='submit' class='leave-button' name='leave[user]' value={$_SESSION["PLAY_USER"]["username"]}>Leave Game</button>"; 
-            echo "<input type='hidden' name='leave[id]' value={$_SESSION["GAME_ID"]}>";
-            if ($_SESSION["PLAY_USER"]["host"]) {
-                echo "<input type='hidden' name='leave[host]' value=true>";
-            }  
-            echo "</form>"; 
-            echo "</div>"; 
-            echo "</div>";
             ?>
+            <div class='waiting-turn'>
+                <div>
+                    <div class='wait-box'>
+                        <p>Waiting for your turn.</p>
+                        <img src='images/cyberchase-hacker.gif' alt='Hacker from Cyberchase being electrocuted'>
+                    </div>
+                    <form action='<?php route('storyPost') ?>' method='POST' id='wait-turn-form'>
+                        <?php echo csrf_field(); ?>
+                        <input type='hidden' name='wait-turn' value=<?php echo $_SESSION["GAME_ID"]; ?>>
+                        <input type='hidden' name='wait-player' value='<?php echo $_SESSION["PLAY_USER"]["username"]; ?>'>
+                        <button type='submit' class='leave-button' name='leave[user]' value='<?php echo $_SESSION["PLAY_USER"]["username"]; ?>'>Leave Game</button>
+                        <input type='hidden' name='leave[id]' value=<?php echo $_SESSION["GAME_ID"]; ?>>
+                        <?php if ($_SESSION["PLAY_USER"]["host"]) {
+                            echo "<input type='hidden' name='leave[host]' value=true>";
+                        } ?>  
+                    </form>
+                </div>
+            </div>
             <script>
             function poll() {
                 $.ajax({
@@ -249,25 +256,25 @@ function showGameMain() {
             $range2 = count($json["placeholder"]["second"]) - 1; 
 
             $placeholder = $json["placeholder"]["first"][rand(0, $range1)] . " " . $json["placeholder"]["second"][rand(0, $range2)]; 
-
-            echo "<div class='story-says'>"; 
-            echo "<p><strong>The story says: </strong>{$text[0]["STORY_TEXT"]}</p>"; 
-            echo "<form action='" . route('storyPost') . "' method='POST'>"; 
-            echo csrf_field(); 
-            echo "<textarea name='new-text'>{$placeholder}</textarea>"; 
-            echo "<button type='submit' name='game-id' value='{$_SESSION["GAME_ID"]}'>Submit</button>"; 
-            echo "<button type='submit' name='redo' value=true>Redo</button>"; 
-            echo "<button type='submit' class='leave-button' name='leave[user]' value={$_SESSION["PLAY_USER"]["username"]}>Leave Game</button>"; 
-            echo "<input type='hidden' name='leave[id]' value={$_SESSION["GAME_ID"]}>";
-            if ($_SESSION["PLAY_USER"]["host"]) {
-                echo "<input type='hidden' name='leave[host]' value=true>";
-            }  
-            echo "<input type='hidden' name='turn-limit' value={$_SESSION["STORY_TURN_LIMIT"]}>"; 
-            echo "<input type='hidden' name='turn-range' value={$_SESSION["GAME_TURN_RANGE"]}>"; 
-            echo "<input type='hidden' name='player-turn' value={$_SESSION["PLAY_USER"]["turn"]}>"; 
-            echo "</form>"; 
-            echo "</div>"; 
-        }
+            ?>
+            <div class='story-says'>
+                <p><strong>The story says: </strong><?php echo $text[0]["STORY_TEXT"]; ?></p>
+                <form action="<?php route('storyPost') ?>" method='POST'>
+                    <?php echo csrf_field(); ?>
+                    <textarea name='new-text'><?php echo $placeholder; ?></textarea>
+                    <button type='submit' name='game-id' value=<?php echo $_SESSION["GAME_ID"]; ?>>Submit</button>
+                    <button type='submit' name='redo' value=true>Redo</button>
+                    <button type='submit' class='leave-button' name='leave[user]' value='<?php echo $_SESSION["PLAY_USER"]["username"]; ?>'>Leave Game</button>
+                    <input type='hidden' name='leave[id]' value=<?php echo $_SESSION["GAME_ID"]; ?>>
+                    <?php if ($_SESSION["PLAY_USER"]["host"]) {
+                        echo "<input type='hidden' name='leave[host]' value=true>";
+                    } ?>
+                    <input type='hidden' name='turn-limit' value=<?php echo $_SESSION["STORY_TURN_LIMIT"]; ?>>
+                    <input type='hidden' name='turn-range' value=<?php echo $_SESSION["GAME_TURN_RANGE"]; ?>>
+                    <input type='hidden' name='player-turn' value='<?php echo $_SESSION["PLAY_USER"]["turn"]; ?>'>
+                </form>
+            </div>
+        <?php }
     } 
 }
 ?>

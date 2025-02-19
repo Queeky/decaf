@@ -112,13 +112,12 @@ if (isset($err)) {
                     !((isset($_SESSION["GAME_KEY"])) && (isset($_SESSION["GAME_PASS"]))) ? showJoinOptions() : showGameInfo(); 
                     ?>
                 </div>
-                <!-- Got rid of id inner content here -->
                 <div class='inner-content story-content'>
                     <?php 
-                        if ((isset($_GET["join"]))) {
-                            showJoinForm(); 
-                        } else if ((isset($_SESSION["GAME_KEY"])) && (isset($_SESSION["GAME_PASS"]))) {
+                        if ((isset($_SESSION["GAME_KEY"])) && (isset($_SESSION["GAME_PASS"]))) {
                             showGameMain(); 
+                        } else if (isset($_GET["join"])) {
+                            showJoinForm(); 
                         } else {
                             ?>
                             <div class='game-instruct'>
