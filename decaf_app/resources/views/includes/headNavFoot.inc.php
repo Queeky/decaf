@@ -1,31 +1,30 @@
 <?php
 function showHead() {
     if (!isset($_SESSION["SESSION_ID"])) $_SESSION["SESSION_ID"] = session_id(); 
-
-    echo "<header>"; 
-
-    echo "<img src='images/logoBlue.png'>"; 
-    echo "<div class='header-triangle'></div>"; 
-    echo "<form action='index.php' method='GET'>"; 
-    echo "<input class='search-bar' type='text'>"; 
-    echo "<a type='submit' href='index.php'><img src='images/search-icon.png'></a>"; 
-    echo "</form>"; 
-
-    echo "</header>"; 
+    ?>
+    <header>
+        <img src='images/logoBlue.png'>
+        <div class='header-triangle'></div>
+        <form action='index.php' method='GET'>
+            <input class='search-bar' type='text'>
+            <a type='submit' href='index.php'><img src='images/search-icon.png'></a>
+        </form>
+    </header>
+    <?php
 }
 
 function showNav() {
-    echo "<nav>"; 
-
-    echo "<ul>"; 
-    echo "<li><a href='index.php'>HOME</a></li>";
-    echo "<li><a href='about.php'>ABOUT</a></li>";
-    echo "<li><a href='index.php'>MADLIBS</a></li>";
-    echo "<li><a href='story.php'>1-WORD</a></li>";
-    // echo "<li><a href='index.php'>COLORING BOOK</a></li>";
-    echo "</ul>"; 
-
-    echo "</nav>"; 
+    ?>
+    <nav>
+        <ul>
+            <li><a href='index.php'>HOME</a></li>
+            <li><a href='about.php'>ABOUT</a></li>
+            <!-- <li><a href='index.php'>MADLIBS</a></li> -->
+            <li><a href='story.php'>RAMBLE</a></li>
+            <!-- <li><a href='index.php'>COLORING BOOK</a></li> -->
+        </ul>
+    </nav>
+    <?php
 }
 
 function showFoot() {
@@ -56,8 +55,10 @@ function showFoot() {
 }
 
 function showError($message) {
-    echo "<div class='error-message'>"; 
-    echo "<p>{$message}</p>"; 
-    echo "</div>"; 
+    ?>
+    <div class='error-message'>
+        <p><?php echo $message; ?></p>
+    </div>
+    <?php
 }
 ?>

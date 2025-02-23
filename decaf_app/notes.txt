@@ -1,20 +1,19 @@
 DECAF NOTES: 
 
 WHERE YOU LEFT OFF ***
-** Fixed polling, but it does a weird double load or delayed load when switching
-from wait game to wait turn function. Need to look for better solutions eventually
 Fixed the login routing system, but might be able to make it more simple
 *** Added "host left game" feature, but the message quickly blips before 
 returning to default story page.  
 
 TODO:
+- WRITE UNIT TESTS & add more robust error messages
 - CHECK if player posted but host left game 
-- Simplify code by changing some PHP to HTML, removing echo statements.
 - ADD FORM report bugs to my gmail
 ^^^ Designed, now just need to add functionality -- send to gmail
     Currently submit button crashes site cause no csrf
 - Add notifs to home
 - Redesign story default page
+- Make my about page somewhat legit before website goes live
 
 Can I make different web routes for POST on the same page? Just for better organization
 

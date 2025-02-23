@@ -86,8 +86,6 @@ class UserController extends Controller
         if (isset($data["wait-turn"]) || isset($data["wait-game"])) { 
             $id = isset($data["wait-turn"]) ? $data["wait-turn"] : $data["wait-game"]; 
 
-            Log::info("DEBUG --> ID: " . $id); 
-
             $gameInfo = DB::select("SELECT GAME_RUN, GAME_TURN FROM GAME WHERE GAME_ID = ?", [$id]); 
 
             if ($gameInfo) {
@@ -121,7 +119,9 @@ class UserController extends Controller
                 }
 
                 Log::info("Uh oh spaghetti-o, storyPost #4 is broken"); 
-                return view('story'); 
+                return response()->json([
+                    'html' => view('story')->render()
+                ]);
             } else {
                 Log::info("GAME #" . $data["wait-game"] . ": Game ended, player kicked");
 
@@ -144,6 +144,8 @@ class UserController extends Controller
         // 6. Appends new text to story
         if (isset($data["new-text"]) && !isset($data["leave"]["user"]) && !isset($data["redo"])) {
             $data["new-text"] = " " . $data["new-text"]; 
+
+            // Update story AND return game id. If id not returned, return view with leftGame
 
             DB::select("CALL updateStory(:newText, :gameId)", ["newText" => $data["new-text"], "gameId" => $data["game-id"]]); 
             Log::info("GAME #" . $data["game-id"] . ": Text appended"); 
