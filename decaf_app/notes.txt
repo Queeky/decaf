@@ -7,13 +7,17 @@ returning to default story page.
 
 TODO:
 - WRITE UNIT TESTS & add more robust error messages
-- CHECK if player posted but host left game 
 - ADD FORM report bugs to my gmail
 ^^^ Designed, now just need to add functionality -- send to gmail
     Currently submit button crashes site cause no csrf
 - Add notifs to home
 - Redesign story default page
+- Better-ify the admin page
 - Make my about page somewhat legit before website goes live
+
+WHEN DECAF GOES LIVE 
+- Gather stats on which page users are at the most, then reorganize if statements 
+    to reflect this
 
 Can I make different web routes for POST on the same page? Just for better organization
 

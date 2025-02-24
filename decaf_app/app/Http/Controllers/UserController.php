@@ -145,20 +145,28 @@ class UserController extends Controller
         if (isset($data["new-text"]) && !isset($data["leave"]["user"]) && !isset($data["redo"])) {
             $data["new-text"] = " " . $data["new-text"]; 
 
-            // Update story AND return game id. If id not returned, return view with leftGame
+            $gameExists = DB::select("CALL updateStory(:newText, :gameId, @gameId)", ["newText" => $data["new-text"], "gameId" => $data["game-id"]]); 
 
-            DB::select("CALL updateStory(:newText, :gameId)", ["newText" => $data["new-text"], "gameId" => $data["game-id"]]); 
-            Log::info("GAME #" . $data["game-id"] . ": Text appended"); 
+            if ($gameExists) {
+                Log::info("GAME #" . $data["game-id"] . ": Text appended"); 
 
-            // Updating game turn
-            if (($data["player-turn"] + 1) <= $data["turn-range"]) {
-                DB::update("UPDATE GAME SET GAME_TURN = ? WHERE GAME_ID = ?", [$data["player-turn"] + 1, $data["game-id"]]); 
+                // Updating game turn
+                if (($data["player-turn"] + 1) <= $data["turn-range"]) {
+                    DB::update("UPDATE GAME SET GAME_TURN = ? WHERE GAME_ID = ?", [$data["player-turn"] + 1, $data["game-id"]]); 
 
-                return view('story')->with("newTurn", $data["player-turn"] + 1); 
+                    return view('story')->with("newTurn", $data["player-turn"] + 1); 
+                } else {
+                    DB::update("UPDATE GAME SET GAME_TURN = 1 WHERE GAME_ID = ?", [$data["game-id"]]); 
+
+                    return view('story')->with("newTurn", 1); 
+                }
             } else {
-                DB::update("UPDATE GAME SET GAME_TURN = 1 WHERE GAME_ID = ?", [$data["game-id"]]); 
+                Log::info("GAME #" . $data["game-id"] . ": Player attempted to submit turn on game that no longer exists");
 
-                return view('story')->with("newTurn", 1); 
+                $err = ["errCode" => "JP", "errMsg" => "Host has left the game."];
+                $leftGame = true; 
+
+                return view('story')->with(compact("err", "leftGame")); 
             }
         } 
         
