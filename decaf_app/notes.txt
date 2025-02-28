@@ -12,7 +12,6 @@ TODO:
     Currently submit button crashes site cause no csrf
 - Add notifs to home
 - Redesign story default page
-- Better-ify the admin page
 - Make my about page somewhat legit before website goes live
 
 WHEN DECAF GOES LIVE 

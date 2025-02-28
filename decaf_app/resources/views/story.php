@@ -2,6 +2,12 @@
 session_start(); 
 use Illuminate\Support\Facades\Log;
 
+$get = null; 
+if (isset($adminRead)) {
+    $get = $adminRead;
+    $_SESSION["STORY_TITLE"] = $get["STORY_TITLE"]; 
+}  
+
 // If game exists, sets SESSION
 if (isset($avail)) {
     $avail = $avail[0]; 
@@ -115,7 +121,7 @@ if (isset($err)) {
                 <div class='inner-content story-content'>
                     <?php 
                         if ((isset($_SESSION["GAME_KEY"])) && (isset($_SESSION["GAME_PASS"]))) {
-                            showGameMain(); 
+                            showGameMain($get); 
                         } else if (isset($_GET["join"])) {
                             showJoinForm(); 
                         } else {

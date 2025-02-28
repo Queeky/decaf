@@ -115,36 +115,10 @@ function showJoinForm() {
     <?php }
 }
 
-function showGameMain() {
-    // Need to eventually organize these by priority
-    // So script isn't going through all of them all the time
-    if ($_SESSION["GAME_ID"] == 1) { ?>
-        <!-- Admin view -->
-        <div class='story-says'>
-            <form action="<?php route('storyPost') ?>" method='POST'>
-                <?php echo csrf_field(); ?>
-                <p>You are in the admin view</p>
-                <p>Wow, there's nothing to see!</p>
-                <button type='submit' class='leave-button' name='leave[user]' value='<?php echo $_SESSION["PLAY_USER"]["username"]; ?>'>Leave Game</button>
-                <input type='hidden' name='leave[id]' value=<?php echo $_SESSION["GAME_ID"]; ?>>
-                <?php if ($_SESSION["PLAY_USER"]["host"]) {
-                    echo "<input type='hidden' name='leave[host]' value=true>";
-                } ?>
-            </form>
-        </div>
-    <?php 
-    } else if ($_SESSION["GAME_RUN"] == 0) { 
-        if ($_SESSION["PLAY_USER"]["host"]) { ?>
-            <div class='story-wait'>
-                <form action="<?php route('storyPost') ?>" method='POST'>
-                    <?php echo csrf_field(); ?>
-                    <img src='images/stupid-picture.png' alt='FREE ME'>
-                    <div>
-                        <button type='submit' name='start-game' value=<?php echo $_SESSION["GAME_ID"]; ?>>Start Game</button>
-                    </div>
-                </form>
-            </div>
-        <?php } else { ?>
+function showGameMain($get) {
+    if ($_SESSION["GAME_RUN"] == 0 && $_SESSION["GAME_ID"] != 1) { 
+        // Game waiting to run
+        if (!$_SESSION["PLAY_USER"]["host"]) { ?>
             <div class='waiting-turn'>
                 <div>
                     <div class='wait-box'>
@@ -191,9 +165,20 @@ function showGameMain() {
             $(document).ready(function () {
                 setInterval(poll, 5000);
             }); 
-        </script>
+            </script>
+        <?php } else { ?>
+            <div class='story-wait'>
+                <form action="<?php route('storyPost') ?>" method='POST'>
+                    <?php echo csrf_field(); ?>
+                    <img src='images/stupid-picture.png' alt='FREE ME'>
+                    <div>
+                        <button type='submit' name='start-game' value=<?php echo $_SESSION["GAME_ID"]; ?>>Start Game</button>
+                    </div>
+                </form>
+            </div>
         <?php }
     } else if ($_SESSION["GAME_RUN"] == 1) {
+        // Game is running
         if ($_SESSION["PLAY_USER"]["turn"] != $_SESSION["GAME_TURN"]) {
             ?>
             <div class='waiting-turn'>
@@ -275,6 +260,61 @@ function showGameMain() {
                 </form>
             </div>
         <?php }
-    } 
+    } else if (!$get && $_SESSION["GAME_ID"] == 1) { 
+        // Admin view
+        $completed = DB::select("SELECT STORY_ID, STORY_TITLE, LEFT(STORY_TEXT, 70) AS STORY_TEXT, STORY_TURN_LIMIT FROM STORY WHERE GAME_ID = 1 ORDER BY STORY_ID DESC"); 
+        $completed = json_decode(json_encode($completed, true), true);
+
+        $active = DB::select("SELECT STORY_ID, STORY_TITLE, LEFT(STORY_TEXT, 70) AS STORY_TEXT, STORY_TURN_LIMIT FROM STORY WHERE GAME_ID != 1 ORDER BY STORY_ID DESC"); 
+        $active = json_decode(json_encode($active, true), true);
+        ?>
+        <div class='admin-stories'>
+            <div class='completed'>
+                <h3>COMPLETED STORIES</h3>
+                <?php foreach ($completed as $c) { ?>
+                    <div>
+                        <form class='delete' action="<?php route('storyPost') ?>" method="POST">
+                            <?php echo csrf_field(); ?>
+                            <button type='submit' name='admin-delete' value=<?php echo $c["STORY_ID"]; ?>>DEL</button>
+                        </form>
+                        <p class='title'><?php echo $c["STORY_TITLE"]; ?></p>
+                        <p class='limit'><?php echo $c["STORY_TURN_LIMIT"]; ?></p>
+                        <p class='text'><?php echo $c["STORY_TEXT"]; ?></p>
+                        <form class='read-more' action="<?php route('storyGet') ?>" method="GET">
+                            <button type='submit' name='admin-read' value=<?php echo $c["STORY_ID"]; ?>>READ</button>
+                        </form>
+                    </div>
+                <?php } ?>
+            </div>
+            <div class='active'>
+                <h3>ACTIVE STORIES</h3>
+                <?php foreach ($active as $a) { ?>
+                    <div>
+                        <form class='delete' action="<?php route('storyPost') ?>" method="POST">
+                            <?php echo csrf_field(); ?>
+                            <button type='button'>DEL</button>
+                        </form>
+                        <p class='title'><?php echo $a["STORY_TITLE"]; ?></p>
+                        <p class='limit'><?php echo $a["STORY_TURN_LIMIT"]; ?></p>
+                        <p class='text'><?php echo $a["STORY_TEXT"]; ?></p>
+                        <form class='read-more' action="<?php route('storyGet') ?>" method="GET">
+                            <button type='submit' name='admin-read' value=<?php echo $a["STORY_ID"]; ?>>READ</button>
+                        </form>
+                    </div>
+                <?php } ?>
+            </div>
+            <div class='story-says admin'>
+                <form action="<?php route('storyPost') ?>" method='POST'>
+                    <?php echo csrf_field(); ?>
+                    <button type='submit' class='leave-button' name='leave[user]' value='<?php echo $_SESSION["PLAY_USER"]["username"]; ?>'>Leave Admin View</button>
+                    <input type='hidden' name='leave[id]' value=<?php echo $_SESSION["GAME_ID"]; ?>>
+                </form>
+            </div>
+        </div>
+    <?php } else if ($get && $_SESSION["GAME_ID"] == 1) { ?>
+        <div class='admin-view read'>
+            <p><?php echo $get["STORY_TEXT"]; ?></p>
+        </div>
+    <?php }
 }
 ?>

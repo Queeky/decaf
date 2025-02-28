@@ -338,6 +338,67 @@ footer #icons, footer #icons a {
 }
 
 
+/* ADMIN VIEW */
+.admin-stories {
+    display: block; 
+    width: 100%; 
+    padding-top: 2%; 
+    padding-bottom: 2%; 
+    border-bottom: 0.2vw solid var(--blue1); 
+}
+
+.admin-stories > .completed, .admin-stories > .active {
+    display: block; 
+    width: 100%; 
+    overflow: none; 
+    padding-top: 1%; 
+    padding-bottom: 1%; 
+}
+
+.completed > h3, .active > h3 {
+    padding-left: 5%; 
+}
+
+.completed > div, .active > div {
+    display: grid; 
+    width: 100%; 
+    grid-template-columns: 5% 25% 5% 60% 5%;
+    margin-top: 0.5%; 
+}
+
+.completed > div > form, .active > div > form {
+    text-align: center; 
+}
+
+.completed button, .active button {
+    width: 100%; 
+    background-color: var(--yellow2); 
+    border: none; 
+}
+
+.completed button:hover, .active form.read-more button:hover {
+    text-decoration: underline;
+}
+
+.completed > div > *, .active > div > * {
+    padding: 1%; 
+    border: 1px solid black; 
+}
+
+.completed > div > .limit, .completed > div > .title, .active > div > .limit, .active > div > .title {
+    text-align: center; 
+}
+
+.admin-view.read {
+    display: flex; 
+    width: 100%; 
+    padding: 5%; 
+    height: 20vw; 
+    justify-content: center; 
+    align-items: center; 
+}
+
+
 /* WORD OF THE DAY */
 .side > .daily-vocab {
     width: 100%; 

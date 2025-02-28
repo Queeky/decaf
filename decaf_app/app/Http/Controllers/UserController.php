@@ -15,18 +15,34 @@ class UserController extends Controller
             Log::info("Beta player login success"); 
             return view('login')->with("loginTrue", [true]); 
         } else if (isset($data["pass"]) && $data["pass"] == "1234") {
-            Log::info("Beta player login failure"); 
+            Log::info("Beta player login failure (gullible vers.)"); 
             return view('login')->with("message", ["Haha get rekt"]); 
         } else if (!isset($data["pass"])) {
             Log::info("Beta player login failure"); 
-            return view('login')->with("message", ["A blank password would be a pretty bad idea, but I'm glad you're trying everything"]); 
+            return view('login')->with("message", ["To solve the password, you 1) must enter a password, and 2) the password must be correct. I hope this helps."]); 
         }
 
         $pass = (isset($data["pass"])) ?  $data["pass"] . "?" : ""; 
 
         Log::info("Beta player login failure"); 
 
-        return view('login')->with("message", ["Nope", "Try again", "I'm afraid that is incorrect", "So close, yet so far", "Have you tried '1234'", "Hello I'm your cousin James and I'm stuck in Mexico, please send your credit card # so I can book a flight home", "If that's your best guess, we might be here a while", "...could you rephrase that?", "Say pretty please", "Nah I'm not feeling it right now, come back later", "What did you say? <strong>{$pass}</strong>"]); 
+        return view('login')->with("message", ["No", "Try again", "That is incorrect", "So close, yet so far", "Have you tried '1234'", "Hello I'm your cousin James and I'm stuck in Mexico, please send your credit card # so I can book a flight home", "Wrong", "Could you rephrase that?", "Say pretty please", "Come back later", "What did you say? <strong>{$pass}</strong>"]); 
+    }
+
+    public function storyGet() {
+        $readId = request()->get("admin-read");
+
+        // 1. Admin reads full story text
+        if (isset($readId)) {
+            $adminRead = DB::select("SELECT STORY_TITLE, STORY_TEXT FROM STORY WHERE STORY_ID = ? LIMIT 1", [$readId]); 
+            $adminRead = json_decode(json_encode($adminRead, true), true)[0];
+
+            Log::info("Admin is reading STORY #" . $readId); 
+
+            return view('story')->with("adminRead", $adminRead); 
+        }
+
+        return view('story'); 
     }
 
     public function storyPost() {
@@ -213,6 +229,15 @@ class UserController extends Controller
 
             return view('story')->with('turns', $turns); 
         } 
+
+        // 9. Admin deletes completed story
+        if (isset($data["admin-delete"])) {
+            DB::delete("DELETE FROM STORY WHERE STORY_ID = ?", [$data["admin-delete"]]); 
+
+            Log::info("STORY #" . $data["admin-delete"] . " was removed by admin"); 
+
+            return view('story'); 
+        }
 
         // Default return
         return response()->json([
