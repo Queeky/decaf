@@ -187,29 +187,43 @@ class UserController extends Controller
         } 
         
         // 7. Host creates a new story
-        if (isset($data["host-user"]) && isset($data["host-key"]) && isset($data["host-pass"])) {
-            // Check if game key is valid
-            if (array_intersect(str_split("1234567890"), str_split($data["host-key"]))) {
-                $err = ["errCode" => "JH", "errMsg" => "Your room key cannot include numbers."]; 
+        if (isset($data["host-user"]) || isset($data["host-key"]) || isset($data["host-pass"]) || isset($data["make-public"])) {
+            if (isset($data["host-user"]) && isset($data["host-key"]) && isset($data["make-public"])) {
+                // Check if key is valid
+                if (array_intersect(str_split("1234567890"), str_split($data["host-key"]))) {
+                    $err = ["errCode" => "JH", "errMsg" => "Your room key cannot include numbers."]; 
+    
+                    return view('story')->with("err", $err); 
+                } 
 
-                return view('story')->with("err", $err); 
-            } else if ($data["host-limit"] < 1) {
-                $err = ["errCode" => "JH", "errMsg" => "Your word limit cannot be less than 1."]; 
+                if ($data["make-public"] == "n" && !isset($data["host-pass"])) {
+                    $err = ["errCode" => "JH", "errMsg" => "Private games must have a password."]; 
+    
+                    return view('story')->with("err", $err);
+                }
 
+                if ($data["host-limit"] < 1) {
+                    $err = ["errCode" => "JH", "errMsg" => "Your word limit cannot be less than 1."]; 
+    
+                    return view('story')->with("err", $err); 
+                }
+    
+                // Creating new story
+                Log::info("Creating new story..."); 
+    
+                $data["host-key"] = strtoupper($data["host-key"]); 
+    
+                $gameId = DB::select("CALL createStory(:key, :pass, :user, :session, :title, :text, :limit, @gameId)", ["key" => $data["host-key"], "pass" => $data["host-pass"], "user" => $data["host-user"], "session" => $data["session"], "title" => $data["host-title"], "text" => $data["starter-text"], "limit" => $data["host-limit"]]);
+    
+                $gameId = json_decode(json_encode($gameId, true), true);  
+    
+                return view('story')->with("gameId", $gameId); 
+            } else {
+                $err = ["errCode" => "JH", "errMsg" => "You must fill out all necessary fields."]; 
+    
                 return view('story')->with("err", $err); 
             }
-
-            // Creating new story
-            Log::info("Creating new story..."); 
-
-            $data["host-key"] = strtoupper($data["host-key"]); 
-
-            $gameId = DB::select("CALL createStory(:key, :pass, :user, :session, :title, :text, :limit, @gameId)", ["key" => $data["host-key"], "pass" => $data["host-pass"], "user" => $data["host-user"], "session" => $data["session"], "title" => $data["host-title"], "text" => $data["starter-text"], "limit" => $data["host-limit"]]);
-
-            $gameId = json_decode(json_encode($gameId, true), true);  
-
-            return view('story')->with("gameId", $gameId); 
-        } 
+        }
         
         // 8. Host starts game
         if (isset($data["start-game"])) {
@@ -239,9 +253,6 @@ class UserController extends Controller
             return view('story'); 
         }
 
-        // Default return
-        return response()->json([
-            'html' => view('story')->render()
-        ]);
+        return view('story'); 
     }
 }

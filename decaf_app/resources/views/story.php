@@ -33,14 +33,14 @@ if (isset($leftGame)) {
 
 if (isset($gameId)) {
     $_SESSION["GAME_ID"] = $gameId[0]["@gameId := GAME_ID"]; 
-    $_SESSION["GAME_KEY"] = $_POST["key"]; 
-    $_SESSION["GAME_PASS"] = $_POST["pass"]; 
+    $_SESSION["GAME_KEY"] = $_POST["host-key"]; 
+    $_SESSION["GAME_PASS"] = $_POST["host-pass"]; 
     $_SESSION["GAME_RUN"] = 0; 
     $_SESSION["GAME_TURN"] = 1; 
-    $_SESSION["STORY_TITLE"] = $_POST["title"]; 
+    $_SESSION["STORY_TITLE"] = $_POST["host-title"]; 
     $_SESSION["STORY_TEXT"] = $_POST["starter-text"]; 
-    $_SESSION["STORY_TURN_LIMIT"] = $_POST["limit"]; 
-    $_SESSION["PLAY_USER"] = ["username" => $_POST["user"], "turn" => 0, "host" => true]; 
+    $_SESSION["STORY_TURN_LIMIT"] = $_POST["host-limit"]; 
+    $_SESSION["PLAY_USER"] = ["username" => $_POST["host-user"], "turn" => 0, "host" => true]; 
 } else if (isset($turns)) {
     // Better way to index this without having to loop until getting to specific row?
     // Index directly?

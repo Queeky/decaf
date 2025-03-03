@@ -18,35 +18,31 @@ function showMain() {
 }
 
 function showSide() {
-    echo "<div class='side'>"; 
-
-    // Will have foreach loop here
-    echo "<div class='daily-vocab'>"; 
-    echo "<h3>WORD OF THE DAY</h3>"; 
-    echo "<div>"; 
-    echo "<p class='word'>LYCANTHROPY</p>"; 
-    echo "<p class='word-type'>noun</p>"; 
-    echo "<p class='word-def'>A delusion that one has become a wolf; the assumption of the form and characteristics of a wolf held to be possible by witchcraft or magic.</p>"; 
-
-    echo "<ul class='synonyms'>"; 
-    echo "<li>Synonyms:</li>"; 
-    echo "<li><a href=''>zoanthropy</a></li>"; 
-    echo "<li><a href=''>zoanthropy</a></li>"; 
-    echo "<li><a href=''>zoanthropy</a></li>"; 
-    echo "<li><a href=''>zoanthropy</a></li>"; 
-    echo "</ul>"; 
-
-    echo "<ul class='antonyms'>"; 
-    echo "<li>Antonyms:</li>"; 
-    echo "<li><a href=''>zoanthropy</a></li>"; 
-    echo "<li><a href=''>zoanthropy</a></li>"; 
-    echo "<li><a href=''>zoanthropy</a></li>"; 
-    echo "<li><a href=''>zoanthropy</a></li>"; 
-    echo "</ul>"; 
-
-    echo "</div>"; 
-    echo "</div>"; 
-
-    echo "</div>"; 
+    ?>
+    <div class='side'>
+        <div class='daily-vocab'>
+            <h3>WORD OF THE DAY</h3>
+            <div>
+                <p class='word'>LYCANTHROPY</p>
+                <p class='word-type'>noun</p>
+                <p class='word-def'>A delusion that one has become a wolf; the assumption of the form and characteristics of a wolf held to be possible by witchcraft or magic.</p>
+                <ul class='synonyms'>
+                    <li>Synonyms:</li>
+                    <li><a href=''>zoanthropy</a></li>
+                    <li><a href=''>zoanthropy</a></li>
+                    <li><a href=''>zoanthropy</a></li>
+                    <li><a href=''>zoanthropy</a></li>
+                </ul>
+                <ul class='antonyms'>
+                    <li>Antonyms:</li>
+                    <li><a href=''>zoanthropy</a></li>
+                    <li><a href=''>zoanthropy</a></li>
+                    <li><a href=''>zoanthropy</a></li>
+                    <li><a href=''>zoanthropy</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <?php
 }
 ?>

@@ -4,11 +4,11 @@ use Illuminate\Support\Facades\Log;
 function showJoinOptions() {
     ?>
     <div class='join-game'>
-        <p><a href='#'>Join random game</a></p>
+        <p><a href='<?php route('storyGet'); ?>?join=random'>Join random game</a></p>
         <p>|</p>
-        <p><a href='story.php?join=private'>Join private game</a></p>
+        <p><a href='<?php route('storyGet'); ?>?join=private'>Join private game</a></p>
         <p>|</p>
-        <p><a href='story.php?join=host'>Host game</a></p>
+        <p><a href='<?php route('storyGet'); ?>?join=host'>Host game</a></p>
     </div>
     <?php
 }
@@ -62,7 +62,7 @@ function showGameInfo() {
 }
 
 function showJoinForm() {
-    if ($_GET["join"] == "private") { ?>
+    if ($_GET["join"] == "private" || $_GET["join"] == "random") { ?>
         <form class='join-form' action='<?php route('storyPost') ?>' method='POST'>
         <?php echo csrf_field(); ?>
             <div>
@@ -76,8 +76,10 @@ function showJoinForm() {
                     <div class='inner-div'>
                         <label for='join-key'>Room Key:</label> 
                         <input type='text' name='join-key'>
-                        <label for='join-pass'>Password:</label>
-                        <input type='password' name='join-pass'>
+                        <?php if ($_GET["join"] == "private") { ?>
+                            <label for='join-pass'>Password:</label>
+                            <input type='password' name='join-pass'>
+                        <?php } ?>
                         <button type='submit'>Submit</button> 
                     </div>
                 </div>
@@ -85,7 +87,7 @@ function showJoinForm() {
         </form>
     <?php
     } else if ($_GET["join"] == "host") { ?>
-        <form class='join-form' action='<?php route('storyPost') ?>' method='POST'>
+        <form class='join-form host-form' action='<?php route('storyPost') ?>' method='POST'>
         <?php echo csrf_field(); ?>
             <div>
                 <div class='create-username'>
@@ -98,15 +100,28 @@ function showJoinForm() {
                     <div class='inner-div'>
                         <label for='host-key'>Set Room Key:</label>
                         <input type='text' name='host-key'> 
-                        <label for='host-pass'>Set Password:</label>
-                        <input type='password' name='host-pass'> 
+                        <label class='host-pass-label' for='host-pass'>Set Password:</label>
+                        <input class='host-pass' type='password' name='host-pass'> 
+                        <div class='public-private'>
+                            <div>
+                                <input type="radio" id='choice-public' name='make-public' value='y'>
+                                <label for="choice-public">Public</label>
+                            </div>
+                            <div>
+                                <input type="radio" id='choice-private' name='make-public' value='n'>
+                                <label for="choice-private">Private</label>
+                            </div>
+                        </div>
+                        <p class='radio-msg'>
+                            Making your game public will allow random players to join. If you choose public, <strong>your game will not need/have a password.</strong>
+                        </p>
                         <label for='host-title'>Set Story Title:</label> 
                         <input type='text' name='host-title'> 
                         <label for='starter-text'>Begin the story:</label>
                         <textarea name='starter-text'>Once upon a time...</textarea> 
                         <label for='host-limit'>Set Word Limit:</label> 
                         <input type='number' name='host-limit' min='1' value='3'> 
-                        <input type='hidden' name='session' value='<?php $_SESSION["SESSION_ID"] ?>'> 
+                        <input type='hidden' name='session' value='<?php echo $_SESSION["SESSION_ID"]; ?>'> 
                         <button type='submit'>Submit</button> 
                     </div>
                 </div>
@@ -173,6 +188,9 @@ function showGameMain($get) {
                     <img src='images/stupid-picture.png' alt='FREE ME'>
                     <div>
                         <button type='submit' name='start-game' value=<?php echo $_SESSION["GAME_ID"]; ?>>Start Game</button>
+                        <button type='submit' class='leave-button' name='leave[user]' value='<?php echo $_SESSION["PLAY_USER"]["username"]; ?>'>Leave Game</button>
+                        <input type='hidden' name='leave[id]' value=<?php echo $_SESSION["GAME_ID"]; ?>>
+                        <input type='hidden' name='leave[host]' value=true>
                     </div>
                 </form>
             </div>
