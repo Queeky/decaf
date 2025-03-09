@@ -48,31 +48,38 @@ class UserController extends Controller
     public function storyPost() {
         $data = request()->post(); 
 
-        // 1. Private game login
+        // 1. Private/public game login
         if (isset($data["join-key"]) || isset($data["join-pass"]) || isset($data["join-user"])) {
             if (isset($data["join-key"]) && isset($data["join-pass"]) && isset($data["join-user"])) {
                 $data["join-key"] = strtoupper($data["join-key"]); 
 
-                $avail = DB::select("SELECT GAME.GAME_ID, GAME.GAME_KEY, GAME.GAME_PASS, GAME.GAME_RUN, GAME.GAME_TURN, STORY.STORY_TITLE, STORY.STORY_TEXT, STORY.STORY_TURN_LIMIT FROM GAME JOIN STORY ON GAME.GAME_ID = STORY.GAME_ID WHERE GAME_KEY = ? AND GAME_PASS = ? LIMIT 1", [$data["join-key"], $data["join-pass"]]); 
+                $avail = DB::select("SELECT GAME.GAME_ID, GAME.GAME_KEY, GAME.GAME_PASS, GAME.GAME_RUN, GAME.GAME_TURN, STORY.STORY_TITLE, STORY.STORY_TEXT, STORY.STORY_TURN_LIMIT FROM GAME JOIN STORY ON GAME.GAME_ID = STORY.GAME_ID WHERE GAME_KEY = ? AND GAME_PASS = ? LIMIT 1", [$data["join-key"], $data["join-pass"]]);
+            } else if (isset($data["join-user"]) && isset($data["join-public"])) {
+                $avail = DB::select("SELECT GAME.GAME_ID, GAME.GAME_KEY, GAME.GAME_PASS, GAME.GAME_RUN, GAME.GAME_TURN, STORY.STORY_TITLE, STORY.STORY_TEXT, STORY.STORY_TURN_LIMIT FROM GAME JOIN STORY ON GAME.GAME_ID = STORY.GAME_ID WHERE GAME_KEY = ? AND GAME_PASS IS NULL AND GAME_RUN = 0 ORDER BY RAND() LIMIT 1", ["RANDOM"]);
+            } else {
+                $err = ["errCode" => "JP", "errMsg" => "You must fill out all fields."]; 
 
+                return view('story')->with("err", $err); 
+            }
+
+            // Code should only reach here if performed DB check for public/private game
+            if (isset($avail)) {
                 $avail = json_decode(json_encode($avail, true), true);
                 $joinUser = $data["join-user"]; 
 
                 if ($avail && ($avail[0]["GAME_RUN"] == 0)) {
+                    Log::info("GAME #" . $avail[0]["GAME_ID"] . ": " . $joinUser . " joined"); 
+
                     return view('story')->with(compact("avail", "joinUser"));
                 } else if ($avail && ($avail[0]["GAME_RUN"] == 1)) {
                     $err = ["errCode" => "JP", "errMsg" => "This game has already begun."]; 
 
                     return view('story')->with("err", $err);
                 } else {
-                    $err = ["errCode" => "JP", "errMsg" => "This game does not exist."]; 
+                    $err = isset($data["join-public"]) ? ["errCode" => "JR", "errMsg" => "There are currently no public games."] : ["errCode" => "JP", "errMsg" => "This game does not exist."]; 
 
                     return view('story')->with("err", $err);
                 }
-            } else {
-                $err = ["errCode" => "JP", "errMsg" => "You must fill out all fields."]; 
-
-                return view('story')->with("err", $err); 
             }
         }
 
@@ -87,7 +94,7 @@ class UserController extends Controller
                 // Host left, remove game
                 DB::select("CALL endGame(?)", [$data["leave"]["id"]]); 
 
-                Log::info("GAME #" . $data["leave"]["id"] . " ended!"); 
+                Log::info("GAME #" . $data["leave"]["id"] . " ended"); 
             } else {
                 // Player left, remove player from game
                 DB::delete("DELETE FROM PLAYER WHERE PLAY_USER = ? AND GAME_ID = ?", [$data["leave"]["user"], $data["leave"]["id"]]); 
@@ -98,9 +105,10 @@ class UserController extends Controller
             return view('story')->with("leftGame", true); 
         } 
 
-        // 4. Checks if wait-turn or wait-game polling is active
-        if (isset($data["wait-turn"]) || isset($data["wait-game"])) { 
+        // 4. Checks if wait-turn, wait-game, or wait-host polling is active
+        if (!isset($data["start-game"]) && (isset($data["wait-turn"]) || isset($data["wait-game"]))) { 
             $id = isset($data["wait-turn"]) ? $data["wait-turn"] : $data["wait-game"]; 
+            $gameInfo = null; 
 
             $gameInfo = DB::select("SELECT GAME_RUN, GAME_TURN FROM GAME WHERE GAME_ID = ?", [$id]); 
 
@@ -119,7 +127,7 @@ class UserController extends Controller
                     Log::info("GAME #" . $data["wait-game"] . ": Waiting to begin"); 
 
                     // Sending back turn data for all players if game is running
-                    if ($gameInfo["GAME_RUN"] == 1) {
+                    if (!isset($data["wait-host"]) && $gameInfo["GAME_RUN"] == 1) {
                         $turns = DB::select("SELECT PLAY_USER, PLAY_SESSION, PLAY_TURN FROM PLAYER WHERE GAME_ID = ? ORDER BY PLAY_TURN ASC;", [$data["wait-game"]]); 
 
                         $turns = json_decode(json_encode($turns, true), true);
@@ -187,14 +195,20 @@ class UserController extends Controller
         } 
         
         // 7. Host creates a new story
-        if (isset($data["host-user"]) || isset($data["host-key"]) || isset($data["host-pass"]) || isset($data["make-public"])) {
-            if (isset($data["host-user"]) && isset($data["host-key"]) && isset($data["make-public"])) {
+        if (isset($data["host-user"]) || isset($data["host-key"]) || isset($data["host-pass"]) || isset($data["make-public"]) || isset($data["host-title"]) || isset($data["host-limit"]) || isset($data["starter-text"])) {
+            if (isset($data["host-user"]) && isset($data["make-public"]) && isset($data["host-title"]) && isset($data["host-limit"]) && isset($data["starter-text"])) {
                 // Check if key is valid
                 if (array_intersect(str_split("1234567890"), str_split($data["host-key"]))) {
                     $err = ["errCode" => "JH", "errMsg" => "Your room key cannot include numbers."]; 
     
                     return view('story')->with("err", $err); 
                 } 
+
+                if ($data["make-public"] == "n" && !isset($data["host-key"])) {
+                    $err = ["errCode" => "JH", "errMsg" => "Private games must have a room key."]; 
+    
+                    return view('story')->with("err", $err);
+                }
 
                 if ($data["make-public"] == "n" && !isset($data["host-pass"])) {
                     $err = ["errCode" => "JH", "errMsg" => "Private games must have a password."]; 
@@ -207,11 +221,23 @@ class UserController extends Controller
     
                     return view('story')->with("err", $err); 
                 }
+
+                // Check if key is already in use
+                // Eventually incorporate this in main select below
+                if ($data["make-public"] == "n") {
+                    $exists = DB::select("SELECT GAME_ID FROM GAME WHERE GAME_KEY = ?", [$data["host-key"]]); 
+
+                    if ($exists) {
+                        $err = ["errCode" => "JH", "errMsg" => "This key already exists."];
+
+                        return view('story')->with("err", $err);
+                    }
+                }
     
-                // Creating new story
                 Log::info("Creating new story..."); 
-    
-                $data["host-key"] = strtoupper($data["host-key"]); 
+
+                // If private, uppercase submitted key; if public, key becomes RANDOM
+                $data["host-key"] = ($data["make-public"] == "n") ? strtoupper($data["host-key"]) : "RANDOM"; 
     
                 $gameId = DB::select("CALL createStory(:key, :pass, :user, :session, :title, :text, :limit, @gameId)", ["key" => $data["host-key"], "pass" => $data["host-pass"], "user" => $data["host-user"], "session" => $data["session"], "title" => $data["host-title"], "text" => $data["starter-text"], "limit" => $data["host-limit"]]);
     

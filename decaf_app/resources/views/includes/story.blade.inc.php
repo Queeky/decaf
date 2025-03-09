@@ -74,11 +74,16 @@ function showJoinForm() {
                 </div>
                 <div class='outer-div'>
                     <div class='inner-div'>
-                        <label for='join-key'>Room Key:</label> 
-                        <input type='text' name='join-key'>
                         <?php if ($_GET["join"] == "private") { ?>
+                            <label for='join-key'>Room Key:</label> 
+                            <input type='text' name='join-key'>
                             <label for='join-pass'>Password:</label>
                             <input type='password' name='join-pass'>
+                        <?php } else { ?>
+                            <input type='hidden' name='join-public' value=true>
+                            <p>
+                                Once you submit your username, you will join a randomly-selected public game. Have fun!
+                            </p><br>
                         <?php } ?>
                         <button type='submit'>Submit</button> 
                     </div>
@@ -113,7 +118,7 @@ function showJoinForm() {
                             </div>
                         </div>
                         <p class='radio-msg'>
-                            Making your game public will allow random players to join. If you choose public, <strong>your game will not need/have a password.</strong>
+                            Making your game public will allow random players to join. If you choose public, <strong>your game will not have a room key or password.</strong>
                         </p>
                         <label for='host-title'>Set Story Title:</label> 
                         <input type='text' name='host-title'> 
@@ -182,18 +187,52 @@ function showGameMain($get) {
             }); 
             </script>
         <?php } else { ?>
-            <div class='story-wait'>
-                <form action="<?php route('storyPost') ?>" method='POST'>
-                    <?php echo csrf_field(); ?>
-                    <img src='images/stupid-picture.png' alt='FREE ME'>
-                    <div>
-                        <button type='submit' name='start-game' value=<?php echo $_SESSION["GAME_ID"]; ?>>Start Game</button>
+            <div class='waiting-turn'>
+                <div>
+                    <div class='wait-box'>
+                        <p>Waiting for game to begin.</p>
+                        <img src='images/wordgirl-becky.gif' alt='Wordgirl dancing'>
+                    </div>
+                    <form action="<?php route('storyPost') ?>" method='POST' id='wait-host-form'>
+                        <?php echo csrf_field(); ?>
+                        <input type='hidden' name='wait-game' value=<?php echo $_SESSION["GAME_ID"]; ?>>
+                        <input type="hidden" name='wait-host' value=true>
+                        <button type='submit' class='leave-button start-button' name='start-game' value=<?php echo $_SESSION["GAME_ID"]; ?>>Start Game</button>
                         <button type='submit' class='leave-button' name='leave[user]' value='<?php echo $_SESSION["PLAY_USER"]["username"]; ?>'>Leave Game</button>
                         <input type='hidden' name='leave[id]' value=<?php echo $_SESSION["GAME_ID"]; ?>>
                         <input type='hidden' name='leave[host]' value=true>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
+            <script>
+            function poll() {
+                $.ajax({
+                    type: 'POST',
+                    url: 'story.php',
+                    dataType: 'JSON',
+                    data: $('#wait-host-form').serialize(),
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        document.getElementById("body").innerHTML = response.html; 
+                        console.log("Waiting for game to begin");
+
+                        // Temp solution maybe
+                        if (!document.getElementById("wait-host-form")) {
+                            location.replace("http://127.0.0.1:8000/story.php"); 
+                        }
+                    },
+                    error: function () {
+                        console.log("You goofed up somewhere, good luck finding where"); 
+                    }
+                });
+            }
+
+            $(document).ready(function () {
+                setInterval(poll, 5000);
+            }); 
+            </script>
         <?php }
     } else if ($_SESSION["GAME_RUN"] == 1) {
         // Game is running

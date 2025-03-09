@@ -14,7 +14,7 @@ if (isset($avail)) {
 
     $_SESSION["GAME_ID"] = $avail["GAME_ID"]; 
     $_SESSION["GAME_KEY"] = $avail["GAME_KEY"]; 
-    $_SESSION["GAME_PASS"] = $avail["GAME_PASS"]; 
+    $_SESSION["GAME_PASS"] = isset($avail["GAME_PASS"]) ? $avail["GAME_PASS"] : " "; 
     $_SESSION["GAME_RUN"] = $avail["GAME_RUN"]; 
     $_SESSION["GAME_TURN"] = $avail["GAME_TURN"]; 
     $_SESSION["STORY_TITLE"] = $avail["STORY_TITLE"]; 
@@ -33,8 +33,9 @@ if (isset($leftGame)) {
 
 if (isset($gameId)) {
     $_SESSION["GAME_ID"] = $gameId[0]["@gameId := GAME_ID"]; 
-    $_SESSION["GAME_KEY"] = $_POST["host-key"]; 
-    $_SESSION["GAME_PASS"] = $_POST["host-pass"]; 
+    Log::info("DEBUG 1 --> SESSION GAME_ID = " . $_SESSION["GAME_ID"]); 
+    $_SESSION["GAME_KEY"] = $_POST["host-key"] ? $_POST["host-key"] : "RANDOM"; 
+    $_SESSION["GAME_PASS"] = $_POST["host-pass"] ? $_POST["host-pass"] : " "; 
     $_SESSION["GAME_RUN"] = 0; 
     $_SESSION["GAME_TURN"] = 1; 
     $_SESSION["STORY_TITLE"] = $_POST["host-title"]; 
@@ -129,30 +130,40 @@ if (isset($err)) {
                             <div class='game-instruct'>
                                 <p>
                                     <strong>First time playing?</strong><br><br>
-                                    In Run-On Story, the goal is for you (and a group of friends) to collaborate on a story. The catch is that, each turn, you can only see the story's final few words and must add more based on the limited amount you know. <br><br>
-                                    You can either build a cohesive tale with context clues and teamwork, or you can make something really stupid. 
+                                    The goal is for you and your team to collaborate on a story. The catch is that, each turn, you can only see the story's final few words and must add more based on the limited amount you know. <br><br>
+                                    Freewrite with friends (or strangers), build a cohesive storyline, or create something really stupid. 
                                 </p>
-                                <p>
-                                    Every game begins with some starter text and a word limit of the host's choosing. Here's what a few turns may look like. <br><br>
-                                    <strong>Word Limit: </strong>
-                                    3 <br>
-                                    <strong>Story: </strong> 
-                                    I failed my driver's license exam, so I had to <br>
-                                    <strong class='player-1'>What player #1 sees: </strong>
-                                    I had to <br>
-                                    <strong class='player-1'>What player #1 writes: </strong>
-                                    walk my cat. <br>
-                                    <strong class='player-2'>What player #2 sees: </strong>
-                                    walk my cat. <br>
-                                    <strong class='player-2'>What player #2 writes: </strong>
-                                    I really love <br>
-                                    <strong class='player-3'>What player #3 sees: </strong>
-                                    I really love <br>
-                                    <strong class='player-3'>What player #3 writes: </strong>
-                                    to eat sand. <br>
-                                    <strong>Story: </strong>
-                                    I failed my driver's license exam, so I had to walk my cat. I really love to eat sand.
-                                </p>
+                                <div class='wrapper-1'>
+                                    <p>
+                                        Every game begins with some starter text and a word limit of the host's choosing. Here's what a few turns may look like. -->
+                                    </p>
+                                    <div class='wrapper-2'>
+                                        <p>
+                                            <strong>Word Limit: </strong>
+                                            3 <br>
+                                            <strong>Starter Text: </strong> 
+                                            I failed my driver's license exam, so I had to 
+                                        </p>
+                                        <p>
+                                            <strong class='player-1'>What player #1 sees: </strong>
+                                            I had to <br>
+                                            <strong class='player-1'>What player #1 writes: </strong>
+                                            walk my cat. <br>
+                                            <strong class='player-2'>What player #2 sees: </strong>
+                                            walk my cat. <br>
+                                            <strong class='player-2'>What player #2 writes: </strong>
+                                            I really love <br>
+                                            <strong class='player-3'>What player #3 sees: </strong>
+                                            I really love <br>
+                                            <strong class='player-3'>What player #3 writes: </strong>
+                                            to eat sand. <br>
+                                        </p>
+                                        <p>
+                                            <strong>Story: </strong>
+                                            I failed my driver's license exam, so I had to walk my cat. I really love to eat sand.
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                             <?php
                         }

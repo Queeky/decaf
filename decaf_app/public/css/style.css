@@ -7,7 +7,7 @@
     font-family: monospace; 
     font-size: 1.1vw; 
     color: var(--blue2); 
-    box-sizing: border-box; 
+    box-sizing: border-box !important; 
 }
 
 :root {
@@ -307,6 +307,7 @@ footer #icons, footer #icons a {
 
 .main {
     width: 75%; 
+    border-right: 0.2vw solid var(--blue1); 
 }
 
 .main > div {
@@ -323,8 +324,35 @@ footer #icons, footer #icons a {
     text-align: center; 
 }
 
-.main > div > p {
+.main > div p {
     padding: 1.75%; 
+
+}
+
+.main .story-item {
+    display: inline-block; 
+    width: 100%; 
+    border-bottom: 1px solid var(--blue1); 
+}
+
+.main .story-item > p {
+    display: inline-block; 
+}
+
+.main .story-item > p.title {
+    width: 30%; 
+    font-weight: bold; 
+}
+
+.main .story-item > p.text {
+    width: 60%; 
+    margin-right: 2%; 
+}
+
+.all-stories {
+    height: 25vw; 
+    overflow-y: scroll; 
+    overflow-x: hidden; 
 }
 
 .side {
@@ -402,7 +430,8 @@ footer #icons, footer #icons a {
 /* WORD OF THE DAY */
 .side > .daily-vocab {
     width: 100%; 
-    border-left: 0.2vw solid var(--blue1); 
+    /* border-left: 0.2vw solid var(--blue1);  */
+    border-bottom: 0.2vw solid var(--blue1); 
     padding-bottom: 8.75%; 
 }
 
@@ -664,47 +693,66 @@ footer #icons, footer #icons a {
 }
 
 .game-instruct {
-    background-color: var(--blue3); 
-    /* background-color: var(--yellow2);  */
+    display: block; 
+    background-color: var(--yellow2); 
+    width: 100%; 
+}
+
+.game-instruct p {
     padding: 2%; 
 }
 
-.game-instruct p, .game-instruct strong {
+.game-instruct > p:first-child {
+    display: block; 
+    background-color: var(--blue3); 
+    text-align: center; 
+    border-bottom: 0.2vw solid var(--blue1); 
+    color: white; 
+    width: 100%; 
+}
+
+.game-instruct > p:first-child > strong {
     color: white; 
 }
 
-.game-instruct > p:first-child {
-    text-align: center; 
-    margin-bottom: 3.5%; 
-    padding-bottom: 3.5%; 
-    border-bottom: 2px solid var(--blue1); 
+.game-instruct > .wrapper-1 {
+    display: flex; 
+    width: 100%; 
+    align-items: center; 
 }
 
-.game-instruct > p:nth-child(2) {
-    line-height: 1.3; 
+.game-instruct > .wrapper-1 > p {
+    display: inline-block; 
+    width: 35%; 
+    padding: 5%; 
 }
 
-.game-instruct > p:nth-child(2) > strong {
-    color: black; 
+.game-instruct > .wrapper-1 > .wrapper-2 {
+    display: inline-block; 
+    width: 65%; 
+    border-left: 0.2vw solid var(--blue1);
+    padding: 2%; 
+    background-color: white; 
 }
 
-.game-instruct > p > strong.player-1 {
-    color: var(--yellow1); 
-    /* color: #0062ff;  */
+.game-instruct .wrapper-2 > p:nth-child(2) { 
+    line-height: 1.3;
 }
 
-.game-instruct > p > strong.player-2 {
-    color: #f2a602; 
-    /* color: #0f1940;  */
-}
-
-.game-instruct > p > strong.player-3 {
-    color: #fffa99; 
-    /* color: #6c4ab5;   */
-}
-
-strong.player-1, strong.player-2, strong.player-3 {
+.game-instruct .wrapper-2 > p:nth-child(2) > * {
     margin-left: 2%; 
+}
+
+.game-instruct strong.player-1 {
+    color: #0062ff; 
+}
+
+.game-instruct strong.player-2 {
+    color: #0f1940; 
+}
+
+.game-instruct strong.player-3 {
+    color: #af21cf;  
 }
 
 .story-says {
@@ -813,14 +861,18 @@ strong.player-1, strong.player-2, strong.player-3 {
     margin-top: 5%;  
 }
 
-#wait-game-form, #wait-turn-form {
+#wait-game-form, #wait-turn-form, #wait-host-form {
     width: 100%; 
     display: flex; 
     justify-content: center; 
     margin-top: 5%; 
 }
 
-#wait-game-form > button, #wait-turn-form > button {
+#wait-host-form > button.start-button {
+    margin-right: 3%; 
+}
+
+#wait-game-form > button, #wait-turn-form > button, #wait-host-form > button {
     background-color: var(--blue1); 
     padding-right: 5%; 
     padding-left: 5%; 
@@ -830,7 +882,7 @@ strong.player-1, strong.player-2, strong.player-3 {
     border: none; 
 }
 
-#wait-game-form > button:hover, #wait-turn-form > button:hover {
+#wait-game-form > button:hover, #wait-turn-form > button:hover, #wait-host-form > button:hover {
     background-color: var(--blue2);
 }
 

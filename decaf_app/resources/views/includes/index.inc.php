@@ -7,14 +7,31 @@ function showSplash() {
 }
 
 function showMain() {
-    echo "<div class='main'>"; 
-    echo "<div>"; 
+    // Make these two queries one? Left or right join?
+    $featured = DB::select("SELECT STORY_TITLE, STORY_TEXT FROM STORY WHERE GAME_ID = 1 ORDER BY RAND() LIMIT 1"); 
+    $stories = DB::select("SELECT STORY_TITLE, STORY_TEXT FROM STORY WHERE GAME_ID = 1 ORDER BY STORY_ID DESC"); 
 
-    echo "<h3>LATEST STORY</h3>";
-    echo "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Orci eu lobortis elementum nibh tellus. Orci sagittis eu volutpat odio. Purus sit amet luctus venenatis lectus magna fringilla. Aenean sed adipiscing diam donec adipiscing tristique risus nec. Leo integer malesuada nunc vel risus commodo viverra maecenas accumsan. Felis bibendum ut tristique et. Justo laoreet sit amet cursus sit amet dictum sit. Porttitor massa id neque aliquam vestibulum morbi blandit cursus risus. Vel elit scelerisque mauris pellentesque. Faucibus purus in massa tempor nec feugiat nisl pretium fusce. Sit amet venenatis urna cursus eget nunc scelerisque viverra. Sapien eget mi </p>";  
-
-    echo "</div>"; 
-    echo "</div>"; 
+    $featured = json_decode(json_encode($featured, true), true)[0];
+    $stories = json_decode(json_encode($stories, true), true);
+    ?>
+    <div class='main'>
+        <div class='featured'>
+            <h3>FEATURED STORY | <?php echo $featured["STORY_TITLE"]; ?></h3>
+            <p><?php echo $featured["STORY_TEXT"]; ?></p>
+        </div>
+        <div>
+            <h3>ALL STORIES (NEWEST TO OLDEST)</h3>
+            <div class='all-stories'>
+                <?php foreach ($stories as $story) { ?>
+                    <div class='story-item'>
+                        <p class='title'><?php echo $story["STORY_TITLE"]; ?></p>
+                        <p class='text'><?php echo $story["STORY_TEXT"]; ?></p>
+                    </div>
+                <?php } ?>
+            </div>
+        </div>
+    </div>
+    <?php
 }
 
 function showSide() {

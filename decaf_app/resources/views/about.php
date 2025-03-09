@@ -33,9 +33,7 @@ session_start();
                     showError("You're coming back... right? (You are currently <strong>in a game</strong>.)"); 
                 }
                 ?>
-                <div style="display: flex; justify-content: center; align-items: center; height: 35vw;">
-                    <img src="images/me.jpg" alt="" style="width: 20vw;">
-                </div>
+                <p>Visit my LinkedIn here >>> <a href="http://www.linkedin.com/in/quinn-miersma" target="_blank">Quinn Miersma</a></p>
             </div>
             <?php showRight(); ?>
         </div>

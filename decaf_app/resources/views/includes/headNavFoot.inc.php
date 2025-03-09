@@ -20,7 +20,7 @@ function showNav() {
             <li><a href='index.php'>HOME</a></li>
             <li><a href='about.php'>ABOUT</a></li>
             <!-- <li><a href='index.php'>MADLIBS</a></li> -->
-            <li><a href='story.php'>RAMBLE</a></li>
+            <li><a href='story.php'>BLUE RASPBERRY</a></li>
             <!-- <li><a href='index.php'>COLORING BOOK</a></li> -->
         </ul>
     </nav>
@@ -35,7 +35,7 @@ function showFoot() {
                 <strong>Bugs? In <i>my</i> website? It's more likely than you think!</strong><br>
                 Hey beta testers -- if you find the site behaving strangely or flat out breaking, please let me know! In the form below, describe the issue and any steps I may need to replicate the problem. Muchas gracias. 
             </p>
-            <form action="index.php" method="POST">
+            <form action="#" method="GET">
                 <div>
                     <label for="bug-name">Name (can be fake):</label>
                     <input type="text" name='bug-name'>
