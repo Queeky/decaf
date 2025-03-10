@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Hash;
 use DB; 
 
 class UserController extends Controller
@@ -48,14 +49,38 @@ class UserController extends Controller
     public function storyPost() {
         $data = request()->post(); 
 
+        // Set variable that brings script error, instead of having tons of else 
+        // statements
+
         // 1. Private/public game login
         if (isset($data["join-key"]) || isset($data["join-pass"]) || isset($data["join-user"])) {
             if (isset($data["join-key"]) && isset($data["join-pass"]) && isset($data["join-user"])) {
                 $data["join-key"] = strtoupper($data["join-key"]); 
+                
+                $checkPass = DB::select("SELECT GAME.GAME_ID, GAME.GAME_KEY, GAME.GAME_PASS, GAME.GAME_RUN, GAME.GAME_TURN, STORY.STORY_TITLE, STORY.STORY_TEXT, STORY.STORY_TURN_LIMIT FROM GAME JOIN STORY ON GAME.GAME_ID = STORY.GAME_ID WHERE GAME_KEY = ? LIMIT 1", [$data["join-key"]]);
+                $checkPass = json_decode(json_encode($checkPass, true), true);
 
-                $avail = DB::select("SELECT GAME.GAME_ID, GAME.GAME_KEY, GAME.GAME_PASS, GAME.GAME_RUN, GAME.GAME_TURN, STORY.STORY_TITLE, STORY.STORY_TEXT, STORY.STORY_TURN_LIMIT FROM GAME JOIN STORY ON GAME.GAME_ID = STORY.GAME_ID WHERE GAME_KEY = ? AND GAME_PASS = ? LIMIT 1", [$data["join-key"], $data["join-pass"]]);
+                if ($checkPass) {
+                    Log::info("DEBUG --> Checking password..."); 
+                    if (Hash::check($data["join-pass"], $checkPass[0]["GAME_PASS"])) {
+                        Log::info("DEBUG --> Password matches!"); 
+                        $avail = $checkPass; 
+                    } else {
+                        Log::info("DEBUG --> Password not found"); 
+                        $err = ["errCode" => "JP", "errMsg" => "This game does not exist."]; 
+
+                        return view('story')->with("err", $err);
+                    }
+                } else {
+                    Log::info("DEBUG --> Game key not found"); 
+                    $err = ["errCode" => "JP", "errMsg" => "This game does not exist."]; 
+
+                    return view('story')->with("err", $err);
+                }
             } else if (isset($data["join-user"]) && isset($data["join-public"])) {
                 $avail = DB::select("SELECT GAME.GAME_ID, GAME.GAME_KEY, GAME.GAME_PASS, GAME.GAME_RUN, GAME.GAME_TURN, STORY.STORY_TITLE, STORY.STORY_TEXT, STORY.STORY_TURN_LIMIT FROM GAME JOIN STORY ON GAME.GAME_ID = STORY.GAME_ID WHERE GAME_KEY = ? AND GAME_PASS IS NULL AND GAME_RUN = 0 ORDER BY RAND() LIMIT 1", ["RANDOM"]);
+
+                $avail = isset($avail) ? json_decode(json_encode($avail, true), true) : null; 
             } else {
                 $err = ["errCode" => "JP", "errMsg" => "You must fill out all fields."]; 
 
@@ -64,7 +89,6 @@ class UserController extends Controller
 
             // Code should only reach here if performed DB check for public/private game
             if (isset($avail)) {
-                $avail = json_decode(json_encode($avail, true), true);
                 $joinUser = $data["join-user"]; 
 
                 if ($avail && ($avail[0]["GAME_RUN"] == 0)) {
@@ -108,11 +132,11 @@ class UserController extends Controller
         // 4. Checks if wait-turn, wait-game, or wait-host polling is active
         if (!isset($data["start-game"]) && (isset($data["wait-turn"]) || isset($data["wait-game"]))) { 
             $id = isset($data["wait-turn"]) ? $data["wait-turn"] : $data["wait-game"]; 
-            $gameInfo = null; 
+            // $gameInfo = null; 
 
             $gameInfo = DB::select("SELECT GAME_RUN, GAME_TURN FROM GAME WHERE GAME_ID = ?", [$id]); 
 
-            if ($gameInfo) {
+            if (isset($gameInfo) && $gameInfo) {
                 $gameInfo = json_decode(json_encode($gameInfo, true), true)[0];
 
                 if (isset($data["wait-turn"])) {
@@ -147,7 +171,8 @@ class UserController extends Controller
                     'html' => view('story')->render()
                 ]);
             } else {
-                Log::info("GAME #" . $data["wait-game"] . ": Game ended, player kicked");
+                $id = isset($data["wait-turn"]) ? $data["wait-turn"] : $data["wait-game"]; 
+                Log::info("GAME #" . $id . ": Game ended, player kicked");
 
                 $err = ["errCode" => "JP", "errMsg" => "Host has left the game."]; 
                 $leftGame = true; 
@@ -238,6 +263,8 @@ class UserController extends Controller
 
                 // If private, uppercase submitted key; if public, key becomes RANDOM
                 $data["host-key"] = ($data["make-public"] == "n") ? strtoupper($data["host-key"]) : "RANDOM"; 
+
+                $data["host-pass"] = Hash::make($data["host-pass"]); 
     
                 $gameId = DB::select("CALL createStory(:key, :pass, :user, :session, :title, :text, :limit, @gameId)", ["key" => $data["host-key"], "pass" => $data["host-pass"], "user" => $data["host-user"], "session" => $data["session"], "title" => $data["host-title"], "text" => $data["starter-text"], "limit" => $data["host-limit"]]);
     

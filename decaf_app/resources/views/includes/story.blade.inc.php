@@ -317,7 +317,7 @@ function showGameMain($get) {
                 </form>
             </div>
         <?php }
-    } else if (!$get && $_SESSION["GAME_ID"] == 1) { 
+    } else if (!$get && $_SESSION["GAME_KEY"] == "WODAHS") { 
         // Admin view
         $completed = DB::select("SELECT STORY_ID, STORY_TITLE, LEFT(STORY_TEXT, 70) AS STORY_TEXT, STORY_TURN_LIMIT FROM STORY WHERE GAME_ID = 1 ORDER BY STORY_ID DESC"); 
         $completed = json_decode(json_encode($completed, true), true);

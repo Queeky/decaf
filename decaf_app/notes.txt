@@ -6,8 +6,8 @@ Fixed the login routing system, but might be able to make it more simple
 returning to default story page.  
 
 TODO:
-- Password security *** Also for login password, shouldn't be in the script
-    make::Hash
+- CHECK ALL FUNCTIONS now that you changed the pass!!
+Also, fix admin login because it isn't hashed -- and fix TESTOFF
 
 - Eventually add a delete confirm message (for admin)
 - Make story private option (not saved)
@@ -93,6 +93,11 @@ GIF IDEAS:
 SPLASH IDEAS: 
 - I put the hippo in Hippocratic Oath
 
+PICTIONARY-ISH GAME: 
+- Host writes prompt, other players draw prompt
+- Host guesses who's is who's 
+- Most points wins
+
 CHARACTER CREATION: 
 - Everyone writes a name
 - FakeCharacter (FC) gets passed to random people
@@ -104,6 +109,7 @@ CHARACTER CREATION:
 (etc)
 - Random category is assigned, then everyone has to vote which FC would win the category
 - Game Master mode where someone writes all the prompts
+- NOTE: Winner only wrote the name so that would not be fair? Think about
 
 
 RNG GAME: 
@@ -117,6 +123,8 @@ It requires about as much technical skill as winning at UNO.
             (+5 curiosity, +10 fame)
     :Ignore it
         1. 
+
+- NOTE: Negative points kill you?
 
 
 
