@@ -49,9 +49,6 @@ class UserController extends Controller
     public function storyPost() {
         $data = request()->post(); 
 
-        // Set variable that brings script error, instead of having tons of else 
-        // statements
-
         // 1. Private/public game login
         if (isset($data["join-key"]) || isset($data["join-pass"]) || isset($data["join-user"])) {
             if (isset($data["join-key"]) && isset($data["join-pass"]) && isset($data["join-user"])) {
@@ -61,21 +58,10 @@ class UserController extends Controller
                 $checkPass = json_decode(json_encode($checkPass, true), true);
 
                 if ($checkPass) {
-                    Log::info("DEBUG --> Checking password..."); 
-                    if (Hash::check($data["join-pass"], $checkPass[0]["GAME_PASS"])) {
-                        Log::info("DEBUG --> Password matches!"); 
-                        $avail = $checkPass; 
-                    } else {
-                        Log::info("DEBUG --> Password not found"); 
-                        $err = ["errCode" => "JP", "errMsg" => "This game does not exist."]; 
-
-                        return view('story')->with("err", $err);
-                    }
+                    Log::info("DEBUG --> Checking password"); 
+                    $avail = Hash::check($data["join-pass"], $checkPass[0]["GAME_PASS"]) ? $checkPass : null; 
                 } else {
                     Log::info("DEBUG --> Game key not found"); 
-                    $err = ["errCode" => "JP", "errMsg" => "This game does not exist."]; 
-
-                    return view('story')->with("err", $err);
                 }
             } else if (isset($data["join-user"]) && isset($data["join-public"])) {
                 $avail = DB::select("SELECT GAME.GAME_ID, GAME.GAME_KEY, GAME.GAME_PASS, GAME.GAME_RUN, GAME.GAME_TURN, STORY.STORY_TITLE, STORY.STORY_TEXT, STORY.STORY_TURN_LIMIT FROM GAME JOIN STORY ON GAME.GAME_ID = STORY.GAME_ID WHERE GAME_KEY = ? AND GAME_PASS IS NULL AND GAME_RUN = 0 ORDER BY RAND() LIMIT 1", ["RANDOM"]);
@@ -88,22 +74,24 @@ class UserController extends Controller
             }
 
             // Code should only reach here if performed DB check for public/private game
-            if (isset($avail)) {
-                $joinUser = $data["join-user"]; 
+            if (isset($avail) && $avail) {
+                if ($avail[0]["GAME_RUN"] == 0) {
+                    $joinUser = $data["join-user"]; 
 
-                if ($avail && ($avail[0]["GAME_RUN"] == 0)) {
                     Log::info("GAME #" . $avail[0]["GAME_ID"] . ": " . $joinUser . " joined"); 
 
                     return view('story')->with(compact("avail", "joinUser"));
-                } else if ($avail && ($avail[0]["GAME_RUN"] == 1)) {
+                } else if ($avail[0]["GAME_RUN"] == 1) {
                     $err = ["errCode" => "JP", "errMsg" => "This game has already begun."]; 
 
                     return view('story')->with("err", $err);
-                } else {
-                    $err = isset($data["join-public"]) ? ["errCode" => "JR", "errMsg" => "There are currently no public games."] : ["errCode" => "JP", "errMsg" => "This game does not exist."]; 
+                } 
+            } else {
+                Log::info("Login failed"); 
 
-                    return view('story')->with("err", $err);
-                }
+                $err = isset($data["join-public"]) ? ["errCode" => "JR", "errMsg" => "There are currently no public games."] : ["errCode" => "JP", "errMsg" => "This game does not exist."]; 
+
+                return view('story')->with("err", $err);
             }
         }
 
@@ -132,7 +120,6 @@ class UserController extends Controller
         // 4. Checks if wait-turn, wait-game, or wait-host polling is active
         if (!isset($data["start-game"]) && (isset($data["wait-turn"]) || isset($data["wait-game"]))) { 
             $id = isset($data["wait-turn"]) ? $data["wait-turn"] : $data["wait-game"]; 
-            // $gameInfo = null; 
 
             $gameInfo = DB::select("SELECT GAME_RUN, GAME_TURN FROM GAME WHERE GAME_ID = ?", [$id]); 
 
@@ -184,14 +171,14 @@ class UserController extends Controller
         }
 
         // 5. Player's text is too long
-        if (!isset($data["leave"]["user"]) && isset($data["new-text"]) && ((substr_count($data["new-text"], " ") + 1) > $data["turn-limit"])) {
+        if (isset($data["new-text"]) && ((substr_count($data["new-text"], " ") + 1) > $data["turn-limit"])) {
             Log::info("GAME #" . $data["game-id"] . ": Message is too long"); 
 
             return view('story')->with("limitMessage", "Your message is too long! Write <strong>{$data["turn-limit"]} word(s)</strong> or less.");
         } 
         
         // 6. Appends new text to story
-        if (isset($data["new-text"]) && !isset($data["leave"]["user"]) && !isset($data["redo"])) {
+        if (isset($data["new-text"])) {
             $data["new-text"] = " " . $data["new-text"]; 
 
             $gameExists = DB::select("CALL updateStory(:newText, :gameId, @gameId)", ["newText" => $data["new-text"], "gameId" => $data["game-id"]]); 
@@ -225,27 +212,22 @@ class UserController extends Controller
                 // Check if key is valid
                 if (array_intersect(str_split("1234567890"), str_split($data["host-key"]))) {
                     $err = ["errCode" => "JH", "errMsg" => "Your room key cannot include numbers."]; 
-    
-                    return view('story')->with("err", $err); 
                 } 
 
                 if ($data["make-public"] == "n" && !isset($data["host-key"])) {
                     $err = ["errCode" => "JH", "errMsg" => "Private games must have a room key."]; 
-    
-                    return view('story')->with("err", $err);
                 }
 
                 if ($data["make-public"] == "n" && !isset($data["host-pass"])) {
                     $err = ["errCode" => "JH", "errMsg" => "Private games must have a password."]; 
-    
-                    return view('story')->with("err", $err);
                 }
 
                 if ($data["host-limit"] < 1) {
                     $err = ["errCode" => "JH", "errMsg" => "Your word limit cannot be less than 1."]; 
-    
-                    return view('story')->with("err", $err); 
                 }
+
+                // If private, uppercase submitted key; if public, key becomes RANDOM
+                $data["host-key"] = ($data["make-public"] == "n") ? strtoupper($data["host-key"]) : "RANDOM";
 
                 // Check if key is already in use
                 // Eventually incorporate this in main select below
@@ -254,15 +236,15 @@ class UserController extends Controller
 
                     if ($exists) {
                         $err = ["errCode" => "JH", "errMsg" => "This key already exists."];
+                    } 
+                }
 
-                        return view('story')->with("err", $err);
-                    }
+                // Checks if any errors were set above
+                if (isset($err)) {
+                    return view('story')->with("err", $err); 
                 }
     
-                Log::info("Creating new story..."); 
-
-                // If private, uppercase submitted key; if public, key becomes RANDOM
-                $data["host-key"] = ($data["make-public"] == "n") ? strtoupper($data["host-key"]) : "RANDOM"; 
+                Log::info("Creating new story...");  
 
                 $data["host-pass"] = Hash::make($data["host-pass"]); 
     

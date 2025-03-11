@@ -11,12 +11,21 @@ Also, fix admin login because it isn't hashed -- and fix TESTOFF
 
 - Eventually add a delete confirm message (for admin)
 - Make story private option (not saved)
+- Have try catch instead of another query to check room key validity (UserController 250)
+- Make new controller for password management
+
+RESEARCH whether or not malicious users can edit $_SESSION. 
+I DON'T CARE whether or not they can SEE it, just editing. 
+(Actually maybe seeing would be bad if password returns unencrypted.)
+
 - WRITE UNIT TESTS & add more robust error messages
 - ADD FORM report bugs to my gmail
 ^^^ Designed, now just need to add functionality -- send to gmail
     Currently submit button crashes site cause no csrf
 - Add notifs to home
-- Redesign story default page
+- Maybe for player login, save query info for key until new key is used
+    (Why? Because then multiple attempts for one key uses less db power. 
+    Locks after certain amount of failed attempts.)
 
 WHEN DECAF GOES LIVE 
 - Gather stats on which page users are at the most, then reorganize if statements 
