@@ -36,11 +36,13 @@ function showFoot() {
                 Hey beta testers -- if you find the site behaving strangely or flat out breaking, please let me know! In the form below, describe the issue and any steps I may need to replicate the problem. Muchas gracias. 
             </p>
             <form action="#" method="GET">
+                <input type="hidden" name='READ' value='form doesnt work rn lol whoopsie'>
                 <div>
                     <label for="bug-name">Name (can be fake):</label>
                     <input type="text" name='bug-name'>
                 </div>
                 <div class='bug-msg'>
+                    <!-- Remove null values when I get this working! -->
                     <label for="bug-msg">Your message:</label>
                     <textarea name="bug-msg" id="bug-msg" placeholder="Describe bug here"></textarea>
                 </div>

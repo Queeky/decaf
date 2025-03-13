@@ -886,3 +886,66 @@ footer #icons, footer #icons a {
     background-color: var(--blue2);
 }
 
+.story-complete {
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    width: 100%; 
+    min-height: 20vw; 
+}
+
+.story-complete > div {
+    display: block; 
+    width: 70%; 
+    margin-top: 5%; 
+    margin-bottom: 5%; 
+}
+
+.story-complete h3 {
+    width: 100%; 
+    background-color: var(--blue1); 
+    color: white; 
+    font-weight: bold; 
+    text-align: center; 
+    font-size: 1.2vw; 
+    padding: 1%; 
+    overflow: hidden; 
+}
+
+.story-complete > div > div {
+    background-color: white; 
+    padding: 2%; 
+    border: 1px solid black; 
+    border-top: none; 
+}
+
+.story-complete form {
+    display: block; 
+    width: 100%; 
+}
+
+.story-complete .wrapper > p {
+    margin-bottom: 4%; 
+}
+
+.story-complete form > p {
+    display: inline-block; 
+    width: 40%; 
+}
+
+.story-complete button, .story-complete a {
+    padding-right: 3%; 
+    padding-left: 3%; 
+    padding-top: 1.5%; 
+    padding-bottom: 1.5%; 
+    margin-right: 2%; 
+    background-color: var(--blue1); 
+    color: white; 
+    border: none; 
+    text-decoration: none; 
+}
+
+.story-complete button:hover, .story-complete a:hover {
+    background-color: var(--blue2);
+}
+

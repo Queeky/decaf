@@ -18,7 +18,8 @@
             "Political Compass", 
             "Boil the Frog", 
             "Translunar Travelers Lounge", 
-            "Seventh Sanctum"
+            "Seventh Sanctum", 
+            "Garfield Minus Garfield"
         ], 
         "url": [
             "https://classicreload.com/the-lost-treasures-of-infocom-volume-i.html", 
@@ -38,7 +39,8 @@
             "https://www.politicalcompass.org/", 
             "http://boilthefrog.playlistmachinery.com/", 
             "https://translunartravelerslounge.com/", 
-            "https://www.seventhsanctum.com/"
+            "https://www.seventhsanctum.com/", 
+            "https://garfieldminusgarfield.net/"
         ]
     }
 }

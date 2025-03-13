@@ -1,25 +1,28 @@
 {
     "splash" : {
         "full-text" : [
-            "I put the za in [LINK].", 
+            "I put the hippo in [LINK].", 
             "Do you or a loved one suffer from [LINK]?", 
             "[LINK]? I hardly know her.", 
             "[LINK]: I'm a teapot.", 
-            "\"Don't [LINK] everything you read on the internet.\" -- Abraham Lincoln"
+            "\"Don't [LINK] everything you read on the internet.\" -- Abraham Lincoln", 
+            "Challenge me at [LINK] if you dare (ID 227392455)."
         ], 
         "hyperlink-text" : [
-            "Model 522AC Zamboni", 
+            "Hippocratic Oath", 
             "rheumatoid arthritis", 
             "Debugger", 
             "Error 418", 
-            "believe"
+            "believe", 
+            "Scrabble GO"
         ], 
         "url" : [
-            "https://zamboni.com/product/model-552ac/", 
+            "https://en.wikipedia.org/wiki/Hippocratic_Oath", 
             "https://www.mayoclinic.org/diseases-conditions/rheumatoid-arthritis/symptoms-causes/syc-20353648", 
             "https://xdebug.org/", 
             "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/418", 
-            "images/believe.jpg"
+            "images/believe.jpg", 
+            "https://play.google.com/store/apps/details?id=com.pieyel.scrabble&hl=en_US&pli=1"
         ]
     }
 }

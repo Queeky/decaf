@@ -102,11 +102,18 @@ class UserController extends Controller
 
         // 3. User leaves game (host or player)
         if (isset($data["leave"]["user"])) {
+            // Collecting finished story
+            $storyComplete = DB::select("SELECT STORY_ID, STORY_TITLE, STORY_TEXT FROM STORY WHERE GAME_ID = ?", [$data["leave"]["id"]]); 
+            $storyComplete = json_decode(json_encode($storyComplete, true), true)[0];
+
+            $host = false; 
+
             if (isset($data["leave"]["host"])) {
                 // Host left, remove game
                 DB::select("CALL endGame(?)", [$data["leave"]["id"]]); 
+                $host = true; 
 
-                Log::info("GAME #" . $data["leave"]["id"] . " ended"); 
+                Log::info("Story finished! --> GAME #" . $data["leave"]["id"]); 
             } else {
                 // Player left, remove player from game
                 DB::delete("DELETE FROM PLAYER WHERE PLAY_USER = ? AND GAME_ID = ?", [$data["leave"]["user"], $data["leave"]["id"]]); 
@@ -114,7 +121,7 @@ class UserController extends Controller
 
             Log::info("GAME #" . $data["leave"]["id"] . ": " . $data["leave"]["user"] . " left"); 
 
-            return view('story')->with("leftGame", true); 
+            return view('story')->with(compact("storyComplete", "host")); 
         } 
 
         // 4. Checks if wait-turn, wait-game, or wait-host polling is active
@@ -210,8 +217,8 @@ class UserController extends Controller
         if (isset($data["host-user"]) || isset($data["host-key"]) || isset($data["host-pass"]) || isset($data["make-public"]) || isset($data["host-title"]) || isset($data["host-limit"]) || isset($data["starter-text"])) {
             if (isset($data["host-user"]) && isset($data["make-public"]) && isset($data["host-title"]) && isset($data["host-limit"]) && isset($data["starter-text"])) {
                 // Check if key is valid
-                if (array_intersect(str_split("1234567890"), str_split($data["host-key"]))) {
-                    $err = ["errCode" => "JH", "errMsg" => "Your room key cannot include numbers."]; 
+                if (array_intersect(str_split("!@#$%^&*()-_+={}[]|\\/<>,.;:\"'~`"), str_split($data["host-key"]))) {
+                    $err = ["errCode" => "JH", "errMsg" => "Your room key cannot include special characters."]; 
                 } 
 
                 if ($data["make-public"] == "n" && !isset($data["host-key"])) {
@@ -246,7 +253,7 @@ class UserController extends Controller
     
                 Log::info("Creating new story...");  
 
-                $data["host-pass"] = Hash::make($data["host-pass"]); 
+                $data["host-pass"] = ($data["make-public"] == "n") ? Hash::make($data["host-pass"]) : null; 
     
                 $gameId = DB::select("CALL createStory(:key, :pass, :user, :session, :title, :text, :limit, @gameId)", ["key" => $data["host-key"], "pass" => $data["host-pass"], "user" => $data["host-user"], "session" => $data["session"], "title" => $data["host-title"], "text" => $data["starter-text"], "limit" => $data["host-limit"]]);
     

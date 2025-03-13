@@ -91,7 +91,14 @@ function showJoinForm() {
             </div>
         </form>
     <?php
-    } else if ($_GET["join"] == "host") { ?>
+    } else if ($_GET["join"] == "host") { 
+        $keyDefault = ""; 
+        $chars = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ"; 
+
+        for ($i = 0; $i < rand(4, 9); $i++) {
+            $keyDefault = $keyDefault . substr($chars, rand(0, strlen($chars) - 1), 1); 
+        }
+    ?>
         <form class='join-form host-form' action='<?php route('storyPost') ?>' method='POST'>
         <?php echo csrf_field(); ?>
             <div>
@@ -103,8 +110,8 @@ function showJoinForm() {
                 </div>
                 <div class='outer-div'>
                     <div class='inner-div'>
-                        <label for='host-key'>Set Room Key:</label>
-                        <input type='text' name='host-key'> 
+                        <label for='host-key'>Set Room Key: <br><span style='color: var(--blue3);'>(You can change the preset key.)</span></label>
+                        <input type='text' name='host-key' value='<?php echo $keyDefault; ?>'> 
                         <label class='host-pass-label' for='host-pass'>Set Password:</label>
                         <input class='host-pass' type='password' name='host-pass'> 
                         <div class='public-private'>
