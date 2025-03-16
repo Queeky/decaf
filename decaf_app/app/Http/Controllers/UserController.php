@@ -54,7 +54,7 @@ class UserController extends Controller
             if (isset($data["join-key"]) && isset($data["join-pass"]) && isset($data["join-user"])) {
                 $data["join-key"] = strtoupper($data["join-key"]); 
                 
-                $checkPass = DB::select("SELECT GAME.GAME_ID, GAME.GAME_KEY, GAME.GAME_PASS, GAME.GAME_RUN, GAME.GAME_TURN, STORY.STORY_TITLE, STORY.STORY_TEXT, STORY.STORY_TURN_LIMIT FROM GAME JOIN STORY ON GAME.GAME_ID = STORY.GAME_ID WHERE GAME_KEY = ? LIMIT 1", [$data["join-key"]]);
+                $checkPass = DB::select("SELECT GAME.GAME_ID, GAME.GAME_KEY, GAME.GAME_PASS, GAME.GAME_RUN, GAME.GAME_TURN, STORY.STORY_ID, STORY.STORY_TITLE, STORY.STORY_TEXT, STORY.STORY_TURN_LIMIT FROM GAME JOIN STORY ON GAME.GAME_ID = STORY.GAME_ID WHERE GAME_KEY = ? LIMIT 1", [$data["join-key"]]);
                 $checkPass = json_decode(json_encode($checkPass, true), true);
 
                 if ($checkPass) {
@@ -64,7 +64,7 @@ class UserController extends Controller
                     Log::info("DEBUG --> Game key not found"); 
                 }
             } else if (isset($data["join-user"]) && isset($data["join-public"])) {
-                $avail = DB::select("SELECT GAME.GAME_ID, GAME.GAME_KEY, GAME.GAME_PASS, GAME.GAME_RUN, GAME.GAME_TURN, STORY.STORY_TITLE, STORY.STORY_TEXT, STORY.STORY_TURN_LIMIT FROM GAME JOIN STORY ON GAME.GAME_ID = STORY.GAME_ID WHERE GAME_KEY = ? AND GAME_PASS IS NULL AND GAME_RUN = 0 ORDER BY RAND() LIMIT 1", ["RANDOM"]);
+                $avail = DB::select("SELECT GAME.GAME_ID, GAME.GAME_KEY, GAME.GAME_PASS, GAME.GAME_RUN, GAME.GAME_TURN, STORY.STORY_ID, STORY.STORY_TITLE, STORY.STORY_TEXT, STORY.STORY_TURN_LIMIT FROM GAME JOIN STORY ON GAME.GAME_ID = STORY.GAME_ID WHERE GAME_KEY = ? AND GAME_PASS IS NULL AND GAME_RUN = 0 ORDER BY RAND() LIMIT 1", ["RANDOM"]);
 
                 $avail = isset($avail) ? json_decode(json_encode($avail, true), true) : null; 
             } else {
@@ -106,12 +106,11 @@ class UserController extends Controller
             $storyComplete = DB::select("SELECT STORY_ID, STORY_TITLE, STORY_TEXT FROM STORY WHERE GAME_ID = ?", [$data["leave"]["id"]]); 
             $storyComplete = json_decode(json_encode($storyComplete, true), true)[0];
 
-            $host = false; 
-
             if (isset($data["leave"]["host"])) {
+                Log::info("DEBUG 1 --> Collecting story (host)"); 
+
                 // Host left, remove game
                 DB::select("CALL endGame(?)", [$data["leave"]["id"]]); 
-                $host = true; 
 
                 Log::info("Story finished! --> GAME #" . $data["leave"]["id"]); 
             } else {
@@ -121,7 +120,7 @@ class UserController extends Controller
 
             Log::info("GAME #" . $data["leave"]["id"] . ": " . $data["leave"]["user"] . " left"); 
 
-            return view('story')->with(compact("storyComplete", "host")); 
+            return view('story')->with(compact("storyComplete")); 
         } 
 
         // 4. Checks if wait-turn, wait-game, or wait-host polling is active
@@ -169,10 +168,18 @@ class UserController extends Controller
                 Log::info("GAME #" . $id . ": Game ended, player kicked");
 
                 $err = ["errCode" => "JP", "errMsg" => "Host has left the game."]; 
-                $leftGame = true; 
+                $storyComplete = false; 
+
+                if (isset($data["wait-turn"])) {
+                    Log::info("DEBUG 1 --> Collecting story (non-host)"); 
+
+                    // Collecting finished story
+                    $storyComplete = DB::select("SELECT STORY_ID, STORY_TITLE, STORY_TEXT FROM STORY WHERE STORY_ID = ?", [$data["story-id"]]); 
+                    $storyComplete = json_decode(json_encode($storyComplete, true), true)[0];
+                } 
 
                 return response()->json([
-                    'html' => view('story', compact("err", "leftGame"))->render()
+                    'html' => view('story', compact("err", "storyComplete"))->render()
                 ]);
             }
         }
@@ -206,10 +213,15 @@ class UserController extends Controller
             } else {
                 Log::info("GAME #" . $data["game-id"] . ": Player attempted to submit turn on game that no longer exists");
 
-                $err = ["errCode" => "JP", "errMsg" => "Host has left the game."];
-                $leftGame = true; 
+                $err = ["errCode" => " ", "errMsg" => "Host has left the game."];
+                
+                Log::info("DEBUG 1 --> Collecting story (non-host)"); 
 
-                return view('story')->with(compact("err", "leftGame")); 
+                // Collecting finished story
+                $storyComplete = DB::select("SELECT STORY_ID, STORY_TITLE, STORY_TEXT FROM STORY WHERE STORY_ID = ?", [$data["story-id"]]); 
+                $storyComplete = json_decode(json_encode($storyComplete, true), true)[0];
+
+                return view('story')->with(compact("err", "storyComplete")); 
             }
         } 
         
@@ -255,8 +267,7 @@ class UserController extends Controller
 
                 $data["host-pass"] = ($data["make-public"] == "n") ? Hash::make($data["host-pass"]) : null; 
     
-                $gameId = DB::select("CALL createStory(:key, :pass, :user, :session, :title, :text, :limit, @gameId)", ["key" => $data["host-key"], "pass" => $data["host-pass"], "user" => $data["host-user"], "session" => $data["session"], "title" => $data["host-title"], "text" => $data["starter-text"], "limit" => $data["host-limit"]]);
-    
+                $gameId = DB::select("CALL createStory(:key, :pass, :user, :session, :title, :text, :limit, @gameId, @storyId)", ["key" => $data["host-key"], "pass" => $data["host-pass"], "user" => $data["host-user"], "session" => $data["session"], "title" => $data["host-title"], "text" => $data["starter-text"], "limit" => $data["host-limit"]]);
                 $gameId = json_decode(json_encode($gameId, true), true);  
     
                 return view('story')->with("gameId", $gameId); 
@@ -286,13 +297,29 @@ class UserController extends Controller
             return view('story')->with('turns', $turns); 
         } 
 
-        // 9. Admin deletes completed story
-        if (isset($data["admin-delete"])) {
-            DB::delete("DELETE FROM STORY WHERE STORY_ID = ?", [$data["admin-delete"]]); 
+        // 9. Player leaves story result screen
+        if (isset($data["leave-story-result"])) {
+            return view('story')->with('unset2', true);
+        }
 
-            Log::info("STORY #" . $data["admin-delete"] . " was removed by admin"); 
+        // 10. Host or admin deletes story
+        if (isset($data["delete-story"]) || isset($data["admin-delete"])) {
+            $id = isset($data["delete-story"]) ? [$data["delete-story"], "host"] : [$data["admin-delete"], "admin"]; 
 
-            return view('story'); 
+            DB::delete("DELETE FROM STORY WHERE STORY_ID = ?", [$id[0]]); 
+
+            Log::info("STORY #" . $id[0] . " was removed by " . $id[1]); 
+
+            return view('story')->with('unset2', true); 
+        }
+
+        // 11. Host publishes story
+        if (isset($data["publish-story"])) {
+            DB::update("UPDATE STORY SET STORY_PUBLISH = 1 WHERE STORY_ID = ?", [$data["publish-story"]]); 
+
+            Log::info("STORY #" . $data["publish-story"] . " was published"); 
+
+            return view('story')->with('unset2', true); 
         }
 
         return view('story'); 

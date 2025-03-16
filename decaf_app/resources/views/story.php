@@ -17,10 +17,8 @@ if (isset($avail)) {
     $_SESSION["GAME_PASS"] = isset($avail["GAME_PASS"]) ? $avail["GAME_PASS"] : " "; 
     $_SESSION["GAME_RUN"] = $avail["GAME_RUN"]; 
     $_SESSION["GAME_TURN"] = $avail["GAME_TURN"]; 
+    $_SESSION["STORY_ID"] = $avail["STORY_ID"]; 
     $_SESSION["STORY_TITLE"] = $avail["STORY_TITLE"]; 
-    $_SESSION["STORY_TEXT"] = $avail["STORY_TEXT"]; 
-    // ^^ This will need to update every turn 
-    // (not really a point in having this session var, then)
     $_SESSION["STORY_TURN_LIMIT"] = $avail["STORY_TURN_LIMIT"]; 
     $_SESSION["PLAY_USER"] = ["username" => $joinUser, "turn" => 0, "host" => false]; 
 
@@ -28,13 +26,13 @@ if (isset($avail)) {
 }
 
 if (isset($gameId)) {
-    $_SESSION["GAME_ID"] = $gameId[0]["@gameId := GAME_ID"]; 
+    $_SESSION["GAME_ID"] = $gameId[0]["@gameId"]; 
     $_SESSION["GAME_KEY"] = ($_POST["make-public"] == "n") ? $_POST["host-key"] : "RANDOM"; 
     $_SESSION["GAME_PASS"] = ($_POST["make-public"] == "n") ? $_POST["host-pass"] : " "; 
     $_SESSION["GAME_RUN"] = 0; 
     $_SESSION["GAME_TURN"] = 1; 
+    $_SESSION["STORY_ID"] = $gameId[0]["@storyId"];
     $_SESSION["STORY_TITLE"] = $_POST["host-title"]; 
-    // $_SESSION["STORY_TEXT"] = $_POST["starter-text"]; 
     $_SESSION["STORY_TURN_LIMIT"] = $_POST["host-limit"]; 
     $_SESSION["PLAY_USER"] = ["username" => $_POST["host-user"], "turn" => 0, "host" => true]; 
 
@@ -62,8 +60,16 @@ if (isset($newTurn)) {
     $_SESSION["GAME_TURN"] = $newTurn; 
 }
 
-$storyComplete = ["STORY_ID" => 333, "STORY_TITLE" => "Fake Story", "STORY_TEXT" => "This is a lot of fake text lalalalalalal I need to know how to style this page. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. This is a lot of fake text lalalalalalal I need to know how to style this page. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum"]; 
-$host = true; 
+if (isset($storyComplete)) {
+    if ($storyComplete) $_SESSION["STORY_COMPLETE"] = $storyComplete; 
+    Log::info("DEBUG 2 --> Unsetting vars"); 
+
+    unset($_SESSION["GAME_ID"], $_SESSION["GAME_KEY"], $_SESSION["GAME_PASS"], $_SESSION["GAME_RUN"], $_SESSION["GAME_TURN"], $_SESSION["STORY_TITLE"], $_SESSION["STORY_TURN_LIMIT"]); 
+}
+
+if (isset($unset2)) {
+    unset($_SESSION["STORY_COMPLETE"], $_SESSION["PLAY_USER"], $_SESSION["STORY_ID"]); 
+}
 
 if (isset($err)) {
     switch ($err["errCode"]) {
@@ -75,6 +81,8 @@ if (isset($err)) {
             break; 
         case "JR": 
             $_GET["join"] = "random"; 
+            break; 
+        default: 
             break; 
     }
 }
@@ -125,21 +133,24 @@ if (isset($err)) {
                             showGameMain($get); 
                         } else if (isset($_GET["join"])) {
                             showJoinForm(); 
-                        } else if (isset($storyComplete)) { 
-                            unset($_SESSION["GAME_ID"], $_SESSION["GAME_KEY"], $_SESSION["GAME_PASS"], $_SESSION["GAME_RUN"], $_SESSION["GAME_TURN"], $_SESSION["STORY_TITLE"], $_SESSION["STORY_TURN_LIMIT"], $_SESSION["PLAY_USER"]); 
-                        ?>
+                        } else if (isset($_SESSION["STORY_COMPLETE"])) { ?>
                             <div class='story-complete'>
                                 <div>
-                                    <h3><?php echo $storyComplete["STORY_TITLE"]; ?></h3>
+                                    <h3><?php echo $_SESSION["STORY_COMPLETE"]["STORY_TITLE"]; ?></h3>
                                     <div class='wrapper'>
-                                        <p><?php echo $storyComplete["STORY_TEXT"]; ?></p>
+                                        <p><?php echo $_SESSION["STORY_COMPLETE"]["STORY_TEXT"]; ?></p>
                                         <form action="<?php route('storyPost') ?>" method="POST">
-                                            <?php if ($host) { ?>
-                                                    <button type='submit' name='delete-story' value=<?php echo $storyComplete["STORY_ID"]; ?>>Delete</button>
-                                                    <button type='submit' name='publish-story' value=<?php echo $storyComplete["STORY_ID"]; ?>>Publish</button>
+                                        <?php 
+                                        echo csrf_field(); 
+                                        Log::info("DEBUG 3 --> Showing story"); 
+                                        ?>
+                                            <?php if ($_SESSION["PLAY_USER"]["host"]) { ?>
+                                                    <button type='submit' name='delete-story' value=<?php echo $_SESSION["STORY_COMPLETE"]["STORY_ID"]; ?>>Delete</button>
+                                                    <button type='submit' name='publish-story' value=<?php echo $_SESSION["STORY_COMPLETE"]["STORY_ID"]; ?>>Publish</button>
                                                     <p>Want your story on the home page? <strong>Click "Publish" to show off your masterpiece.</strong></p>
                                             <?php } else { ?>
-                                                <a href="story.php">Leave</a>
+                                                <!-- <a href="story.php">Leave</a> -->
+                                                <button type='submit' name='leave-story-result' value=true>Leave</button>
                                             <?php } ?>
                                         </form>
                                     </div>

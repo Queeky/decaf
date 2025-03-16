@@ -254,6 +254,7 @@ function showGameMain($get) {
                     <form action='<?php route('storyPost') ?>' method='POST' id='wait-turn-form'>
                         <?php echo csrf_field(); ?>
                         <input type='hidden' name='wait-turn' value=<?php echo $_SESSION["GAME_ID"]; ?>>
+                        <input type="hidden" name='story-id' value=<?php echo $_SESSION["STORY_ID"]; ?>>
                         <input type='hidden' name='wait-player' value='<?php echo $_SESSION["PLAY_USER"]["username"]; ?>'>
                         <button type='submit' class='leave-button' name='leave[user]' value='<?php echo $_SESSION["PLAY_USER"]["username"]; ?>'>Leave Game</button>
                         <input type='hidden' name='leave[id]' value=<?php echo $_SESSION["GAME_ID"]; ?>>
@@ -318,6 +319,7 @@ function showGameMain($get) {
                     <?php if ($_SESSION["PLAY_USER"]["host"]) {
                         echo "<input type='hidden' name='leave[host]' value=true>";
                     } ?>
+                    <input type="hidden" name='story-id' value=<?php echo $_SESSION["STORY_ID"]; ?>>
                     <input type='hidden' name='turn-limit' value=<?php echo $_SESSION["STORY_TURN_LIMIT"]; ?>>
                     <input type='hidden' name='turn-range' value=<?php echo $_SESSION["GAME_TURN_RANGE"]; ?>>
                     <input type='hidden' name='player-turn' value='<?php echo $_SESSION["PLAY_USER"]["turn"]; ?>'>

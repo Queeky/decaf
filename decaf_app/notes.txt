@@ -1,17 +1,22 @@
 DECAF NOTES: 
 
 WHERE YOU LEFT OFF ***
+Replaced storyComplete with a session variable, need to test if it works
+    did this because polling reload erases the finished story screen (for players)
+    NEED to make the screen for if player submits turn but game is done
 Fixed the login routing system, but might be able to make it more simple
 
 TODO:
-- prevent home from showing active games!
-- After game ends, full story printed 
+- REMOVE DEBUG STATEMENTS (LEVEL: EASY)
 - Add read more to home page stories
 - WRITE UNIT TESTS & add more robust error messages
 - ADD FORM report bugs to my gmail
 ^^^ Designed, now just need to add functionality -- send to gmail
     Currently submit button crashes site cause no csrf
+    Prevented crashing, but still no worky
 
+- Improve if statements in story.php by UserController sending code and comparing with switch statement instead (for future)
+- Eventually make functions for repeating code (especially "collecting stories")
 - Eventually add a delete confirm message (for admin)
 - Make story private option (not saved)
 - Have try catch instead of another query to check room key validity (UserController 250)
@@ -40,9 +45,6 @@ NOTE: Writing collab mode! Authors can see the entire story and
     write as much as they want; whenever they're done, they end their 
     turn and pass it onto the next person / "Writer's Circle" 
     *** Also should be a way to download story as .txt file
-NOTE: Create error messages for missing fields
-NOTE: Start game screen (for host) will need dynamic loading, too
-    (to see all the players joining)
 NOTE: left bar will be a button grid wall that randomly spawns different 
 puzzles, like correctly putting together a poem or something. 
 Only a 10% chance of seeing the puzzle, otherwise a carbonation gif. 

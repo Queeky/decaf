@@ -8,8 +8,8 @@ function showSplash() {
 
 function showMain() {
     // Make these two queries one? Left or right join?
-    $featured = DB::select("SELECT STORY_TITLE, STORY_TEXT FROM STORY WHERE GAME_ID = 1 ORDER BY RAND() LIMIT 1"); 
-    $stories = DB::select("SELECT STORY_TITLE, STORY_TEXT FROM STORY WHERE GAME_ID = 1 ORDER BY STORY_ID DESC"); 
+    $featured = DB::select("SELECT STORY_TITLE, STORY_TEXT FROM STORY WHERE STORY_PUBLISH = 1 ORDER BY RAND() LIMIT 1"); 
+    $stories = DB::select("SELECT STORY_TITLE, STORY_TEXT FROM STORY WHERE STORY_PUBLISH = 1 ORDER BY STORY_ID DESC"); 
 
     $featured = json_decode(json_encode($featured, true), true)[0];
     $stories = json_decode(json_encode($stories, true), true);
