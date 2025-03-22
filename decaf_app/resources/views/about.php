@@ -1,5 +1,9 @@
 <?php 
 session_start(); 
+// FOR TESTING
+if (!isset($_SESSION["LOGIN_ADDRESS"])) {
+    $_SESSION["LOGIN_ADDRESS"] = "127.0.0.1:8000"; 
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -11,7 +15,7 @@ session_start();
         <?php 
         // Checking login
         if (!isset($_SESSION["LOGIN_SUCCESS"])) {
-            echo "<meta http-equiv='refresh' content='0; url=http://127.0.0.1:8000/login.php'>"; 
+            echo "<meta http-equiv='refresh' content='0; url=http://{$_SESSION["LOGIN_ADDRESS"]}/login.php'>"; 
         }
         ?>
     </head>
