@@ -305,7 +305,7 @@ function showGameMain($get) {
             $range1 = count($json["placeholder"]["first"]) - 1; 
             $range2 = count($json["placeholder"]["second"]) - 1; 
 
-            $placeholder = $json["placeholder"]["first"][rand(0, $range1)] . " " . $json["placeholder"]["second"][rand(0, $range2)]; 
+            $placeholder = $json["placeholder"]["first"][rand(0, $range1)] . $json["placeholder"]["second"][rand(0, $range2)]; 
             ?>
             <div class='story-says'>
                 <p><strong>The story says: </strong><?php echo $text[0]["STORY_TEXT"]; ?></p>
