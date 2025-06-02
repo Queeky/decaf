@@ -2,8 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\LoginController;
 use App\Http\Controllers\AjaxController;
 use Illuminate\Support\Facades\Log;
+
+use App\Http\Middleware\CheckBetaPass;
+use App\Http\Middleware\RedirectLogin;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,33 +20,13 @@ use Illuminate\Support\Facades\Log;
 |
 */
 
-// Default doesn't have a name
-Route::get('/', function () {
-    return view('index');
-});
+Route::any('/login', [LoginController::class, 'login'])
+    ->middleware(CheckBetaPass::class)
+    ->name('login'); 
 
-
-// WHEN LIVE
-Route::get('/login.php', function () {
-    return view('login');
-})->name("loginGet"); 
-
-Route::post('/login.php', [UserController::class, 'loginPost'])->name("loginPost");
-
-// Route::get('/index.php', function () {
-//     return view('index'); 
-// })->name("indexGet"); 
-
-
-
-
-Route::get('/about.php', function () {
-    return view('about');
-})->name("aboutGet");
-
-// Route::get('/story.php', function () {
-//     return view('story');
-// })->name("storyGet");
-
-Route::get('/story.php', [UserController::class, 'storyGet'])->name("storyGet"); 
-Route::post('/story.php', [UserController::class, 'storyPost'])->name("storyPost"); 
+Route::middleware([RedirectLogin::class])->group(function() {
+    Route::view('/about', 'about')->name('about'); 
+    Route::post('/story', [UserController::class, 'storyPost'])->name("storyPost"); 
+    Route::get('/story', [UserController::class, 'storyGet'])->name("storyGet"); 
+    Route::view('/{slug?}', 'index')->name('index'); 
+}); 

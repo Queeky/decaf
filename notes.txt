@@ -1,8 +1,9 @@
 DECAF NOTES: 
 
 WHERE YOU LEFT OFF ***
-Failing to address public resources, will need to reconfig path
-Need to install laravel on vm I think, site is breaking
+Polling needs to change redirect, build out domain and add story to end
+When game ends, sends back to host/player login page, then when you hit story link AGAIN, it will show the finished story. What's going on?
+Failing to address public resources, will need to reconfig path (Did I resolve this?)
 
 EVENTUALLY fix the double loading thing :(
 Replaced storyComplete with a session variable, need to test if it works
@@ -11,6 +12,7 @@ Replaced storyComplete with a session variable, need to test if it works
 Fixed the login routing system, but might be able to make it more simple
 
 TODO:
+- Rename UserController and split up functionality
 - Add read more to home page stories
 - WRITE UNIT TESTS & add more robust error messages
 - ADD FORM report bugs to my gmail

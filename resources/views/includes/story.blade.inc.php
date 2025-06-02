@@ -168,7 +168,7 @@ function showGameMain($get) {
             function poll() {
                 $.ajax({
                     type: 'POST',
-                    url: 'story.php',
+                    url: 'story',
                     dataType: 'JSON',
                     data: $('#wait-game-form').serialize(),
                     headers: {
@@ -180,7 +180,7 @@ function showGameMain($get) {
 
                         // Temp solution maybe
                         if (!document.getElementById("wait-game-form")) {
-                            location.replace("http://127.0.0.1:8000/story.php"); 
+                            location.replace("/story"); 
                         }
                     },
                     error: function () {
@@ -215,7 +215,7 @@ function showGameMain($get) {
             function poll() {
                 $.ajax({
                     type: 'POST',
-                    url: 'story.php',
+                    url: 'story',
                     dataType: 'JSON',
                     data: $('#wait-host-form').serialize(),
                     headers: {
@@ -227,11 +227,11 @@ function showGameMain($get) {
 
                         // Temp solution maybe
                         if (!document.getElementById("wait-host-form")) {
-                            location.replace("http://127.0.0.1:8000/story.php"); 
+                            location.replace("/story"); 
                         }
                     },
                     error: function () {
-                        console.log("You goofed up somewhere, good luck finding where"); 
+                        console.log("!! You goofed up somewhere, good luck finding where"); 
                     }
                 });
             }
@@ -268,7 +268,7 @@ function showGameMain($get) {
             function poll() {
                 $.ajax({
                     type: 'POST',
-                    url: 'story.php',
+                    url: 'story',
                     dataType: 'JSON',
                     data: $('#wait-turn-form').serialize(),
                     headers: {

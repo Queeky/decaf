@@ -9,27 +9,6 @@ use DB;
 
 class UserController extends Controller
 {
-    public function loginPost() {
-        $data = request()->post(); 
-
-        if (isset($data["pass"]) && $data["pass"] == "c2hlIGJsaW5kZWQgbWUgd2l0aCBzY2llbmNl") {
-            Log::info("Beta player login success"); 
-            return view('login')->with("loginTrue", [true]); 
-        } else if (isset($data["pass"]) && $data["pass"] == "1234") {
-            Log::info("Beta player login failure (gullible vers.)"); 
-            return view('login')->with("message", ["Haha get rekt"]); 
-        } else if (!isset($data["pass"])) {
-            Log::info("Beta player login failure"); 
-            return view('login')->with("message", ["To solve the password, you 1) must enter a password, and 2) the password must be correct. I hope this helps."]); 
-        }
-
-        $pass = (isset($data["pass"])) ?  $data["pass"] . "?" : ""; 
-
-        Log::info("Beta player login failure"); 
-
-        return view('login')->with("message", ["No", "Try again", "That is incorrect", "So close, yet so far", "Have you tried '1234'", "Hello I'm your cousin James and I'm stuck in Mexico, please send your credit card # so I can book a flight home", "Wrong", "Could you rephrase that?", "Say pretty please", "Come back later", "What did you say? <strong>{$pass}</strong>"]); 
-    }
-
     public function storyGet() {
         $readId = request()->get("admin-read");
 

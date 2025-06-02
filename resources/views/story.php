@@ -1,11 +1,6 @@
 <?php 
-session_start(); 
-// FOR TESTING
-if (!isset($_SESSION["LOGIN_ADDRESS"])) {
-    $_SESSION["LOGIN_ADDRESS"] = "127.0.0.1:8000"; 
-}
-
 use Illuminate\Support\Facades\Log;
+if (!isset($_SESSION)) session_start(); 
 
 $get = null; 
 if (isset($adminRead)) {
@@ -101,12 +96,6 @@ if (isset($err)) {
         <link rel="stylesheet" href="css/style.css">
         <meta name="csrf-token" content="<?php echo csrf_token(); ?>">
         <script type="text/javascript" src="js/jquery-3.7.1.min.js"></script>
-        <?php 
-        // Checking login
-        if (!isset($_SESSION["LOGIN_SUCCESS"])) {
-            echo "<meta http-equiv='refresh' content='0; url=http://{$_SESSION["LOGIN_ADDRESS"]}/login.php'>"; 
-        }
-        ?>
     </head>
     <body id="body">
         <?php 

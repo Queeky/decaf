@@ -1,9 +1,5 @@
 <?php 
-session_start(); 
-// FOR TESTING
-if (!isset($_SESSION["LOGIN_ADDRESS"])) {
-    $_SESSION["LOGIN_ADDRESS"] = "127.0.0.1:8000"; 
-}
+if (!isset($_SESSION)) session_start(); 
 ?>
 <!DOCTYPE html>
 <html>
@@ -12,12 +8,6 @@ if (!isset($_SESSION["LOGIN_ADDRESS"])) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Homepage</title>
         <link rel="stylesheet" href="css/style.css">
-        <?php 
-        // Checking login
-        if (!isset($_SESSION["LOGIN_SUCCESS"])) {
-            echo "<meta http-equiv='refresh' content='0; url=http://{$_SESSION["LOGIN_ADDRESS"]}/login.php'>"; 
-        }
-        ?>
     </head>
     <body>
         <?php 

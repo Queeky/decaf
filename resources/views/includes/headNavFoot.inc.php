@@ -17,11 +17,10 @@ function showNav() {
     ?>
     <nav>
         <ul>
-            <li><a href='index.php'>HOME</a></li>
-            <li><a href='about.php'>ABOUT</a></li>
+            <li><a href='<?php echo route('index'); ?>'>HOME</a></li>
+            <li><a href='<?php echo route('about'); ?>'>ABOUT</a></li>
             <!-- <li><a href='index.php'>MADLIBS</a></li> -->
-            <li><a href='story.php'>BLUE RASPBERRY</a></li>
-            <!-- <li><a href='index.php'>COLORING BOOK</a></li> -->
+            <li><a href='<?php echo route('storyGet'); ?>'>BLUE RASPBERRY</a></li>
         </ul>
     </nav>
     <?php
