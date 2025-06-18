@@ -18,7 +18,6 @@ class CheckBetaPass {
         $login = $request->session()->get("LOGIN_SUCCESS"); 
         $msg = []; 
 
-        Log::info("CheckBetaPass login --> {$login}"); 
         if (isset($login)) return redirect()->route('index'); 
 
         if (isset($pass)) {

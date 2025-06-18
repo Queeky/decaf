@@ -62,8 +62,8 @@ if (isset($newTurn)) {
 
 if (isset($storyComplete)) {
     if ($storyComplete) $_SESSION["STORY_COMPLETE"] = $storyComplete; 
-    Log::info("DEBUG 2 --> Unsetting vars"); 
 
+    unset($_GET["join"]); 
     unset($_SESSION["GAME_ID"], $_SESSION["GAME_KEY"], $_SESSION["GAME_PASS"], $_SESSION["GAME_RUN"], $_SESSION["GAME_TURN"], $_SESSION["STORY_TITLE"], $_SESSION["STORY_TURN_LIMIT"]); 
 }
 
@@ -136,7 +136,6 @@ if (isset($err)) {
                                         <form action="<?php route('storyPost') ?>" method="POST">
                                         <?php 
                                         echo csrf_field(); 
-                                        Log::info("DEBUG 3 --> Showing story"); 
                                         ?>
                                             <?php if ($_SESSION["PLAY_USER"]["host"]) { ?>
                                                     <button type='submit' name='delete-story' value=<?php echo $_SESSION["STORY_COMPLETE"]["STORY_ID"]; ?>>Delete</button>

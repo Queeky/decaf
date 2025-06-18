@@ -1,9 +1,14 @@
 DECAF NOTES: 
 
 WHERE YOU LEFT OFF ***
-Polling needs to change redirect, build out domain and add story to end
-When game ends, sends back to host/player login page, then when you hit story link AGAIN, it will show the finished story. What's going on?
+Get domain from GoDaddy
+Setup automatic deployment from Github -- MAYBE not yet, after refactor
+REFACTOR
+
+When game ends, sends back to host/player login page or host page, then when you hit story link AGAIN, it will show the finished story. What's going on?
 Failing to address public resources, will need to reconfig path (Did I resolve this?)
+
+*** If script saves all story text when doing its select every round, then it doesn't have to execute another query at the end when collecting the finished story. Something to think about.
 
 EVENTUALLY fix the double loading thing :(
 Replaced storyComplete with a session variable, need to test if it works

@@ -280,7 +280,7 @@ function showGameMain($get) {
 
                         // Temp solution maybe
                         if (!document.getElementById("wait-turn-form")) {
-                            location.replace("http://127.0.0.1:8000/story.php"); 
+                            location.replace("/story"); 
                         }
                     },
                     error: function () {

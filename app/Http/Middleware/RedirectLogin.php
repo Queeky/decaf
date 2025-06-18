@@ -15,7 +15,6 @@ class RedirectLogin {
      */
     public function handle(Request $request, Closure $next): Response {
         $login = $request->session()->get("LOGIN_SUCCESS"); 
-        Log::info("RedirectLogin"); 
 
         if (!isset($login)) return redirect()->route('login'); 
         return $next($request);

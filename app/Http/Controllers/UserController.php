@@ -37,11 +37,8 @@ class UserController extends Controller
                 $checkPass = json_decode(json_encode($checkPass, true), true);
 
                 if ($checkPass) {
-                    Log::info("DEBUG --> Checking password"); 
                     $avail = Hash::check($data["join-pass"], $checkPass[0]["GAME_PASS"]) ? $checkPass : null; 
-                } else {
-                    Log::info("DEBUG --> Game key not found"); 
-                }
+                } 
             } else if (isset($data["join-user"]) && isset($data["join-public"])) {
                 $avail = DB::select("SELECT GAME.GAME_ID, GAME.GAME_KEY, GAME.GAME_PASS, GAME.GAME_RUN, GAME.GAME_TURN, STORY.STORY_ID, STORY.STORY_TITLE, STORY.STORY_TEXT, STORY.STORY_TURN_LIMIT FROM GAME JOIN STORY ON GAME.GAME_ID = STORY.GAME_ID WHERE GAME_KEY = ? AND GAME_PASS IS NULL AND GAME_RUN = 0 ORDER BY RAND() LIMIT 1", ["RANDOM"]);
 
@@ -86,8 +83,6 @@ class UserController extends Controller
             $storyComplete = json_decode(json_encode($storyComplete, true), true)[0];
 
             if (isset($data["leave"]["host"])) {
-                Log::info("DEBUG 1 --> Collecting story (host)"); 
-
                 // Host left, remove game
                 DB::select("CALL endGame(?)", [$data["leave"]["id"]]); 
 
@@ -150,8 +145,6 @@ class UserController extends Controller
                 $storyComplete = false; 
 
                 if (isset($data["wait-turn"])) {
-                    Log::info("DEBUG 1 --> Collecting story (non-host)"); 
-
                     // Collecting finished story
                     $storyComplete = DB::select("SELECT STORY_ID, STORY_TITLE, STORY_TEXT FROM STORY WHERE STORY_ID = ?", [$data["story-id"]]); 
                     $storyComplete = json_decode(json_encode($storyComplete, true), true)[0];
@@ -193,8 +186,6 @@ class UserController extends Controller
                 Log::info("GAME #" . $data["game-id"] . ": Player attempted to submit turn on game that no longer exists");
 
                 $err = ["errCode" => " ", "errMsg" => "Host has left the game."];
-                
-                Log::info("DEBUG 1 --> Collecting story (non-host)"); 
 
                 // Collecting finished story
                 $storyComplete = DB::select("SELECT STORY_ID, STORY_TITLE, STORY_TEXT FROM STORY WHERE STORY_ID = ?", [$data["story-id"]]); 
