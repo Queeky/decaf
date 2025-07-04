@@ -157,10 +157,16 @@ class UserController extends Controller
         }
 
         // 5. Player's text is too long
-        if (isset($data["new-text"]) && ((substr_count($data["new-text"], " ") + 1) > $data["turn-limit"])) {
-            Log::info("GAME #" . $data["game-id"] . ": Message is too long"); 
+        if (isset($data["new-text"])) {
+            $spaces = substr_count($data["new-text"], " "); 
+            $underscores = substr_count($data["new-text"], "_"); 
+            $wordCount = $spaces + $underscores + 1; 
 
-            return view('story')->with("limitMessage", "Your message is too long! Write <strong>{$data["turn-limit"]} word(s)</strong> or less.");
+            if ($wordCount > $data["turn-limit"]) {
+                Log::info("GAME #" . $data["game-id"] . ": Message is too long"); 
+
+                return view('story')->with("limitMessage", "Your message is too long! Write <strong>{$data["turn-limit"]} word(s)</strong> or less.");
+            }
         } 
         
         // 6. Appends new text to story
