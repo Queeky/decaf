@@ -5,9 +5,9 @@ function showHead() {
     <header>
         <img src='images/logoBlue.png'>
         <div class='header-triangle'></div>
-        <form action='index.php' method='GET'>
+        <form action='<?php echo route('index'); ?>' method='GET'>
             <input class='search-bar' type='text'>
-            <a type='submit' href='index.php'><img src='images/search-icon.png'></a>
+            <a type='submit'><img src='images/search-icon.png'></a>
         </form>
     </header>
     <?php

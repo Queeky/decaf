@@ -347,7 +347,7 @@ function showGameMain($get) {
                         <p class='limit'><?php echo $c["STORY_TURN_LIMIT"]; ?></p>
                         <p class='text'><?php echo $c["STORY_TEXT"]; ?></p>
                         <form class='read-more' action="<?php route('storyGet') ?>" method="GET">
-                            <button type='submit' name='admin-read' value=<?php echo $c["STORY_ID"]; ?>>READ</button>
+                            <button type='submit' name='read-more' value=<?php echo $c["STORY_ID"]; ?>>READ</button>
                         </form>
                     </div>
                 <?php } ?>
@@ -364,7 +364,7 @@ function showGameMain($get) {
                         <p class='limit'><?php echo $a["STORY_TURN_LIMIT"]; ?></p>
                         <p class='text'><?php echo $a["STORY_TEXT"]; ?></p>
                         <form class='read-more' action="<?php route('storyGet') ?>" method="GET">
-                            <button type='submit' name='admin-read' value=<?php echo $a["STORY_ID"]; ?>>READ</button>
+                            <button type='submit' name='read-more' value=<?php echo $a["STORY_ID"]; ?>>READ</button>
                         </form>
                     </div>
                 <?php } ?>
@@ -377,9 +377,9 @@ function showGameMain($get) {
                 </form>
             </div>
         </div>
-    <?php } else if ($get && $_SESSION["GAME_ID"] == 1) { ?>
+    <?php } else if (isset($readText) && $_SESSION["GAME_ID"] == 1) { ?>
         <div class='admin-view read'>
-            <p><?php echo $get["STORY_TEXT"]; ?></p>
+            <p><?php echo $readText; //Intelliphense is mad but I think it'll work ?></p>
         </div>
     <?php }
 }

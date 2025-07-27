@@ -11,8 +11,8 @@ if (!isset($_SESSION)) session_start();
     </head>
     <body>
         <?php 
-        include_once("includes/headNavFoot.inc.php"); 
-        include_once("includes/bars.inc.php"); 
+        include_once("includes/headNavFoot.php"); 
+        include_once("includes/bars.php"); 
 
         showHead(); 
         showNav(); 

@@ -12,9 +12,9 @@ if (!isset($_SESSION)) session_start();
     </head>
     <body>
         <?php 
-        include_once("includes/headNavFoot.inc.php"); 
-        include_once("includes/bars.inc.php"); 
-        include_once("includes/index.inc.php"); 
+        include_once("includes/headNavFoot.php"); 
+        include_once("includes/bars.php"); 
+        include_once("includes/index.php"); 
 
         showHead(); 
         showNav(); 

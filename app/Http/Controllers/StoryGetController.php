@@ -7,16 +7,17 @@ use DB;
 
 class StoryGetController extends Controller {
     function main(Request $request) {
-        $readId = $request->get("admin-read");
+        $readId = $request->get("read-more");
 
-        // 1. Admin reads full story text
-        if (isset($readId)) {
-            $adminRead = DB::select("SELECT STORY_TITLE, STORY_TEXT FROM STORY WHERE STORY_ID = ? LIMIT 1", [$readId]); 
-            $adminRead = json_decode(json_encode($adminRead, true), true)[0];
+        // 1. User reads full story text
+        if ($readId) {
+            $readData = DB::select("SELECT STORY_TITLE, STORY_TEXT FROM STORY WHERE STORY_ID = ? LIMIT 1", [$readId]); 
+            $readData = json_decode(json_encode($readData, true), true)[0];
 
-            Log::info("Admin is reading STORY #" . $readId); 
+            session(["STORY_TITLE" => $readData["STORY_TITLE"]]); 
+            Log::info("User is reading STORY #" . $readId); // Testing only
 
-            return view('story')->with("adminRead", $adminRead); // Go to session controller instead
+            return view('story')->with("readText", $readData["STORY_TEXT"]); 
         }
 
         return view('story'); 

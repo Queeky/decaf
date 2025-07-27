@@ -26,7 +26,7 @@ Route::any('/login', [LoginController::class, 'login'])
 
 Route::middleware([RedirectLogin::class])->group(function() {
     Route::view('/about', 'about')->name('about'); 
-    Route::post('/story', [UserController::class, 'storyPost'])->name("storyPost"); 
-    Route::get('/story', [UserController::class, 'storyGet'])->name("storyGet"); 
+    Route::post('/story', [StoryPostController::class, 'main'])->name("storyPost"); 
+    Route::get('/story', [StoryGetController::class, 'main'])->name("storyGet"); 
     Route::view('/{slug?}', 'index')->name('index'); 
 }); 

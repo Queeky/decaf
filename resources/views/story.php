@@ -2,12 +2,6 @@
 use Illuminate\Support\Facades\Log;
 if (!isset($_SESSION)) session_start(); 
 
-$get = null; 
-if (isset($adminRead)) {
-    $get = $adminRead;
-    $_SESSION["STORY_TITLE"] = $get["STORY_TITLE"]; 
-}  
-
 // If game exists, sets SESSION
 if (isset($avail)) {
     $avail = $avail[0]; 
@@ -37,28 +31,7 @@ if (isset($gameId)) {
     $_SESSION["PLAY_USER"] = ["username" => $_POST["host-user"], "turn" => 0, "host" => true]; 
 
     Log::info("Story created! --> GAME #" . $_SESSION["GAME_ID"]); 
-} else if (isset($turns)) {
-    // Better way to index this without having to loop until getting to specific row?
-    // Index directly?
-    foreach ($turns as $turn) {
-        if (($turn["PLAY_USER"] == $_SESSION["PLAY_USER"]["username"]) && ($turn["PLAY_SESSION"] == $_SESSION["SESSION_ID"])) {
-            $_SESSION["PLAY_USER"]["turn"] = $turn["PLAY_TURN"]; 
-            break; 
-        }
-    }
-
-    $_SESSION["GAME_RUN"] = 1; 
-    $_SESSION["GAME_TURN_RANGE"] = $turns[count($turns) - 1]["PLAY_TURN"]; 
-}
-
-// This cannot be in the includes folder! Will not run otherwise!
-if (isset($gameTurn)) {
-    $_SESSION["GAME_TURN"] = $gameTurn; 
 } 
-
-if (isset($newTurn)) {
-    $_SESSION["GAME_TURN"] = $newTurn; 
-}
 
 if (isset($storyComplete)) {
     if ($storyComplete) $_SESSION["STORY_COMPLETE"] = $storyComplete; 
@@ -99,9 +72,9 @@ if (isset($err)) {
     </head>
     <body id="body">
         <?php 
-        include_once("includes/headNavFoot.inc.php"); 
-        include_once("includes/bars.inc.php"); 
-        include_once("includes/story.blade.inc.php"); 
+        include_once("includes/headNavFoot.php"); 
+        include_once("includes/bars.php"); 
+        include_once("includes/story.blade.php");  
 
         showHead(); 
         showNav(); 
