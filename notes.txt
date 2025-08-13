@@ -8,11 +8,17 @@ ADD procedures file to live server just in case there are changes I forgot to pu
 CAN'T REPLACE STORY_ID with GAME_ID because when building storyComplete the GAME
 will be deleted and STORY will have the default GAME_ID instead
 
+** TRY USING DOT NOTATION FOR SESSION ARRAY NAMES like PLAYER.NAME and see if it works
+
+Changes to keep in mind when editing views: ****
+- Most user data and game id info will not need to be sent in the forms
+- storyComplete will still need to be handled in view
+
 What should be held in a session?
 - Session id
 When game in progress
 - Player name and turn #
-"PLAYER" => ["NAME" => , "TURN" => , "HOST" => false]
+"PLAYER" => ["NAME" => , "TURN" => , "HOST" => false, "SESSION" =>]
 "GAME" => ["ID" => , "RUN" => , "TURN" => ]
 "STORY" => ["ID" => , ]
 - Story text
