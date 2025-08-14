@@ -43,7 +43,7 @@ class StoryPostController extends Controller {
                     // NOTE: Why can't this also work for the host?
                     // I think because host gets it somewhere else when they begin the game
                     if (!session("PLAYER")["HOST"] && $game["GAME_RUN"] == 1) {
-                        $turn = DB::select("SELECT PLAY_TURN FROM PLAYER WHERE GAME_ID = ? AND PLAY_SESSION = ? ORDER BY PLAY_TURN ASC;", [$waitGame, session("SESSION_ID")]); 
+                        $turn = DB::select("SELECT PLAY_TURN FROM PLAYER WHERE GAME_ID = ? AND PLAY_USER = ? AND PLAY_SESSION = ?;", [$waitGame, session("PLAYER")["NAME"], session("PLAYER")["SESSION"]]); 
                         $turn = json_decode(json_encode($turn, true), true)[0];
 
                         $turnRange = DB::select("SELECT COUNT(PLAY_USER) AS TURN_RANGE FROM PLAYER WHERE GAME_ID = ?;", [$waitGame]); 
@@ -151,11 +151,35 @@ class StoryPostController extends Controller {
             // Code should only reach here if performed DB check for public/private game
             if (isset($avail) && $avail) {
                 if ($avail[0]["GAME_RUN"] == 0) {
-                    $joinUser = $data["join-user"]; 
+                    $avail = $avail[0]; 
 
-                    Log::info("GAME #{$avail[0]['GAME_ID']}: {$joinUser} joined"); 
+                    $gameData = [
+                        "ID" => $avail["GAME_ID"], 
+                        "KEY" => $avail["GAME_KEY"], 
+                        "PASS" => isset($avail["GAME_PASS"]) ? $avail["GAME_PASS"] : " ", 
+                        "RUN" => 0, 
+                        "TURN" => $avail["GAME_TURN"]
+                    ]; 
+                    $storyData = [
+                        "ID" => $avail["STORY_ID"], 
+                        "TITLE" => $avail["STORY_TITLE"], 
+                        "TURN_LIMIT" => $avail["STORY_TURN_LIMIT"]
+                    ]; 
+                    $playerData = [
+                        "NAME" => $data["join-user"], 
+                        "TURN" => 0, 
+                        "HOST" => false, 
+                        "SESSION" => session("SESSION_ID")
+                    ]; 
 
-                    return view('story')->with(compact("avail", "joinUser"));
+                    session(["GAME" => $gameData]); 
+                    session(["STORY" => $storyData]); 
+                    session(["PLAYER" => $playerData]); 
+
+                    DB::insert("INSERT INTO PLAYER (PLAY_USER, GAME_ID, PLAY_SESSION) VALUES (?, ?, ?)", [$data["join-user"], session("GAME")["ID"], session("PLAYER")["SESSION"]]);
+
+                    Log::info("GAME #{$avail['GAME_ID']}: {$data["join-user"]} joined"); 
+                    return view('story'); 
                 } else if ($avail[0]["GAME_RUN"] == 1) {
                     $err = ["errCode" => "JP", "errMsg" => "This game has already begun."]; 
                     return view('story')->with("err", $err);
@@ -210,17 +234,17 @@ class StoryPostController extends Controller {
                     $err = ["errCode" => "JH", "errMsg" => "Private games must have a password."]; 
                 } else if ($data["host-limit"] < 1) {
                     $err = ["errCode" => "JH", "errMsg" => "Your word limit cannot be less than 1."]; 
-                }
+                } else {
+                    // If private, uppercase submitted key; if public, key becomes RANDOM
+                    $data["host-key"] = ($data["make-public"] == "n") ? strtoupper($data["host-key"]) : "RANDOM";
 
-                // If private, uppercase submitted key; if public, key becomes RANDOM
-                $data["host-key"] = ($data["make-public"] == "n") ? strtoupper($data["host-key"]) : "RANDOM";
+                    // Check if key is already in use
+                    // Eventually incorporate this in main select below
+                    if ($data["make-public"] == "n") {
+                        $exists = DB::select("SELECT GAME_ID FROM GAME WHERE GAME_KEY = ?", [$data["host-key"]]); 
 
-                // Check if key is already in use
-                // Eventually incorporate this in main select below
-                if ($data["make-public"] == "n") {
-                    $exists = DB::select("SELECT GAME_ID FROM GAME WHERE GAME_KEY = ?", [$data["host-key"]]); 
-
-                    if ($exists) $err = ["errCode" => "JH", "errMsg" => "This key already exists."];
+                        if ($exists) $err = ["errCode" => "JH", "errMsg" => "This key already exists."];
+                    }
                 }
 
                 // Checks if any errors were set above
@@ -230,15 +254,39 @@ class StoryPostController extends Controller {
 
                 $data["host-pass"] = ($data["make-public"] == "n") ? Hash::make($data["host-pass"]) : null; 
     
-                $gameId = DB::select("CALL createStory(:key, :pass, :user, :session, :title, :text, :limit, @gameId, @storyId)", ["key" => $data["host-key"], "pass" => $data["host-pass"], "user" => $data["host-user"], "session" => $data["session"], "title" => $data["host-title"], "text" => $data["starter-text"], "limit" => $data["host-limit"]]);
-                $gameId = json_decode(json_encode($gameId, true), true);  
-    
-                return view('story')->with("gameId", $gameId); 
+                $results = DB::select("CALL createStory(:key, :pass, :user, :session, :title, :text, :limit, @gameId, @storyId)", ["key" => $data["host-key"], "pass" => $data["host-pass"], "user" => $data["host-user"], "session" => $data["session"], "title" => $data["host-title"], "text" => $data["starter-text"], "limit" => $data["host-limit"]]);
+                $results = json_decode(json_encode($results, true), true)[0];  
+
+                $gameData = [
+                    "ID" => $results["@gameId"], 
+                    "KEY" => ($data["make-public"] == "n") ? $data["host-key"] : "RANDOM", 
+                    "PASS" => ($data["make-public"] == "n") ? $data["host-pass"] : " ", 
+                    "RUN" => 0, 
+                    "TURN" => 1
+                ]; 
+                $storyData = [
+                    "ID" => $results["@storyId"], 
+                    "TITLE" => $data["host-title"], 
+                    "TURN_LIMIT" => $data["host-limit"]
+                ]; 
+                $playerData = [
+                    "NAME" => $data["host-user"], 
+                    "TURN" => 0, 
+                    "HOST" => true, 
+                    "SESSION" => session("SESSION_ID")
+                ]; 
+
+                session(["GAME" => $gameData]); 
+                session(["STORY" => $storyData]); 
+                session(["PLAYER" => $playerData]); 
+
+                Log::info("Story created! --> GAME #{$results["@gameId"]}"); 
             } else {
                 $err = ["errCode" => "JH", "errMsg" => "You must fill out all necessary fields."]; 
     
                 return view('story')->with("err", $err); 
             }
+            return view('story'); 
         }
 
         // 8. Host starts game
@@ -251,14 +299,38 @@ class StoryPostController extends Controller {
             $sql .= "WHERE GAME_ID = {$data["start-game"]} ORDER BY RAND();"; 
             DB::unprepared($sql); 
 
-            $turns = DB::select("SELECT PLAY_USER, PLAY_SESSION, PLAY_TURN FROM PLAYER WHERE GAME_ID = ? ORDER BY PLAY_TURN ASC;", [$data["start-game"]]); 
-            $turns = json_decode(json_encode($turns, true), true);
+            $turn = DB::select("SELECT PLAY_TURN FROM PLAYER WHERE GAME_ID = ? AND PLAY_USER = ? AND PLAY_SESSION = ?;", [$data["start-game"], session("PLAYER")["NAME"], session("PLAYER")["SESSION"]]); 
+            $turn = json_decode(json_encode($turn, true), true)[0];
+
+            $player = [...session("PLAYER"), "TURN" => $turn["PLAY_TURN"]]; 
+            session(["PLAYER" => $player]); 
 
             Log::info("GAME #{$data["start-game"]}: Starting game"); 
             DB::update("UPDATE GAME SET GAME_RUN = 1 WHERE GAME_ID = ?", [$data["start-game"]]); 
 
-            return view('story')->with('turns', $turns); 
+            return view('story'); 
         } 
+
+        // 9. Host or admin deletes story
+        if (isset($data["delete-story"]) || isset($data["admin-delete"])) {
+            $id = isset($data["delete-story"]) ? [$data["delete-story"], "host"] : [$data["admin-delete"], "admin"]; 
+
+            DB::delete("DELETE FROM STORY WHERE STORY_ID = ?", [$id[0]]); 
+            Log::info("STORY #{$id[0]} was removed by {$id[1]}"); 
+
+            unset(session("STORY"), session("PLAYER"), session("STORY_COMPLETE")); 
+            return view('story'); 
+        }
+
+        // 10. Host publishes story
+        if (isset($data["publish-story"])) {
+            DB::update("UPDATE STORY SET STORY_PUBLISH = 1 WHERE STORY_ID = ?", [$data["publish-story"]]); 
+
+            Log::info("STORY #{$data["publish-story"]} was published"); 
+
+            unset(session("STORY"), session("PLAYER"), session("STORY_COMPLETE")); 
+            return view('story'); 
+        }
 
         return view('story'); 
     }
