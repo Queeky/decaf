@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use DB; 
 
 class StoryPostController extends Controller {
     function collectStory($gameId) { // Collects finished story
@@ -196,7 +197,7 @@ class StoryPostController extends Controller {
         // 5. User leaves game (host or player)
         if (isset($data["leave"])) {
             // Collecting finished story
-            $gameId = session("GAME")["ID"]; 
+            $gameId = $data["leave"]; 
             collectStory($gameId); 
 
             if (session("PLAYER")["HOST"]) {

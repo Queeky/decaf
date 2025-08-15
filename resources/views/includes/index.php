@@ -11,13 +11,18 @@ function showMain() {
     $featured = DB::select("SELECT STORY_TITLE, STORY_TEXT FROM STORY WHERE STORY_PUBLISH = 1 ORDER BY RAND() LIMIT 1"); 
     $stories = DB::select("SELECT STORY_TITLE, STORY_TEXT FROM STORY WHERE STORY_PUBLISH = 1 ORDER BY STORY_ID DESC"); 
 
-    $featured = json_decode(json_encode($featured, true), true)[0];
+    $featured = json_decode(json_encode($featured, true), true);
     $stories = json_decode(json_encode($stories, true), true);
     ?>
     <div class='main'>
         <div class='featured'>
-            <h3>FEATURED STORY | <?php echo $featured["STORY_TITLE"]; ?></h3>
-            <p><?php echo $featured["STORY_TEXT"]; ?></p>
+            <?php if ($featured) { ?>
+                <h3>FEATURED STORY | <?php echo $featured[0]["STORY_TITLE"]; ?></h3>
+                <p><?php echo $featured[0]["STORY_TEXT"]; ?></p>
+            <?php } else { ?>
+                <h3>FEATURED STORY | NONE FOUND</h3>
+                <p>No stories are currently published.</p>
+            <?php } ?>
         </div>
         <div>
             <h3>ALL STORIES (NEWEST TO OLDEST)</h3>

@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\StoryPostController;
+use App\Http\Controllers\StoryGetController;
 use App\Http\Controllers\AjaxController;
 use Illuminate\Support\Facades\Log;
 

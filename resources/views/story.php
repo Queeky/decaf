@@ -1,6 +1,8 @@
 <?php 
 use Illuminate\Support\Facades\Log;
-if (!isset(session("SESSION_ID"))) session_start(); 
+
+if (session("SESSION_ID")) echo var_dump(session("SESSION_ID")); 
+if (session("GAME")) echo var_dump(session("GAME.ID")); 
 
 if (isset($err)) {
     switch ($err["errCode"]) {
@@ -49,28 +51,28 @@ if (isset($err)) {
                 ?>
                 <div class='upper-content' style='border-bottom: 0.2vw solid var(--blue1); padding: 0;'>
                     <?php
-                    !((isset(session("GAME.KEY"))) && (isset(session("GAME.PASS")))) ? showJoinOptions() : showGameInfo(); 
+                    !(session("GAME.KEY") && session("GAME.PASS")) ? showJoinOptions() : showGameInfo(); 
                     ?>
                 </div>
                 <div class='inner-content story-content'>
                     <?php 
-                        if ((isset(session("GAME.KEY"))) && (isset(session("GAME.PASS")))) {
+                        if (session("GAME.KEY") && session("GAME.PASS")) {
                             showGameMain($get); 
                         } else if (isset($_GET["join"])) {
                             showJoinForm(); 
-                        } else if (isset(session("STORY_COMPLETE"))) { ?>
+                        } else if (session("STORY_COMPLETE")) { ?>
                             <div class='story-complete'>
                                 <div>
                                     <h3><?php echo session("STORY_COMPLETE.STORY_TITLE"); ?></h3>
                                     <div class='wrapper'>
-                                        <p><?php echo $_SESSION["STORY_COMPLETE"]["STORY_TEXT"]; ?></p>
+                                        <p><?php echo session("STORY_COMPLETE.STORY_TEXT"); ?></p>
                                         <form action="<?php route('storyPost') ?>" method="POST">
                                         <?php 
                                         echo csrf_field(); 
                                         ?>
-                                            <?php if ($_SESSION["PLAY_USER"]["host"]) { ?>
-                                                    <button type='submit' name='delete-story' value=<?php echo $_SESSION["STORY_COMPLETE"]["STORY_ID"]; ?>>Delete</button>
-                                                    <button type='submit' name='publish-story' value=<?php echo $_SESSION["STORY_COMPLETE"]["STORY_ID"]; ?>>Publish</button>
+                                            <?php if (session("PLAYER.HOST")) { ?>
+                                                    <button type='submit' name='delete-story' value=<?php echo session("STORY_COMPLETE.STORY_ID"); ?>>Delete</button>
+                                                    <button type='submit' name='publish-story' value=<?php echo session("STORY_COMPLETE.STORY_ID"); ?>>Publish</button>
                                                     <p>Want your story on the home page? <strong>Click "Publish" to show off your masterpiece.</strong></p>
                                             <?php } else { ?>
                                                 <!-- <a href="story.php">Leave</a> -->

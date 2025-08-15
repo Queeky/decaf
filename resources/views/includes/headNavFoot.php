@@ -1,6 +1,6 @@
 <?php
 function showHead() {
-    if (!isset($_SESSION["SESSION_ID"])) $_SESSION["SESSION_ID"] = session_id(); 
+    if (!session("SESSION_ID")) session(["SESSION_ID" => session()->getId()]); 
     ?>
     <header>
         <img src='images/logoBlue.png'>
