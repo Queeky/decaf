@@ -1,8 +1,6 @@
 <?php 
 use Illuminate\Support\Facades\Log;
-
-if (session("SESSION_ID")) echo var_dump(session("SESSION_ID")); 
-if (session("GAME")) echo var_dump(session("GAME.ID")); 
+// var_dump(session("GAME")); 
 
 if (isset($err)) {
     switch ($err["errCode"]) {
@@ -57,7 +55,7 @@ if (isset($err)) {
                 <div class='inner-content story-content'>
                     <?php 
                         if (session("GAME.KEY") && session("GAME.PASS")) {
-                            showGameMain($get); 
+                            showGameMain(); 
                         } else if (isset($_GET["join"])) {
                             showJoinForm(); 
                         } else if (session("STORY_COMPLETE")) { ?>

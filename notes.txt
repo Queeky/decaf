@@ -8,7 +8,7 @@ ADD procedures file to live server just in case there are changes I forgot to pu
 CAN'T REPLACE STORY_ID with GAME_ID because when building storyComplete the GAME
 will be deleted and STORY will have the default GAME_ID instead
 
-** TRY USING DOT NOTATION FOR SESSION ARRAY NAMES like PLAYER.NAME and see if it works
+*** start-game doesn't work, need to figure out why
 
 Changes to keep in mind when editing views: ****
 - Most user data and game id info will not need to be sent in the forms

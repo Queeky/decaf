@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Hash;
 use DB; 
 
 class StoryPostController extends Controller {
@@ -16,8 +18,10 @@ class StoryPostController extends Controller {
     function main(Request $request) {
         $data = $request->post(); 
 
+        Log::info("DEBUG -->", $data); 
+
         // 1. Checks if wait-turn, wait-game, or wait-host polling is active
-        if ((isset($data["wait-game"])) || (!isset($data["start-game"]) && (isset($data["wait-turn"]))))  {
+        if ((isset($data["wait-game"]) || isset($data["wait-turn"])) && !isset($data["leave"]) && !isset($data["start-game"])) {
             $waitGame = $request->input("wait-game"); 
             $waitTurn = $request->input("wait-turn"); 
             
@@ -29,10 +33,11 @@ class StoryPostController extends Controller {
                 $game = json_decode(json_encode($game, true), true)[0];
 
                 if ($waitTurn) { 
-                    Log::info("GAME #{$waitTurn}: " . session("PLAYER")["NAME"] . " is waiting their turn"); 
+                    Log::info("GAME #{$waitTurn}: " . session("PLAYER.NAME") . " is waiting their turn"); 
         
-                    $updated = [...session("GAME"), "TURN" => $game["GAME_TURN"]]; 
-                    session(["GAME" => $updated]); 
+                    // $updated = [...session("GAME"), "TURN" => $game["GAME_TURN"]]; 
+                    // session(["GAME" => $updated]); 
+                    session(["GAME.TURN" => $game["GAME_TURN"]]); 
         
                     return response()->json([
                         'html' => view('story')->render()
@@ -43,18 +48,20 @@ class StoryPostController extends Controller {
                     // Sending back turn data for all players if game is running
                     // NOTE: Why can't this also work for the host?
                     // I think because host gets it somewhere else when they begin the game
-                    if (!session("PLAYER")["HOST"] && $game["GAME_RUN"] == 1) {
-                        $turn = DB::select("SELECT PLAY_TURN FROM PLAYER WHERE GAME_ID = ? AND PLAY_USER = ? AND PLAY_SESSION = ?;", [$waitGame, session("PLAYER")["NAME"], session("PLAYER")["SESSION"]]); 
+                    if (!session("PLAYER.HOST") && $game["GAME_RUN"] == 1) {
+                        $turn = DB::select("SELECT PLAY_TURN FROM PLAYER WHERE GAME_ID = ? AND PLAY_USER = ? AND PLAY_SESSION = ?;", [$waitGame, session("PLAYER.NAME"), session("PLAYER.SESSION")]); 
                         $turn = json_decode(json_encode($turn, true), true)[0];
 
                         $turnRange = DB::select("SELECT COUNT(PLAY_USER) AS TURN_RANGE FROM PLAYER WHERE GAME_ID = ?;", [$waitGame]); 
                         $turnRange = json_decode(json_encode($turnRange, true), true)[0];
 
-                        $player = [...session("PLAYER"), "TURN" => $turn["PLAY_TURN"]]; 
-                        session(["PLAYER" => $player]); 
+                        // $player = [...session("PLAYER"), "TURN" => $turn["PLAY_TURN"]]; 
+                        // session(["PLAYER" => $player]); 
+                        session(["PLAYER.TURN" => $turn["PLAY_TURN"]]); 
 
-                        $updated = [...session("GAME"), "TURN_RANGE" => $turnRange["TURN_RANGE"], "RUN" => 1]; 
-                        session(["GAME" => $updated]); 
+                        // $updated = [...session("GAME"), "TURN_RANGE" => $turnRange["TURN_RANGE"], "RUN" => 1]; 
+                        // session(["GAME" => $updated]); 
+                        session(["GAME.TURN_RANGE" => $turnRange["TURN_RANGE"]]); 
                     } 
 
                     return response()->json([
@@ -71,7 +78,7 @@ class StoryPostController extends Controller {
                 $err = ["errCode" => "JP", "errMsg" => "Host has left the game."]; 
                 $storyComplete = false; 
 
-                if ($waitTurn) collectStory($id); 
+                if ($waitTurn) $this->collectStory($id); 
 
                 return response()->json([
                     'html' => view('story', compact("err"))->render()
@@ -85,42 +92,44 @@ class StoryPostController extends Controller {
             $spaces = substr_count($data["new-text"], " "); 
             $underscores = substr_count($data["new-text"], "_"); 
             $wordCount = $spaces + $underscores + 1;
-            $limit = session("STORY")["LIMIT"]; 
+            $limit = session("STORY.TURN_LIMIT"); 
 
             if ($wordCount > $limit) {
-                Log::info("GAME #" . session("GAME")["ID"] . ": Message is too long"); 
+                Log::info("GAME #" . session("GAME.ID") . ": Message is too long"); 
 
                 return view('story')->with("limitMessage", "Your message is too long! Write <strong>$limit word(s)</strong> or less.");
             }
 
             $data["new-text"] = ` {$data["new-text"]}`; 
 
-            $gameExists = DB::select("CALL updateStory(:newText, :gameId, @gameId)", ["newText" => $data["new-text"], "gameId" => session("GAME")["ID"]]); 
+            $gameExists = DB::select("CALL updateStory(:newText, :gameId, @gameId)", ["newText" => $data["new-text"], "gameId" => session("GAME.ID")]); 
 
             if ($gameExists) {
-                Log::info("GAME #" . session("GAME")["ID"] . ": Text appended"); 
-                $turn = session("PLAYER")["TURN"];
-                $turnRange = session("GAME")["TURN_RANGE"];  
+                Log::info("GAME #" . session("GAME.ID") . ": Text appended"); 
+                $turn = session("PLAYER.TURN");
+                $turnRange = session("GAME.TURN_RANGE");  
 
                 // Updating game turn
                 if (($turn + 1) <= $turnRange) {
-                    DB::update("UPDATE GAME SET GAME_TURN = ? WHERE GAME_ID = ?", [$turn + 1, session("GAME")["ID"]]); 
+                    DB::update("UPDATE GAME SET GAME_TURN = ? WHERE GAME_ID = ?", [$turn + 1, session("GAME.ID")]); 
 
-                    $newTurn = [...session("GAME"), "TURN" => $turn + 1]; 
-                    session(["GAME" => $newTurn]);
+                    // $newTurn = [...session("GAME"), "TURN" => $turn + 1]; 
+                    // session(["GAME" => $newTurn]);
+                    session(["GAME.TURN" => $turn + 1]);
                 } else {
-                    DB::update("UPDATE GAME SET GAME_TURN = 1 WHERE GAME_ID = ?", [session("GAME")["ID"]]); 
+                    DB::update("UPDATE GAME SET GAME_TURN = 1 WHERE GAME_ID = ?", [session("GAME.ID")]); 
 
-                    $newTurn = [...session("GAME"), "TURN" => 1]; 
-                    session(["GAME" => $newTurn]);
+                    // $newTurn = [...session("GAME"), "TURN" => 1]; 
+                    // session(["GAME" => $newTurn]);
+                    session(["GAME.TURN" => 1]);
                 }
 
                 return view('story'); 
             } else {
-                Log::info("GAME #" . session("GAME")["ID"] . ": Player attempted to submit turn on game that no longer exists");
+                Log::info("GAME #" . session("GAME.ID") . ": Player attempted to submit turn on game that no longer exists");
 
                 $err = ["errCode" => " ", "errMsg" => "Host has left the game."];
-                collectStory(session("GAME")["ID"]); 
+                $this->collectStory(session("GAME.ID")); 
 
                 return view('story')->with(compact("err")); 
             }
@@ -177,7 +186,7 @@ class StoryPostController extends Controller {
                     session(["STORY" => $storyData]); 
                     session(["PLAYER" => $playerData]); 
 
-                    DB::insert("INSERT INTO PLAYER (PLAY_USER, GAME_ID, PLAY_SESSION) VALUES (?, ?, ?)", [$data["join-user"], session("GAME")["ID"], session("PLAYER")["SESSION"]]);
+                    DB::insert("INSERT INTO PLAYER (PLAY_USER, GAME_ID, PLAY_SESSION) VALUES (?, ?, ?)", [$data["join-user"], session("GAME.ID"), session("PLAYER.SESSION")]);
 
                     Log::info("GAME #{$avail['GAME_ID']}: {$data["join-user"]} joined"); 
                     return view('story'); 
@@ -198,28 +207,29 @@ class StoryPostController extends Controller {
         if (isset($data["leave"])) {
             // Collecting finished story
             $gameId = $data["leave"]; 
-            collectStory($gameId); 
+            $this->collectStory($gameId); 
 
-            if (session("PLAYER")["HOST"]) {
+            if (session("PLAYER.HOST")) {
                 // Host left, remove game
                 DB::select("CALL endGame(?)", [$gameId]); 
 
                 Log::info("Story finished! --> GAME #{$gameId}"); 
             } else {
                 // Player left, remove player from game
-                DB::delete("DELETE FROM PLAYER WHERE PLAY_USER = ? AND PLAY_SESSION = ? AND GAME_ID = ?", [session("PLAYER")["NAME"], session("PLAYER")["SESSION"], $gameId]); 
+                DB::delete("DELETE FROM PLAYER WHERE PLAY_USER = ? AND PLAY_SESSION = ? AND GAME_ID = ?", [session("PLAYER.NAME"), session("PLAYER.SESSION"), $gameId]); 
             }
 
-            unset(session("GAME"), $request->get("join")); 
-            // session()->forget(["GAME"]); 
+            Log::info("GAME #{$gameId}: " . session("PLAYER.NAME") . " left"); 
 
-            Log::info("GAME #{$gameId}: " . session("PLAYER")["NAME"] . " left"); 
+            unset($_GET["join"]); 
+            session()->forget(["GAME"]); 
+
             return view('story'); 
         } 
 
         // 6. Player leaves story result screen
         if (isset($data["leave-story-result"])) {
-            unset(session("PLAYER"), session("STORY")); 
+            session()->forget(["PLAYER", "STORY"]); 
             return view('story'); 
         }
 
@@ -253,6 +263,7 @@ class StoryPostController extends Controller {
 
                 Log::info("Creating new story...");  
 
+                $unhashedPass = $data["host-pass"]; 
                 $data["host-pass"] = ($data["make-public"] == "n") ? Hash::make($data["host-pass"]) : null; 
     
                 $results = DB::select("CALL createStory(:key, :pass, :user, :session, :title, :text, :limit, @gameId, @storyId)", ["key" => $data["host-key"], "pass" => $data["host-pass"], "user" => $data["host-user"], "session" => $data["session"], "title" => $data["host-title"], "text" => $data["starter-text"], "limit" => $data["host-limit"]]);
@@ -261,7 +272,7 @@ class StoryPostController extends Controller {
                 $gameData = [
                     "ID" => $results["@gameId"], 
                     "KEY" => ($data["make-public"] == "n") ? $data["host-key"] : "RANDOM", 
-                    "PASS" => ($data["make-public"] == "n") ? $data["host-pass"] : " ", 
+                    "PASS" => ($data["make-public"] == "n") ? $unhashedPass : " ", 
                     "RUN" => 0, 
                     "TURN" => 1
                 ]; 
@@ -300,11 +311,12 @@ class StoryPostController extends Controller {
             $sql .= "WHERE GAME_ID = {$data["start-game"]} ORDER BY RAND();"; 
             DB::unprepared($sql); 
 
-            $turn = DB::select("SELECT PLAY_TURN FROM PLAYER WHERE GAME_ID = ? AND PLAY_USER = ? AND PLAY_SESSION = ?;", [$data["start-game"], session("PLAYER")["NAME"], session("PLAYER")["SESSION"]]); 
+            $turn = DB::select("SELECT PLAY_TURN FROM PLAYER WHERE GAME_ID = ? AND PLAY_USER = ? AND PLAY_SESSION = ?;", [$data["start-game"], session("PLAYER.NAME"), session("PLAYER.SESSION")]); 
             $turn = json_decode(json_encode($turn, true), true)[0];
 
-            $player = [...session("PLAYER"), "TURN" => $turn["PLAY_TURN"]]; 
-            session(["PLAYER" => $player]); 
+            // $player = [...session("PLAYER"), "TURN" => $turn["PLAY_TURN"]]; 
+            // session(["PLAYER" => $player]); 
+            session(["PLAYER.TURN" => $turn["PLAY_TURN"]]); 
 
             Log::info("GAME #{$data["start-game"]}: Starting game"); 
             DB::update("UPDATE GAME SET GAME_RUN = 1 WHERE GAME_ID = ?", [$data["start-game"]]); 
@@ -319,7 +331,7 @@ class StoryPostController extends Controller {
             DB::delete("DELETE FROM STORY WHERE STORY_ID = ?", [$id[0]]); 
             Log::info("STORY #{$id[0]} was removed by {$id[1]}"); 
 
-            unset(session("STORY"), session("PLAYER"), session("STORY_COMPLETE")); 
+            session()->forget(["STORY", "PLAYER", "STORY_COMPLETE"]); 
             return view('story'); 
         }
 
@@ -329,7 +341,7 @@ class StoryPostController extends Controller {
 
             Log::info("STORY #{$data["publish-story"]} was published"); 
 
-            unset(session("STORY"), session("PLAYER"), session("STORY_COMPLETE")); 
+            session()->forget(["STORY", "PLAYER", "STORY_COMPLETE"]); 
             return view('story'); 
         }
 

@@ -1,6 +1,5 @@
 <?php 
 use Illuminate\Support\Facades\Log;
-if (!isset($_SESSION)) session_start(); 
 ?>
 <!DOCTYPE html>
 <html>
@@ -23,9 +22,9 @@ if (!isset($_SESSION)) session_start();
             <?php showLeft(); ?>
             <div class='content'>
                 <?php  
-                if (isset($_SESSION["PLAY_USER"]) && $_SESSION["PLAY_USER"]["host"]) {
+                if (session("PLAYER.HOST")) {
                     showError("Your people need you, captain! (You are currently <strong>hosting a game</strong>.)"); 
-                } else if (isset($_SESSION["PLAY_USER"])) {
+                } else if (session("PLAYER") && !session("PLAYER.HOST")) {
                     showError("You're coming back... right? (You are currently <strong>in a game</strong>.)"); 
                 }
                 ?>

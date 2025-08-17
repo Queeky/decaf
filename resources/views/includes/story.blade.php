@@ -16,7 +16,6 @@ function showJoinOptions() {
 function showGameInfo() {
     // To do order by most recent, would need PLAY_ID (and redo all composite keys)
     $players = DB::select("SELECT PLAY_USER FROM PLAYER WHERE GAME_ID = ?", [session("GAME.ID")]); 
-
     $players = json_decode(json_encode($players, true), true);
     ?>
     <div class='game-info'>
@@ -142,7 +141,7 @@ function showJoinForm() {
     <?php }
 }
 
-function showGameMain($get) {
+function showGameMain() {
     if (session("GAME.RUN") == 0 && session("GAME.ID") != 1) { 
         // Game waiting to run
         if (!session("PLAYER.HOST")) { ?>
