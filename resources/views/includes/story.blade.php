@@ -245,7 +245,7 @@ function showGameMain() {
                     <form action='<?php route('storyPost') ?>' method='POST' id='wait-turn-form'>
                         <?php echo csrf_field(); ?>
                         <input type='hidden' name='wait-turn' value=<?php echo session("GAME.ID"); ?>>
-                        <input type="hidden" name='story-id' value=<?php echo session("STORY.ID"); ?>>
+                        <!-- <input type="hidden" name='story-id' value=<?php //echo session("STORY.ID"); ?>> -->
                         <button type='submit' class='leave-button' name='leave' value='<?php echo session("GAME.ID"); ?>'>Leave Game</button>
                     </form>
                 </div>
@@ -283,7 +283,7 @@ function showGameMain() {
         } else {
             // Active game, player's turn
             $text = DB::select("SELECT SUBSTRING_INDEX((SELECT STORY_TEXT FROM STORY WHERE GAME_ID = ?), ' ', -?) AS STORY_TEXT; ", [session("GAME.ID"), session("STORY.TURN_LIMIT")]);
-            $text = json_decode(json_encode($text, true), true)[0]; 
+            $text = json_decode(json_encode($text, true), true)[0];
 
             // Setting up a random placeholder (suggestion text)
             $json = json_decode(file_get_contents("json/placeholder.json"), true); 

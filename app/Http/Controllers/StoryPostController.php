@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -18,8 +17,6 @@ class StoryPostController extends Controller {
     function main(Request $request) {
         $data = $request->post(); 
 
-        Log::info("DEBUG -->", $data); 
-
         // 1. Checks if wait-turn, wait-game, or wait-host polling is active
         if ((isset($data["wait-game"]) || isset($data["wait-turn"])) && !isset($data["leave"]) && !isset($data["start-game"])) {
             $waitGame = $request->input("wait-game"); 
@@ -34,9 +31,6 @@ class StoryPostController extends Controller {
 
                 if ($waitTurn) { 
                     Log::info("GAME #{$waitTurn}: " . session("PLAYER.NAME") . " is waiting their turn"); 
-        
-                    // $updated = [...session("GAME"), "TURN" => $game["GAME_TURN"]]; 
-                    // session(["GAME" => $updated]); 
                     session(["GAME.TURN" => $game["GAME_TURN"]]); 
         
                     return response()->json([
@@ -49,19 +43,12 @@ class StoryPostController extends Controller {
                     // NOTE: Why can't this also work for the host?
                     // I think because host gets it somewhere else when they begin the game
                     if (!session("PLAYER.HOST") && $game["GAME_RUN"] == 1) {
-                        $turn = DB::select("SELECT PLAY_TURN FROM PLAYER WHERE GAME_ID = ? AND PLAY_USER = ? AND PLAY_SESSION = ?;", [$waitGame, session("PLAYER.NAME"), session("PLAYER.SESSION")]); 
+                        $turn = DB::select("SELECT P1.PLAY_TURN AS PLAY_TURN, P2.TURN_RANGE AS TURN_RANGE FROM (SELECT GAME_ID, PLAY_TURN FROM PLAYER WHERE GAME_ID = ? AND PLAY_USER = ? AND PLAY_SESSION = ?) AS P1 JOIN (SELECT GAME_ID, COUNT(PLAY_USER) AS TURN_RANGE FROM PLAYER GROUP BY GAME_ID) AS P2 ON P1.GAME_ID = P2.GAME_ID;", [$waitGame, session("PLAYER.NAME"), session("PLAYER.SESSION")]); 
                         $turn = json_decode(json_encode($turn, true), true)[0];
 
-                        $turnRange = DB::select("SELECT COUNT(PLAY_USER) AS TURN_RANGE FROM PLAYER WHERE GAME_ID = ?;", [$waitGame]); 
-                        $turnRange = json_decode(json_encode($turnRange, true), true)[0];
-
-                        // $player = [...session("PLAYER"), "TURN" => $turn["PLAY_TURN"]]; 
-                        // session(["PLAYER" => $player]); 
                         session(["PLAYER.TURN" => $turn["PLAY_TURN"]]); 
-
-                        // $updated = [...session("GAME"), "TURN_RANGE" => $turnRange["TURN_RANGE"], "RUN" => 1]; 
-                        // session(["GAME" => $updated]); 
-                        session(["GAME.TURN_RANGE" => $turnRange["TURN_RANGE"]]); 
+                        session(["GAME.TURN_RANGE" => $turn["TURN_RANGE"]]);
+                        session(["GAME.RUN" => 1]); 
                     } 
 
                     return response()->json([
@@ -87,7 +74,7 @@ class StoryPostController extends Controller {
         }
 
         // 2. Appends new text to story
-        if (isset($data["new-text"])) {
+        if (isset($data["new-text"]) && !isset($data["leave"])) {
             // Checks if text is too long
             $spaces = substr_count($data["new-text"], " "); 
             $underscores = substr_count($data["new-text"], "_"); 
@@ -100,7 +87,7 @@ class StoryPostController extends Controller {
                 return view('story')->with("limitMessage", "Your message is too long! Write <strong>$limit word(s)</strong> or less.");
             }
 
-            $data["new-text"] = ` {$data["new-text"]}`; 
+            $data["new-text"] = " {$data["new-text"]}"; 
 
             $gameExists = DB::select("CALL updateStory(:newText, :gameId, @gameId)", ["newText" => $data["new-text"], "gameId" => session("GAME.ID")]); 
 
@@ -113,14 +100,10 @@ class StoryPostController extends Controller {
                 if (($turn + 1) <= $turnRange) {
                     DB::update("UPDATE GAME SET GAME_TURN = ? WHERE GAME_ID = ?", [$turn + 1, session("GAME.ID")]); 
 
-                    // $newTurn = [...session("GAME"), "TURN" => $turn + 1]; 
-                    // session(["GAME" => $newTurn]);
                     session(["GAME.TURN" => $turn + 1]);
                 } else {
                     DB::update("UPDATE GAME SET GAME_TURN = 1 WHERE GAME_ID = ?", [session("GAME.ID")]); 
 
-                    // $newTurn = [...session("GAME"), "TURN" => 1]; 
-                    // session(["GAME" => $newTurn]);
                     session(["GAME.TURN" => 1]);
                 }
 
@@ -229,7 +212,7 @@ class StoryPostController extends Controller {
 
         // 6. Player leaves story result screen
         if (isset($data["leave-story-result"])) {
-            session()->forget(["PLAYER", "STORY"]); 
+            session()->forget(["PLAYER", "STORY", "STORY_COMPLETE"]); 
             return view('story'); 
         }
 
@@ -311,15 +294,15 @@ class StoryPostController extends Controller {
             $sql .= "WHERE GAME_ID = {$data["start-game"]} ORDER BY RAND();"; 
             DB::unprepared($sql); 
 
-            $turn = DB::select("SELECT PLAY_TURN FROM PLAYER WHERE GAME_ID = ? AND PLAY_USER = ? AND PLAY_SESSION = ?;", [$data["start-game"], session("PLAYER.NAME"), session("PLAYER.SESSION")]); 
+            $turn = DB::select("SELECT P1.PLAY_TURN AS PLAY_TURN, P2.TURN_RANGE AS TURN_RANGE FROM (SELECT GAME_ID, PLAY_TURN FROM PLAYER WHERE GAME_ID = ? AND PLAY_USER = ? AND PLAY_SESSION = ?) AS P1 JOIN (SELECT GAME_ID, COUNT(PLAY_USER) AS TURN_RANGE FROM PLAYER GROUP BY GAME_ID) AS P2 ON P1.GAME_ID = P2.GAME_ID;", [$data["start-game"], session("PLAYER.NAME"), session("PLAYER.SESSION")]); 
             $turn = json_decode(json_encode($turn, true), true)[0];
-
-            // $player = [...session("PLAYER"), "TURN" => $turn["PLAY_TURN"]]; 
-            // session(["PLAYER" => $player]); 
-            session(["PLAYER.TURN" => $turn["PLAY_TURN"]]); 
 
             Log::info("GAME #{$data["start-game"]}: Starting game"); 
             DB::update("UPDATE GAME SET GAME_RUN = 1 WHERE GAME_ID = ?", [$data["start-game"]]); 
+
+            session(["PLAYER.TURN" => $turn["PLAY_TURN"]]); 
+            session(["GAME.TURN_RANGE" => $turn["TURN_RANGE"]]);
+            session(["GAME.RUN" => 1]); 
 
             return view('story'); 
         } 
