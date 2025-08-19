@@ -21,7 +21,7 @@ class CheckBetaPass {
 
         if (isset($pass)) {
             switch($pass) {
-                case "c2hlIGJsaW5kZWQgbWUgd2l0aCBzY2llbmNl":
+                case env("LOGIN_PASS"):
                     Log::info("Login success CheckBetaPass"); 
                     session(["LOGIN_SUCCESS" => true]); 
 

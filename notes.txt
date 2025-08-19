@@ -1,21 +1,14 @@
 DECAF NOTES: 
 
 WHERE YOU LEFT OFF ***
-NOTE: automatic deployment may not be possible
 After refactor, make site responsive (not necessary mobile friendly YET, just better adaption to different laptop screens)
-ADD procedures file to live server just in case there are changes I forgot to push. 
 
 CAN'T REPLACE STORY_ID with GAME_ID because when building storyComplete the GAME
 will be deleted and STORY will have the default GAME_ID instead
 
 
-
 REFACTOR TODO
-- Limit for public stories
-- Limit for story titles (or what is shown for featured stories)
 - Get debugging form working
-
-
 *** If script saves all story text when doing its select every round, then it doesn't have to execute another query at the end when collecting the finished story. Something to think about.
 
 TODO:

@@ -303,12 +303,12 @@ function showGameMain() {
                 </form>
             </div>
         <?php }
-    } else if (!isset($readText) && session("GAME.KEY") == "WODAHS") { 
+    } else if (!isset($readText) && session("GAME.KEY") == env("ADMIN_KEY")) { 
         // Admin view
-        $completed = DB::select("SELECT STORY_ID, STORY_TITLE, LEFT(STORY_TEXT, 70) AS STORY_TEXT, STORY_TURN_LIMIT FROM STORY WHERE GAME_ID = 1 ORDER BY STORY_ID DESC"); 
+        $completed = DB::select("SELECT STORY_ID, LEFT(STORY_TITLE, 30), LEFT(STORY_TEXT, 90) AS STORY_TEXT, STORY_TURN_LIMIT FROM STORY WHERE GAME_ID = 1 ORDER BY STORY_ID DESC"); 
         $completed = json_decode(json_encode($completed, true), true);
 
-        $active = DB::select("SELECT STORY_ID, STORY_TITLE, LEFT(STORY_TEXT, 70) AS STORY_TEXT, STORY_TURN_LIMIT FROM STORY WHERE GAME_ID != 1 ORDER BY STORY_ID DESC"); 
+        $active = DB::select("SELECT STORY_ID, LEFT(STORY_TITLE, 30), LEFT(STORY_TEXT, 90) AS STORY_TEXT, STORY_TURN_LIMIT FROM STORY WHERE GAME_ID != 1 ORDER BY STORY_ID DESC"); 
         $active = json_decode(json_encode($active, true), true);
         ?>
         <div class='admin-stories'>

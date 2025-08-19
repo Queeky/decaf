@@ -40,8 +40,6 @@ class StoryPostController extends Controller {
                     Log::info("GAME #{$waitGame}: Waiting to begin"); 
 
                     // Sending back turn data for all players if game is running
-                    // NOTE: Why can't this also work for the host?
-                    // I think because host gets it somewhere else when they begin the game
                     if (!session("PLAYER.HOST") && $game["GAME_RUN"] == 1) {
                         $turn = DB::select("SELECT P1.PLAY_TURN AS PLAY_TURN, P2.TURN_RANGE AS TURN_RANGE FROM (SELECT GAME_ID, PLAY_TURN FROM PLAYER WHERE GAME_ID = ? AND PLAY_USER = ? AND PLAY_SESSION = ?) AS P1 JOIN (SELECT GAME_ID, COUNT(PLAY_USER) AS TURN_RANGE FROM PLAYER GROUP BY GAME_ID) AS P2 ON P1.GAME_ID = P2.GAME_ID;", [$waitGame, session("PLAYER.NAME"), session("PLAYER.SESSION")]); 
                         $turn = json_decode(json_encode($turn, true), true)[0];
