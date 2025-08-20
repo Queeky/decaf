@@ -1,34 +1,24 @@
 DECAF NOTES: 
 
 WHERE YOU LEFT OFF ***
-Get domain from GoDaddy
-Setup automatic deployment from Github -- MAYBE not yet, after refactor
-REFACTOR
+After refactor, make site responsive (not necessary mobile friendly YET, just better adaption to different laptop screens)
 
-When game ends, sends back to host/player login page or host page, then when you hit story link AGAIN, it will show the finished story. What's going on?
-Failing to address public resources, will need to reconfig path (Did I resolve this?)
+CAN'T REPLACE STORY_ID with GAME_ID because when building storyComplete the GAME
+will be deleted and STORY will have the default GAME_ID instead
 
+
+REFACTOR TODO
+- Get debugging form working
 *** If script saves all story text when doing its select every round, then it doesn't have to execute another query at the end when collecting the finished story. Something to think about.
 
-EVENTUALLY fix the double loading thing :(
-Replaced storyComplete with a session variable, need to test if it works
-    did this because polling reload erases the finished story screen (for players)
-    NEED to make the screen for if player submits turn but game is done
-Fixed the login routing system, but might be able to make it more simple
-
 TODO:
-- Rename UserController and split up functionality
-- Add read more to home page stories
 - WRITE UNIT TESTS & add more robust error messages
 - ADD FORM report bugs to my gmail
 ^^^ Designed, now just need to add functionality -- send to gmail
     Currently submit button crashes site cause no csrf
     Prevented crashing, but still no worky
 
-- Improve if statements in story.php by UserController sending code and comparing with switch statement instead (for future)
-- Eventually make functions for repeating code (especially "collecting stories")
 - Eventually add a delete confirm message (for admin)
-- Make story private option (not saved)
 - Have try catch instead of another query to check room key validity (UserController 250)
 - Make new controller for password management
 
@@ -142,9 +132,9 @@ It requires about as much technical skill as winning at UNO.
 - "Someone is calling your phone" 
     :Answer it
         1. Oh no, you answered a spam call and now they know this number is active!
-            (-5 internet safety, +5 curiosity) 
+            (-5 internet safety) 
         2. Mr. Beast says you just won a spot on his newest video: "100 People Outlast 1 Man-Eating Tiger!"
-            (+5 curiosity, +10 fame)
+            (+10 fame)
     :Ignore it
         1. 
 

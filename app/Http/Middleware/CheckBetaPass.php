@@ -14,15 +14,14 @@ class CheckBetaPass {
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
     public function handle(Request $request, Closure $next): Response {
-        $pass = $request->input("login-pass"); 
-        $login = $request->session()->get("LOGIN_SUCCESS"); 
-        $msg = []; 
+        if (session("LOGIN_SUCCESS")) return redirect()->route('index'); 
 
-        if (isset($login)) return redirect()->route('index'); 
+        $pass = $request->input("login-pass"); 
+        $msg = []; 
 
         if (isset($pass)) {
             switch($pass) {
-                case "c2hlIGJsaW5kZWQgbWUgd2l0aCBzY2llbmNl":
+                case env("LOGIN_PASS"):
                     Log::info("Login success CheckBetaPass"); 
                     session(["LOGIN_SUCCESS" => true]); 
 

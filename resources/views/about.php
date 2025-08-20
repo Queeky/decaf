@@ -1,5 +1,5 @@
 <?php 
-if (!isset($_SESSION)) session_start(); 
+use Illuminate\Support\Facades\Log;
 ?>
 <!DOCTYPE html>
 <html>
@@ -11,8 +11,8 @@ if (!isset($_SESSION)) session_start();
     </head>
     <body>
         <?php 
-        include_once("includes/headNavFoot.inc.php"); 
-        include_once("includes/bars.inc.php"); 
+        include_once("includes/headNavFoot.php"); 
+        include_once("includes/bars.php"); 
 
         showHead(); 
         showNav(); 
@@ -21,9 +21,9 @@ if (!isset($_SESSION)) session_start();
             <?php showLeft(); ?>
             <div class='content'>
                 <?php  
-                if (isset($_SESSION["PLAY_USER"]) && $_SESSION["PLAY_USER"]["host"]) {
+                if (session("PLAYER.HOST")) {
                     showError("Your people need you, captain! (You are currently <strong>hosting a game</strong>.)"); 
-                } else if (isset($_SESSION["PLAY_USER"])) {
+                } else if (session("PLAYER") && !session("PLAYER.HOST")) {
                     showError("You're coming back... right? (You are currently <strong>in a game</strong>.)"); 
                 }
                 ?>

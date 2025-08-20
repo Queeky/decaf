@@ -15,22 +15,21 @@ function showJoinOptions() {
 
 function showGameInfo() {
     // To do order by most recent, would need PLAY_ID (and redo all composite keys)
-    $players = DB::select("SELECT PLAY_USER FROM PLAYER WHERE GAME_ID = ?", [$_SESSION["GAME_ID"]]); 
-
+    $players = DB::select("SELECT PLAY_USER FROM PLAYER WHERE GAME_ID = ?", [session("GAME.ID")]); 
     $players = json_decode(json_encode($players, true), true);
     ?>
     <div class='game-info'>
         <div class='word-limit'>
             <div>
-                <p><strong>Word Limit: </strong><?php echo $_SESSION["STORY_TURN_LIMIT"]; ?></p>
+                <p><strong>Word Limit: </strong><?php echo session("STORY.TURN_LIMIT"); ?></p>
             </div>
         </div>
         <div class='room-key'>
             <div>
-                <p><strong>Room Key: </strong><?php echo $_SESSION["GAME_KEY"]; ?></p>
+                <p><strong>Room Key: </strong><?php echo session("GAME.KEY"); ?></p>
             </div>
         </div>
-        <?php if ($_SESSION["PLAY_USER"]["host"]) { ?>
+        <?php if (session("PLAYER.HOST")) { ?>
             <style>
                 /* Resetting style if host */
                 .game-info > .users-connected {
@@ -42,7 +41,7 @@ function showGameInfo() {
                 }
             </style>
             <div class='room-key' style='border-left: 0.2vw solid var(--blue1);grid-column-start: 3; grid-column-end: 4;'>
-                <p><strong>Password: </strong><?php echo $_SESSION["GAME_PASS"]; ?></p>
+                <p><strong>Password: </strong><?php echo session("GAME.PASS"); ?></p>
             </div>
         <?php } ?>
         <div class='users-connected'>
@@ -56,7 +55,7 @@ function showGameInfo() {
                 ?>
             </p>
         </div>
-        <h3>Story: <?php echo $_SESSION["STORY_TITLE"]; ?></h3>
+        <h3>Story: <?php echo session("STORY.TITLE"); ?></h3>
     </div>
     <?php
 }
@@ -133,7 +132,7 @@ function showJoinForm() {
                         <textarea name='starter-text'>Once upon a time...</textarea> 
                         <label for='host-limit'>Set Word Limit:</label> 
                         <input type='number' name='host-limit' min='1' value='3'> 
-                        <input type='hidden' name='session' value='<?php echo $_SESSION["SESSION_ID"]; ?>'> 
+                        <input type='hidden' name='session' value='<?php echo session("SESSION_ID"); ?>'> 
                         <button type='submit'>Submit</button> 
                     </div>
                 </div>
@@ -142,10 +141,10 @@ function showJoinForm() {
     <?php }
 }
 
-function showGameMain($get) {
-    if ($_SESSION["GAME_RUN"] == 0 && $_SESSION["GAME_ID"] != 1) { 
+function showGameMain() {
+    if (session("GAME.RUN") == 0 && session("GAME.ID") != 1) { 
         // Game waiting to run
-        if (!$_SESSION["PLAY_USER"]["host"]) { ?>
+        if (!session("PLAYER.HOST")) { ?>
             <div class='waiting-turn'>
                 <div>
                     <div class='wait-box'>
@@ -154,13 +153,8 @@ function showGameMain($get) {
                     </div>
                     <form action="<?php route('storyPost') ?>" method='POST' id='wait-game-form'>
                         <?php echo csrf_field(); ?>
-                        <input type='hidden' name='wait-game' value=<?php echo $_SESSION["GAME_ID"]; ?>>
-                        <input type='hidden' name='wait-player' value='<?php echo $_SESSION["PLAY_USER"]["username"]; ?>'>
-                        <button type='submit' class='leave-button' name='leave[user]' value='<?php echo $_SESSION["PLAY_USER"]["username"]; ?>'>Leave Game</button>
-                        <input type='hidden' name='leave[id]' value=<?php echo $_SESSION["GAME_ID"]; ?>>
-                        <?php if ($_SESSION["PLAY_USER"]["host"]) {
-                            echo "<input type='hidden' name='leave[host]' value=true>";
-                        } ?>
+                        <input type='hidden' name='wait-game' value=<?php echo session("GAME.ID"); ?>>
+                        <button type='submit' class='leave-button' name='leave' value='<?php echo session("GAME.ID"); ?>'>Leave Game</button>
                     </form>
                 </div>
             </div>
@@ -202,12 +196,9 @@ function showGameMain($get) {
                     </div>
                     <form action="<?php route('storyPost') ?>" method='POST' id='wait-host-form'>
                         <?php echo csrf_field(); ?>
-                        <input type='hidden' name='wait-game' value=<?php echo $_SESSION["GAME_ID"]; ?>>
-                        <input type="hidden" name='wait-host' value=true>
-                        <button type='submit' class='leave-button start-button' name='start-game' value=<?php echo $_SESSION["GAME_ID"]; ?>>Start Game</button>
-                        <button type='submit' class='leave-button' name='leave[user]' value='<?php echo $_SESSION["PLAY_USER"]["username"]; ?>'>Leave Game</button>
-                        <input type='hidden' name='leave[id]' value=<?php echo $_SESSION["GAME_ID"]; ?>>
-                        <input type='hidden' name='leave[host]' value=true>
+                        <input type='hidden' name='wait-game' value=<?php echo session("GAME.ID"); ?>>
+                        <button type='submit' class='leave-button start-button' name='start-game' value=<?php echo session("GAME.ID"); ?>>Start Game</button>
+                        <button type='submit' class='leave-button' name='leave' value='<?php echo session("GAME.ID"); ?>'>Leave Game</button>
                     </form>
                 </div>
             </div>
@@ -241,9 +232,9 @@ function showGameMain($get) {
             }); 
             </script>
         <?php }
-    } else if ($_SESSION["GAME_RUN"] == 1) {
+    } else if (session("GAME.RUN") == 1) {
         // Game is running
-        if ($_SESSION["PLAY_USER"]["turn"] != $_SESSION["GAME_TURN"]) {
+        if (session("PLAYER.TURN") != session("GAME.TURN")) {
             ?>
             <div class='waiting-turn'>
                 <div>
@@ -253,14 +244,9 @@ function showGameMain($get) {
                     </div>
                     <form action='<?php route('storyPost') ?>' method='POST' id='wait-turn-form'>
                         <?php echo csrf_field(); ?>
-                        <input type='hidden' name='wait-turn' value=<?php echo $_SESSION["GAME_ID"]; ?>>
-                        <input type="hidden" name='story-id' value=<?php echo $_SESSION["STORY_ID"]; ?>>
-                        <input type='hidden' name='wait-player' value='<?php echo $_SESSION["PLAY_USER"]["username"]; ?>'>
-                        <button type='submit' class='leave-button' name='leave[user]' value='<?php echo $_SESSION["PLAY_USER"]["username"]; ?>'>Leave Game</button>
-                        <input type='hidden' name='leave[id]' value=<?php echo $_SESSION["GAME_ID"]; ?>>
-                        <?php if ($_SESSION["PLAY_USER"]["host"]) {
-                            echo "<input type='hidden' name='leave[host]' value=true>";
-                        } ?>  
+                        <input type='hidden' name='wait-turn' value=<?php echo session("GAME.ID"); ?>>
+                        <!-- <input type="hidden" name='story-id' value=<?php //echo session("STORY.ID"); ?>> -->
+                        <button type='submit' class='leave-button' name='leave' value='<?php echo session("GAME.ID"); ?>'>Leave Game</button>
                     </form>
                 </div>
             </div>
@@ -296,9 +282,8 @@ function showGameMain($get) {
         <?php
         } else {
             // Active game, player's turn
-            $text = DB::select("SELECT SUBSTRING_INDEX((SELECT STORY_TEXT FROM STORY WHERE GAME_ID = ?), ' ', -?) AS STORY_TEXT; ", [$_SESSION["GAME_ID"], $_SESSION["STORY_TURN_LIMIT"]]);
-
-            $text = json_decode(json_encode($text, true), true); 
+            $text = DB::select("SELECT SUBSTRING_INDEX((SELECT STORY_TEXT FROM STORY WHERE GAME_ID = ?), ' ', -?) AS STORY_TEXT; ", [session("GAME.ID"), session("STORY.TURN_LIMIT")]);
+            $text = json_decode(json_encode($text, true), true)[0];
 
             // Setting up a random placeholder (suggestion text)
             $json = json_decode(file_get_contents("json/placeholder.json"), true); 
@@ -308,30 +293,22 @@ function showGameMain($get) {
             $placeholder = $json["placeholder"]["first"][rand(0, $range1)] . $json["placeholder"]["second"][rand(0, $range2)]; 
             ?>
             <div class='story-says'>
-                <p><strong>The story says: </strong><?php echo $text[0]["STORY_TEXT"]; ?></p>
+                <p><strong>The story says: </strong><?php echo $text["STORY_TEXT"]; ?></p>
                 <form action="<?php route('storyPost') ?>" method='POST'>
                     <?php echo csrf_field(); ?>
                     <textarea name='new-text'><?php echo $placeholder; ?></textarea>
-                    <button type='submit' name='game-id' value=<?php echo $_SESSION["GAME_ID"]; ?>>Submit</button>
+                    <button type='submit' name='game-id' value=<?php echo session("GAME.ID"); ?>>Submit</button>
                     <button type='submit' name='redo' value=true>Redo</button>
-                    <button type='submit' class='leave-button' name='leave[user]' value='<?php echo $_SESSION["PLAY_USER"]["username"]; ?>'>Leave Game</button>
-                    <input type='hidden' name='leave[id]' value=<?php echo $_SESSION["GAME_ID"]; ?>>
-                    <?php if ($_SESSION["PLAY_USER"]["host"]) {
-                        echo "<input type='hidden' name='leave[host]' value=true>";
-                    } ?>
-                    <input type="hidden" name='story-id' value=<?php echo $_SESSION["STORY_ID"]; ?>>
-                    <input type='hidden' name='turn-limit' value=<?php echo $_SESSION["STORY_TURN_LIMIT"]; ?>>
-                    <input type='hidden' name='turn-range' value=<?php echo $_SESSION["GAME_TURN_RANGE"]; ?>>
-                    <input type='hidden' name='player-turn' value='<?php echo $_SESSION["PLAY_USER"]["turn"]; ?>'>
+                    <button type='submit' class='leave-button' name='leave' value='<?php echo session("GAME.ID") ?>'>Leave Game</button>
                 </form>
             </div>
         <?php }
-    } else if (!$get && $_SESSION["GAME_KEY"] == "WODAHS") { 
+    } else if (!isset($readText) && session("GAME.KEY") == env("ADMIN_KEY")) { 
         // Admin view
-        $completed = DB::select("SELECT STORY_ID, STORY_TITLE, LEFT(STORY_TEXT, 70) AS STORY_TEXT, STORY_TURN_LIMIT FROM STORY WHERE GAME_ID = 1 ORDER BY STORY_ID DESC"); 
+        $completed = DB::select("SELECT STORY_ID, LEFT(STORY_TITLE, 30) AS STORY_TITLE, LEFT(STORY_TEXT, 90) AS STORY_TEXT, STORY_TURN_LIMIT FROM STORY WHERE GAME_ID = 1 ORDER BY STORY_ID DESC"); 
         $completed = json_decode(json_encode($completed, true), true);
 
-        $active = DB::select("SELECT STORY_ID, STORY_TITLE, LEFT(STORY_TEXT, 70) AS STORY_TEXT, STORY_TURN_LIMIT FROM STORY WHERE GAME_ID != 1 ORDER BY STORY_ID DESC"); 
+        $active = DB::select("SELECT STORY_ID, LEFT(STORY_TITLE, 30) AS STORY_TITLE, LEFT(STORY_TEXT, 90) AS STORY_TEXT, STORY_TURN_LIMIT FROM STORY WHERE GAME_ID != 1 ORDER BY STORY_ID DESC"); 
         $active = json_decode(json_encode($active, true), true);
         ?>
         <div class='admin-stories'>
@@ -347,7 +324,7 @@ function showGameMain($get) {
                         <p class='limit'><?php echo $c["STORY_TURN_LIMIT"]; ?></p>
                         <p class='text'><?php echo $c["STORY_TEXT"]; ?></p>
                         <form class='read-more' action="<?php route('storyGet') ?>" method="GET">
-                            <button type='submit' name='admin-read' value=<?php echo $c["STORY_ID"]; ?>>READ</button>
+                            <button type='submit' name='read-more' value=<?php echo $c["STORY_ID"]; ?>>READ</button>
                         </form>
                     </div>
                 <?php } ?>
@@ -364,7 +341,7 @@ function showGameMain($get) {
                         <p class='limit'><?php echo $a["STORY_TURN_LIMIT"]; ?></p>
                         <p class='text'><?php echo $a["STORY_TEXT"]; ?></p>
                         <form class='read-more' action="<?php route('storyGet') ?>" method="GET">
-                            <button type='submit' name='admin-read' value=<?php echo $a["STORY_ID"]; ?>>READ</button>
+                            <button type='submit' name='read-more' value=<?php echo $a["STORY_ID"]; ?>>READ</button>
                         </form>
                     </div>
                 <?php } ?>
@@ -372,14 +349,13 @@ function showGameMain($get) {
             <div class='story-says admin'>
                 <form action="<?php route('storyPost') ?>" method='POST'>
                     <?php echo csrf_field(); ?>
-                    <button type='submit' class='leave-button' name='leave[user]' value='<?php echo $_SESSION["PLAY_USER"]["username"]; ?>'>Leave Admin View</button>
-                    <input type='hidden' name='leave[id]' value=<?php echo $_SESSION["GAME_ID"]; ?>>
+                    <button type='submit' class='leave-button' name='leave' value='<?php echo session("GAME.ID"); ?>'>Leave Admin View</button>
                 </form>
             </div>
         </div>
-    <?php } else if ($get && $_SESSION["GAME_ID"] == 1) { ?>
+    <?php } else if (isset($readText) && session("GAME.ID") == 1) { ?>
         <div class='admin-view read'>
-            <p><?php echo $get["STORY_TEXT"]; ?></p>
+            <p><?php echo $readText; //Intelliphense is mad but I think it'll work ?></p>
         </div>
     <?php }
 }

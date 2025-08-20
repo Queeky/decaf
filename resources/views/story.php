@@ -1,75 +1,6 @@
 <?php 
 use Illuminate\Support\Facades\Log;
-if (!isset($_SESSION)) session_start(); 
-
-$get = null; 
-if (isset($adminRead)) {
-    $get = $adminRead;
-    $_SESSION["STORY_TITLE"] = $get["STORY_TITLE"]; 
-}  
-
-// If game exists, sets SESSION
-if (isset($avail)) {
-    $avail = $avail[0]; 
-
-    $_SESSION["GAME_ID"] = $avail["GAME_ID"]; 
-    $_SESSION["GAME_KEY"] = $avail["GAME_KEY"]; 
-    $_SESSION["GAME_PASS"] = isset($avail["GAME_PASS"]) ? $avail["GAME_PASS"] : " "; 
-    $_SESSION["GAME_RUN"] = $avail["GAME_RUN"]; 
-    $_SESSION["GAME_TURN"] = $avail["GAME_TURN"]; 
-    $_SESSION["STORY_ID"] = $avail["STORY_ID"]; 
-    $_SESSION["STORY_TITLE"] = $avail["STORY_TITLE"]; 
-    $_SESSION["STORY_TURN_LIMIT"] = $avail["STORY_TURN_LIMIT"]; 
-    $_SESSION["PLAY_USER"] = ["username" => $joinUser, "turn" => 0, "host" => false]; 
-
-    DB::insert("INSERT INTO PLAYER (PLAY_USER, GAME_ID, PLAY_SESSION) VALUES (?, ?, ?)", ["{$joinUser}", $_SESSION["GAME_ID"], "{$_SESSION["SESSION_ID"]}"]); 
-}
-
-if (isset($gameId)) {
-    $_SESSION["GAME_ID"] = $gameId[0]["@gameId"]; 
-    $_SESSION["GAME_KEY"] = ($_POST["make-public"] == "n") ? $_POST["host-key"] : "RANDOM"; 
-    $_SESSION["GAME_PASS"] = ($_POST["make-public"] == "n") ? $_POST["host-pass"] : " "; 
-    $_SESSION["GAME_RUN"] = 0; 
-    $_SESSION["GAME_TURN"] = 1; 
-    $_SESSION["STORY_ID"] = $gameId[0]["@storyId"];
-    $_SESSION["STORY_TITLE"] = $_POST["host-title"]; 
-    $_SESSION["STORY_TURN_LIMIT"] = $_POST["host-limit"]; 
-    $_SESSION["PLAY_USER"] = ["username" => $_POST["host-user"], "turn" => 0, "host" => true]; 
-
-    Log::info("Story created! --> GAME #" . $_SESSION["GAME_ID"]); 
-} else if (isset($turns)) {
-    // Better way to index this without having to loop until getting to specific row?
-    // Index directly?
-    foreach ($turns as $turn) {
-        if (($turn["PLAY_USER"] == $_SESSION["PLAY_USER"]["username"]) && ($turn["PLAY_SESSION"] == $_SESSION["SESSION_ID"])) {
-            $_SESSION["PLAY_USER"]["turn"] = $turn["PLAY_TURN"]; 
-            break; 
-        }
-    }
-
-    $_SESSION["GAME_RUN"] = 1; 
-    $_SESSION["GAME_TURN_RANGE"] = $turns[count($turns) - 1]["PLAY_TURN"]; 
-}
-
-// This cannot be in the includes folder! Will not run otherwise!
-if (isset($gameTurn)) {
-    $_SESSION["GAME_TURN"] = $gameTurn; 
-} 
-
-if (isset($newTurn)) {
-    $_SESSION["GAME_TURN"] = $newTurn; 
-}
-
-if (isset($storyComplete)) {
-    if ($storyComplete) $_SESSION["STORY_COMPLETE"] = $storyComplete; 
-
-    unset($_GET["join"]); 
-    unset($_SESSION["GAME_ID"], $_SESSION["GAME_KEY"], $_SESSION["GAME_PASS"], $_SESSION["GAME_RUN"], $_SESSION["GAME_TURN"], $_SESSION["STORY_TITLE"], $_SESSION["STORY_TURN_LIMIT"]); 
-}
-
-if (isset($unset2)) {
-    unset($_SESSION["STORY_COMPLETE"], $_SESSION["PLAY_USER"], $_SESSION["STORY_ID"]); 
-}
+// var_dump(session("GAME")); 
 
 if (isset($err)) {
     switch ($err["errCode"]) {
@@ -99,9 +30,9 @@ if (isset($err)) {
     </head>
     <body id="body">
         <?php 
-        include_once("includes/headNavFoot.inc.php"); 
-        include_once("includes/bars.inc.php"); 
-        include_once("includes/story.blade.inc.php"); 
+        include_once("includes/headNavFoot.php"); 
+        include_once("includes/bars.php"); 
+        include_once("includes/story.blade.php");  
 
         showHead(); 
         showNav(); 
@@ -118,28 +49,28 @@ if (isset($err)) {
                 ?>
                 <div class='upper-content' style='border-bottom: 0.2vw solid var(--blue1); padding: 0;'>
                     <?php
-                    !((isset($_SESSION["GAME_KEY"])) && (isset($_SESSION["GAME_PASS"]))) ? showJoinOptions() : showGameInfo(); 
+                    !(session("GAME.KEY") && session("GAME.PASS")) ? showJoinOptions() : showGameInfo(); 
                     ?>
                 </div>
                 <div class='inner-content story-content'>
                     <?php 
-                        if ((isset($_SESSION["GAME_KEY"])) && (isset($_SESSION["GAME_PASS"]))) {
-                            showGameMain($get); 
+                        if (session("GAME.KEY") && session("GAME.PASS")) {
+                            showGameMain(); 
                         } else if (isset($_GET["join"])) {
                             showJoinForm(); 
-                        } else if (isset($_SESSION["STORY_COMPLETE"])) { ?>
+                        } else if (session("STORY_COMPLETE")) { ?>
                             <div class='story-complete'>
                                 <div>
-                                    <h3><?php echo $_SESSION["STORY_COMPLETE"]["STORY_TITLE"]; ?></h3>
+                                    <h3><?php echo session("STORY_COMPLETE.STORY_TITLE"); ?></h3>
                                     <div class='wrapper'>
-                                        <p><?php echo $_SESSION["STORY_COMPLETE"]["STORY_TEXT"]; ?></p>
+                                        <p><?php echo session("STORY_COMPLETE.STORY_TEXT"); ?></p>
                                         <form action="<?php route('storyPost') ?>" method="POST">
                                         <?php 
                                         echo csrf_field(); 
                                         ?>
-                                            <?php if ($_SESSION["PLAY_USER"]["host"]) { ?>
-                                                    <button type='submit' name='delete-story' value=<?php echo $_SESSION["STORY_COMPLETE"]["STORY_ID"]; ?>>Delete</button>
-                                                    <button type='submit' name='publish-story' value=<?php echo $_SESSION["STORY_COMPLETE"]["STORY_ID"]; ?>>Publish</button>
+                                            <?php if (session("PLAYER.HOST")) { ?>
+                                                    <button type='submit' name='delete-story' value=<?php echo session("STORY_COMPLETE.STORY_ID"); ?>>Delete</button>
+                                                    <button type='submit' name='publish-story' value=<?php echo session("STORY_COMPLETE.STORY_ID"); ?>>Publish</button>
                                                     <p>Want your story on the home page? <strong>Click "Publish" to show off your masterpiece.</strong></p>
                                             <?php } else { ?>
                                                 <!-- <a href="story.php">Leave</a> -->

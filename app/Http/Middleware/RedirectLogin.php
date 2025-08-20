@@ -14,9 +14,7 @@ class RedirectLogin {
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
     public function handle(Request $request, Closure $next): Response {
-        $login = $request->session()->get("LOGIN_SUCCESS"); 
-
-        if (!isset($login)) return redirect()->route('login'); 
+        if (!session("LOGIN_SUCCESS")) return redirect()->route('login'); 
         return $next($request);
     }
 }

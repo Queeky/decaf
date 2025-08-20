@@ -1,0 +1,65 @@
+<?php
+function showHead() {
+    if (!session("SESSION_ID")) session(["SESSION_ID" => session()->getId()]); 
+    ?>
+    <header>
+        <img src='images/logoBlue.png'>
+        <div class='header-triangle'></div>
+        <form action='<?php echo route('index'); ?>' method='GET'>
+            <input class='search-bar' type='text'>
+            <a type='submit'><img src='images/search-icon.png'></a>
+        </form>
+    </header>
+    <?php
+}
+
+function showNav() {
+    ?>
+    <nav>
+        <ul>
+            <li><a href='<?php echo route('index'); ?>'>HOME</a></li>
+            <li><a href='<?php echo route('about'); ?>'>ABOUT</a></li>
+            <!-- <li><a href='index.php'>MADLIBS</a></li> -->
+            <li><a href='<?php echo route('storyGet'); ?>'>BLUE RASPBERRY</a></li>
+        </ul>
+    </nav>
+    <?php
+}
+
+function showFoot() {
+    ?>
+    <footer>
+        <div id='bug-form'>
+            <p>
+                <strong>Bugs? In <i>my</i> website? It's more likely than you think!</strong><br>
+                Hey beta testers -- if you find the site behaving strangely or flat out breaking, please let me know! In the form below, describe the issue and any steps I may need to replicate the problem. Muchas gracias. 
+            </p>
+            <form action="#" method="GET">
+                <input type="hidden" name='READ' value='form doesnt work rn lol whoopsie'>
+                <div>
+                    <label for="bug-name">Name (can be fake):</label>
+                    <input type="text" name='bug-name'>
+                </div>
+                <div class='bug-msg'>
+                    <!-- Remove null values when I get this working! -->
+                    <label for="bug-msg">Your message:</label>
+                    <textarea name="bug-msg" id="bug-msg" placeholder="Describe bug here"></textarea>
+                </div>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+        <div id='icons'>
+        Icons made by <a href='https://www.flaticon.com/authors/creatype' title='Creatype'> Creatype </a> from <a href='https://www.flaticon.com/' title='Flaticon'>www.flaticon.com</a>
+        </div>
+    </footer>
+    <?php
+}
+
+function showError($message) {
+    ?>
+    <div class='error-message'>
+        <p><?php echo $message; ?></p>
+    </div>
+    <?php
+}
+?>
