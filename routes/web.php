@@ -5,6 +5,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\StoryPostController;
 use App\Http\Controllers\StoryGetController;
+use App\Http\Controllers\IndexController;
 use App\Http\Controllers\AjaxController;
 use Illuminate\Support\Facades\Log;
 
@@ -30,5 +31,6 @@ Route::middleware([RedirectLogin::class])->group(function() {
     Route::view('/about', 'about')->name('about'); 
     Route::post('/story', [StoryPostController::class, 'main'])->name("storyPost"); 
     Route::get('/story', [StoryGetController::class, 'main'])->name("storyGet"); 
-    Route::view('/{slug?}', 'index')->name('index'); 
+    Route::get('/{slug?}', [IndexController::class, 'get'])->name("index"); 
+    // Route::view('/{slug?}', 'index')->name('index'); 
 }); 

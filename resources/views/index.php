@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\Log;
 
         showHead(); 
         showNav(); 
+
+        $text = isset($readText) ? $readText : null; 
         ?>
         <div class='full-page'>
             <?php showLeft(); ?>
@@ -31,9 +33,9 @@ use Illuminate\Support\Facades\Log;
                 <div class='upper-content'>
                     <?php showSplash(); ?>
                 </div>
-                <div class='inner-content'>
+                <div class='inner-content index'>
                     <?php 
-                    showMain();
+                    showMain($text);
                     showSide(); 
                     ?>
                 </div>

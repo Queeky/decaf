@@ -6,41 +6,58 @@ function showSplash() {
     echo str_replace("[LINK]", "<a target='_blank' href='{$json["splash"]["url"][$index]}'>{$json["splash"]["hyperlink-text"][$index]}</a>", "<p class='splash'>{$json["splash"]["full-text"][$index]}</p>"); 
 }
 
-function showMain() {
-    // Make these two queries one? Left or right join?
-    $featured = DB::select("SELECT STORY_ID, LEFT(STORY_TITLE, 70) AS STORY_TITLE, LEFT(STORY_TEXT, 210) AS STORY_TEXT FROM STORY WHERE STORY_PUBLISH = 1 ORDER BY RAND() LIMIT 1"); 
-    $stories = DB::select("SELECT STORY_ID, LEFT(STORY_TITLE, 70) AS STORY_TITLE, LEFT(STORY_TEXT, 210) AS STORY_TEXT FROM STORY WHERE STORY_PUBLISH = 1 ORDER BY STORY_ID DESC"); 
-
-    $featured = json_decode(json_encode($featured, true), true);
-    $stories = json_decode(json_encode($stories, true), true);
+function showMain($text) {
     ?>
     <div class='main'>
-        <div class='featured'>
-            <?php if ($featured) { ?>
-                <h3>FEATURED STORY | <?php echo $featured[0]["STORY_TITLE"]; ?></h3>
-                <p><?php echo $featured[0]["STORY_TEXT"]; ?></p>
-                <form class='read-more' action="<?php route('storyGet') ?>" method="GET">
-                    <button type='submit' name='read-more' value=<?php echo $featured[0]["STORY_ID"]; ?>>READ</button>
-                </form>
-            <?php } else { ?>
-                <h3>FEATURED STORY | NONE FOUND</h3>
-                <p>No stories are currently published.</p>
-            <?php } ?>
-        </div>
-        <div>
-            <h3>ALL STORIES (NEWEST TO OLDEST)</h3>
-            <div class='all-stories'>
-                <?php foreach ($stories as $story) { ?>
-                    <div class='story-item'>
-                        <p class='title'><?php echo $story["STORY_TITLE"]; ?></p>
-                        <p class='text'><?php echo $story["STORY_TEXT"]; ?></p>
-                        <form class='read-more' action="<?php route('storyGet') ?>" method="GET">
-                            <button type='submit' name='read-more' value=<?php echo $story["STORY_ID"]; ?>>READ</button>
-                        </form>
-                    </div>
+        <?php if (!$text) {
+            // Make these two queries one? Left or right join?
+            $featured = DB::select("SELECT STORY_ID, LEFT(STORY_TITLE, 70) AS STORY_TITLE, LEFT(STORY_TEXT, 210) AS STORY_TEXT FROM STORY WHERE STORY_PUBLISH = 1 ORDER BY RAND() LIMIT 1"); 
+            $stories = DB::select("SELECT STORY_ID, LEFT(STORY_TITLE, 70) AS STORY_TITLE, LEFT(STORY_TEXT, 210) AS STORY_TEXT FROM STORY WHERE STORY_PUBLISH = 1 ORDER BY STORY_ID DESC"); 
+
+            $featured = json_decode(json_encode($featured, true), true);
+            $stories = json_decode(json_encode($stories, true), true); ?>
+
+            <div class='featured'>
+                <?php if ($featured) { ?>
+                    <h3>FEATURED STORY | <?php echo $featured[0]["STORY_TITLE"]; ?></h3>
+                    <p><?php echo $featured[0]["STORY_TEXT"]; ?></p>
+                    <form class='read-more index-read' action="<?php route('index') ?>" method="GET">
+                        <button type='submit' name='read-more-story' value=<?php echo $featured[0]["STORY_ID"]; ?>>READ MORE</button>
+                    </form>
+                <?php } else { ?>
+                    <h3>FEATURED STORY | NONE FOUND</h3>
+                    <p>No stories are currently published.</p>
                 <?php } ?>
             </div>
-        </div>
+            <div>
+                <h3>ALL STORIES (NEWEST TO OLDEST)</h3>
+                <div class='all-stories'>
+                    <?php foreach ($stories as $story) { ?>
+                        <div class='story-item'>
+                            <p class='title'><?php echo $story["STORY_TITLE"]; ?></p>
+                            <p class='text'><?php echo $story["STORY_TEXT"]; ?></p>
+                            <form class='read-more index-read' action="<?php route('index') ?>" method="GET">
+                                <button type='submit' name='read-more-story' value=<?php echo $story["STORY_ID"]; ?>>READ MORE</button>
+                            </form>
+                        </div>
+                    <?php } ?>
+                </div>
+            </div> 
+        <?php } else if ($text) { ?>
+            <style>
+                .inner-content.index {
+                    background-color: var(--blue1); 
+                }
+            </style>
+            <div class='upper-content' style='border-bottom: 0.2vw solid var(--blue1); padding: 0;'>
+                <div class='game-info'>
+                    <h3>Story: <?php echo session("STORY.TITLE"); ?></h3>
+                </div>
+            </div>
+            <div class='admin-view read'>
+                <p><?php echo $text; ?></p>
+            </div>
+        <?php } ?>
     </div>
     <?php
 }

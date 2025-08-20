@@ -12,7 +12,6 @@ REFACTOR TODO
 *** If script saves all story text when doing its select every round, then it doesn't have to execute another query at the end when collecting the finished story. Something to think about.
 
 TODO:
-- Add read more to home page stories
 - WRITE UNIT TESTS & add more robust error messages
 - ADD FORM report bugs to my gmail
 ^^^ Designed, now just need to add functionality -- send to gmail

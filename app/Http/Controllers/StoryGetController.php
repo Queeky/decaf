@@ -16,7 +16,7 @@ class StoryGetController extends Controller {
             $readData = DB::select("SELECT STORY_TITLE, STORY_TEXT FROM STORY WHERE STORY_ID = ? LIMIT 1", [$readId]); 
             $readData = json_decode(json_encode($readData, true), true)[0];
 
-            session(["STORY_TITLE" => $readData["STORY_TITLE"]]); 
+            session(["STORY.TITLE" => $readData["STORY_TITLE"]]); 
             Log::info("User is reading STORY #" . $readId); // Testing only
 
             return view('story')->with("readText", $readData["STORY_TEXT"]); 
