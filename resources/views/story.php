@@ -23,7 +23,7 @@ if (isset($err)) {
     <head>
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Homepage</title>
+        <title>Run-Away Story</title>
         <link rel="stylesheet" href="css/style.css">
         <meta name="csrf-token" content="<?php echo csrf_token(); ?>">
         <script type="text/javascript" src="js/jquery-3.7.1.min.js"></script>
@@ -83,7 +83,7 @@ if (isset($err)) {
                         <?php } else { ?>
                             <div class='game-instruct'>
                                 <p>
-                                    <strong>First time playing?</strong><br><br>
+                                    <strong>First time playing Run-Away Story?</strong><br><br>
                                     The goal is for you and your team to collaborate on a story. The catch is that, each turn, you can only see the story's final few words and must add more based on the limited amount you know. <br><br>
                                     Freewrite with friends (or strangers), build a cohesive storyline, or create something really stupid. 
                                 </p>

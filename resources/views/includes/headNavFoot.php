@@ -20,7 +20,7 @@ function showNav() {
             <li><a href='<?php echo route('index'); ?>'>HOME</a></li>
             <li><a href='<?php echo route('about'); ?>'>ABOUT</a></li>
             <!-- <li><a href='index.php'>MADLIBS</a></li> -->
-            <li><a href='<?php echo route('storyGet'); ?>'>BLUE RASPBERRY</a></li>
+            <li><a href='<?php echo route('storyGet'); ?>'>RUN-AWAY</a></li>
         </ul>
     </nav>
     <?php

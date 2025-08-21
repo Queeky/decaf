@@ -4,12 +4,9 @@ will be deleted and STORY will have the default GAME_ID instead
 
 
 TODO to rule them all:
-- ** Write function for ajax calls so they aren't repeated
-- ** Make censor file
+- ** Make censor file (or plugin, look into later)
 - WRITE UNIT TESTS & add more robust error messages
 - Eventually add a delete confirm message (for admin)
-- Have try catch instead of another query to check room key validity (UserController 250)
-- Make new controller for password management
 
 - Add notifs to admin 
 - Maybe for player login, save query info for key until new key is used

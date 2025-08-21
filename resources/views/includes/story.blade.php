@@ -159,34 +159,12 @@ function showGameMain() {
                 </div>
             </div>
             <script>
-            function poll() {
-                $.ajax({
-                    type: 'POST',
-                    url: 'story',
-                    dataType: 'JSON',
-                    data: $('#wait-game-form').serialize(),
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function(response) {
-                        document.getElementById("body").innerHTML = response.html; 
-                        console.log("Waiting for game to begin");
-
-                        // Temp solution maybe
-                        if (!document.getElementById("wait-game-form")) {
-                            location.replace("/story"); 
-                        }
-                    },
-                    error: function () {
-                        console.log("You goofed up somewhere, good luck finding where"); 
-                    }
-                });
-            }
-
-            $(document).ready(function () {
-                setInterval(poll, 5000);
-            }); 
+                var url = "story"; 
+                var formId = "wait-game-form"; 
+                var successMsg = "Waiting for game to begin"; 
+                var errorMsg = "wait-game polling has failed"; 
             </script>
+            <script type="text/javascript" src="js/game-poll.js"></script>
         <?php } else { ?>
             <div class='waiting-turn'>
                 <div>
@@ -203,34 +181,12 @@ function showGameMain() {
                 </div>
             </div>
             <script>
-            function poll() {
-                $.ajax({
-                    type: 'POST',
-                    url: 'story',
-                    dataType: 'JSON',
-                    data: $('#wait-host-form').serialize(),
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function(response) {
-                        document.getElementById("body").innerHTML = response.html; 
-                        console.log("Waiting for game to begin");
-
-                        // Temp solution maybe
-                        if (!document.getElementById("wait-host-form")) {
-                            location.replace("/story"); 
-                        }
-                    },
-                    error: function () {
-                        console.log("!! You goofed up somewhere, good luck finding where"); 
-                    }
-                });
-            }
-
-            $(document).ready(function () {
-                setInterval(poll, 5000);
-            }); 
+                var url = "story"; 
+                var formId = "wait-host-form"; 
+                var successMsg = "Waiting for you to start the game"; 
+                var errorMsg = "wait-host polling has failed"; 
             </script>
+            <script type="text/javascript" src="js/game-poll.js"></script>
         <?php }
     } else if (session("GAME.RUN") == 1) {
         // Game is running
@@ -245,40 +201,17 @@ function showGameMain() {
                     <form action='<?php route('storyPost') ?>' method='POST' id='wait-turn-form'>
                         <?php echo csrf_field(); ?>
                         <input type='hidden' name='wait-turn' value=<?php echo session("GAME.ID"); ?>>
-                        <!-- <input type="hidden" name='story-id' value=<?php //echo session("STORY.ID"); ?>> -->
                         <button type='submit' class='leave-button' name='leave' value='<?php echo session("GAME.ID"); ?>'>Leave Game</button>
                     </form>
                 </div>
             </div>
             <script>
-            function poll() {
-                $.ajax({
-                    type: 'POST',
-                    url: 'story',
-                    dataType: 'JSON',
-                    data: $('#wait-turn-form').serialize(),
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function(response) {
-                        document.getElementById("body").innerHTML = response.html; 
-                        console.log("Waiting for player's turn"); 
-
-                        // Temp solution maybe
-                        if (!document.getElementById("wait-turn-form")) {
-                            location.replace("/story"); 
-                        }
-                    },
-                    error: function () {
-                        console.log("You goofed up somewhere, good luck finding where"); 
-                    }
-                });
-            }
-
-            $(document).ready(function () {
-                setInterval(poll, 5000);
-            }); 
-        </script>
+                var url = "story"; 
+                var formId = "wait-turn-form"; 
+                var successMsg = "Waiting for player's turn"; 
+                var errorMsg = "wait-turn polling has failed"; 
+            </script>
+            <script type="text/javascript" src="js/game-poll.js"></script>
         <?php
         } else {
             // Active game, player's turn
