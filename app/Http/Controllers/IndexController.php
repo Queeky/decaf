@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\BugForm; 
 use DB; 
 
 class IndexController extends Controller {
@@ -22,5 +24,17 @@ class IndexController extends Controller {
         }
 
         return view('index'); 
+    }
+
+    function post(Request $request) {
+        $data = $request->post(); 
+        
+        if (!empty($data["website"]) || !empty($data["email"])) die(); // Quits if detects spam
+
+        if (isset($data["bug-name"]) && isset($data["bug-msg"])) {
+            Mail::to("ieatbugs.decaf@gmail.com", "Queeky")->send(new BugForm($data["bug-name"], $data["bug-msg"])); 
+        }
+
+        return back(); 
     }
 }

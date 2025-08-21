@@ -32,5 +32,6 @@ Route::middleware([RedirectLogin::class])->group(function() {
     Route::post('/story', [StoryPostController::class, 'main'])->name("storyPost"); 
     Route::get('/story', [StoryGetController::class, 'main'])->name("storyGet"); 
     Route::get('/{slug?}', [IndexController::class, 'get'])->name("index"); 
+    Route::post('/{slug?}', [IndexController::class, 'post'])->name("indexPost");
     // Route::view('/{slug?}', 'index')->name('index'); 
 }); 

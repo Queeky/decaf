@@ -185,6 +185,10 @@ footer #icons, footer #icons a {
     margin-bottom: 1.5%;
 }
 
+#bug-form #website, #bug-form #email {
+    display: none; 
+}
+
 #bug-form > p {
     margin-bottom: 1.5%; 
 }
@@ -422,6 +426,10 @@ footer #icons, footer #icons a {
 
 .completed button:hover, .active form.read-more button:hover {
     text-decoration: underline;
+}
+
+form.read-more.index-read button {
+    font-size: 1vw; 
 }
 
 .completed > div > *, .active > div > * {

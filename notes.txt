@@ -1,30 +1,15 @@
-DECAF NOTES: 
-
-WHERE YOU LEFT OFF ***
-After refactor, make site responsive (not necessary mobile friendly YET, just better adaption to different laptop screens)
 
 CAN'T REPLACE STORY_ID with GAME_ID because when building storyComplete the GAME
 will be deleted and STORY will have the default GAME_ID instead
 
 
-REFACTOR TODO
-- Get debugging form working
-*** If script saves all story text when doing its select every round, then it doesn't have to execute another query at the end when collecting the finished story. Something to think about.
-
-TODO:
+TODO to rule them all:
+- ** Write function for ajax calls so they aren't repeated
+- ** Make censor file
 - WRITE UNIT TESTS & add more robust error messages
-- ADD FORM report bugs to my gmail
-^^^ Designed, now just need to add functionality -- send to gmail
-    Currently submit button crashes site cause no csrf
-    Prevented crashing, but still no worky
-
 - Eventually add a delete confirm message (for admin)
 - Have try catch instead of another query to check room key validity (UserController 250)
 - Make new controller for password management
-
-RESEARCH whether or not malicious users can edit $_SESSION. 
-I DON'T CARE whether or not they can SEE it, just editing. 
-(Actually maybe seeing would be bad if password returns unencrypted.)
 
 - Add notifs to admin 
 - Maybe for player login, save query info for key until new key is used
@@ -35,12 +20,7 @@ WHEN DECAF GOES LIVE
 - Gather stats on which page users are at the most, then reorganize if statements 
     to reflect this
 
-Can I make different web routes for POST on the same page? Just for better organization
 
-NOTE: Added a procedure!
-NOTE: !isset($data["leave"]["user"]) checks whether or not user hit the leave button, 
-    because other leave is passed regardless, but ["leave"]["user"] only submits when 
-    hitting the button
 NOTE: Writing collab mode! Authors can see the entire story and 
     write as much as they want; whenever they're done, they end their 
     turn and pass it onto the next person / "Writer's Circle" 
@@ -48,21 +28,10 @@ NOTE: Writing collab mode! Authors can see the entire story and
 NOTE: left bar will be a button grid wall that randomly spawns different 
 puzzles, like correctly putting together a poem or something. 
 Only a 10% chance of seeing the puzzle, otherwise a carbonation gif. 
-NOTE: Wall of Shame. (Your parents would be disappointed.)
-        Wall of Sham. (This story is a ripoff of another story.)
-        Wall of Fowl Language. (You're a gizard, Harry!)
 
-REMEMBER if you create a fake game from phpMyAdmin, make a fake story too
-or you won't be able to join anything!
-
-ADMIN CONTROLS can be accessed by logging into a PRIVATE GAME 
-(this game also stores all previous games)
 
 SPEND A DAY writing error messages -- because they ARE NECESSARY! Your code 
 WILL BREAK
-
-
-
 
 PHPUNIT TESTS! YOU NEED TO MAKE THEM! QUINN! DO IT! PLEASE!
 - overflow for game info (make really long room keys and passwords, usernames, etc)

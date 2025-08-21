@@ -34,8 +34,10 @@ function showFoot() {
                 <strong>Bugs? In <i>my</i> website? It's more likely than you think!</strong><br>
                 Hey beta testers -- if you find the site behaving strangely or flat out breaking, please let me know! In the form below, describe the issue and any steps I may need to replicate the problem. Muchas gracias. 
             </p>
-            <form action="#" method="GET">
-                <input type="hidden" name='READ' value='form doesnt work rn lol whoopsie'>
+            <form action="<?php route("indexPost"); ?>" method="POST">
+                <?php echo csrf_field(); ?>
+                <input type="text" id="website" name="website">
+                <input type="email" id="email" name="email">
                 <div>
                     <label for="bug-name">Name (can be fake):</label>
                     <input type="text" name='bug-name'>
