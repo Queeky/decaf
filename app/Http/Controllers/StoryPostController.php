@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\QueryException; 
 use DB; 
 
 class StoryPostController extends Controller {
@@ -127,9 +128,7 @@ class StoryPostController extends Controller {
                 $checkPass = DB::select("SELECT GAME.GAME_ID, GAME.GAME_KEY, GAME.GAME_PASS, GAME.GAME_RUN, GAME.GAME_TURN, STORY.STORY_ID, STORY.STORY_TITLE, STORY.STORY_TEXT, STORY.STORY_TURN_LIMIT FROM GAME JOIN STORY ON GAME.GAME_ID = STORY.GAME_ID WHERE GAME_KEY = ? LIMIT 1", [$data["join-key"]]);
                 $checkPass = json_decode(json_encode($checkPass, true), true);
 
-                if ($checkPass) {
-                    $avail = Hash::check($data["join-pass"], $checkPass[0]["GAME_PASS"]) ? $checkPass : null; 
-                } 
+                if ($checkPass) $avail = Hash::check($data["join-pass"], $checkPass[0]["GAME_PASS"]) ? $checkPass : null; 
             } else if (isset($data["join-user"]) && isset($data["join-public"])) {
                 $avail = DB::select("SELECT GAME.GAME_ID, GAME.GAME_KEY, GAME.GAME_PASS, GAME.GAME_RUN, GAME.GAME_TURN, STORY.STORY_ID, STORY.STORY_TITLE, STORY.STORY_TEXT, STORY.STORY_TURN_LIMIT FROM GAME JOIN STORY ON GAME.GAME_ID = STORY.GAME_ID WHERE GAME_KEY = ? AND GAME_PASS IS NULL AND GAME_RUN = 0 ORDER BY RAND() LIMIT 1", ["RANDOM"]);
 
@@ -226,18 +225,7 @@ class StoryPostController extends Controller {
                     $err = ["errCode" => "JH", "errMsg" => "Private games must have a password."]; 
                 } else if ($data["host-limit"] < 1) {
                     $err = ["errCode" => "JH", "errMsg" => "Your word limit cannot be less than 1."]; 
-                } else {
-                    // If private, uppercase submitted key; if public, key becomes RANDOM
-                    $data["host-key"] = ($data["make-public"] == "n") ? strtoupper($data["host-key"]) : "RANDOM";
-
-                    // Check if key is already in use
-                    // Eventually incorporate this in main select below
-                    if ($data["make-public"] == "n") {
-                        $exists = DB::select("SELECT GAME_ID FROM GAME WHERE GAME_KEY = ?", [$data["host-key"]]); 
-
-                        if ($exists) $err = ["errCode" => "JH", "errMsg" => "This key already exists."];
-                    }
-                }
+                } 
 
                 // Checks if any errors were set above
                 if (isset($err)) return view('story')->with("err", $err); 
@@ -246,10 +234,16 @@ class StoryPostController extends Controller {
 
                 $unhashedPass = $data["host-pass"]; 
                 $data["host-pass"] = ($data["make-public"] == "n") ? Hash::make($data["host-pass"]) : null; 
-    
-                $results = DB::select("CALL createStory(:key, :pass, :user, :session, :title, :text, :limit, @gameId, @storyId)", ["key" => $data["host-key"], "pass" => $data["host-pass"], "user" => $data["host-user"], "session" => $data["session"], "title" => $data["host-title"], "text" => $data["starter-text"], "limit" => $data["host-limit"]]);
-                $results = json_decode(json_encode($results, true), true)[0];  
+                $data["host-key"] = ($data["make-public"] == "n") ? strtoupper($data["host-key"]) : "RANDOM";
 
+                try {
+                    $results = DB::select("CALL createStory(:key, :pass, :user, :session, :title, :text, :limit, @gameId, @storyId)", ["key" => $data["host-key"], "pass" => $data["host-pass"], "user" => $data["host-user"], "session" => $data["session"], "title" => $data["host-title"], "text" => $data["starter-text"], "limit" => $data["host-limit"]]);
+                    $results = json_decode(json_encode($results, true), true)[0];
+                } catch(QueryException $e) {
+                    $err = ["errCode" => "JH", "errMsg" => "This key already exists."];
+                    return view('story')->with("err", $err); 
+                }
+                
                 $gameData = [
                     "ID" => $results["@gameId"], 
                     "KEY" => ($data["make-public"] == "n") ? $data["host-key"] : "RANDOM", 

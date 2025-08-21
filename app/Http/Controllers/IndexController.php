@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\BugForm; 
 use DB; 
 
 class IndexController extends Controller {
@@ -16,11 +18,22 @@ class IndexController extends Controller {
             $readData = json_decode(json_encode($readData, true), true)[0];
 
             session(["STORY.TITLE" => $readData["STORY_TITLE"]]); 
-            Log::info("User is reading STORY #" . $storyId); // Testing only
 
             return view('index')->with("readText", $readData["STORY_TEXT"]); 
         }
 
         return view('index'); 
+    }
+
+    function post(Request $request) {
+        $data = $request->post(); 
+
+        if (!empty($data["website"]) || !empty($data["email"])) die(); // Quits if detects spam
+
+        if (isset($data["bug-name"]) && isset($data["bug-msg"])) {
+            Mail::to("ieatbugs.decaf@gmail.com", "Queeky")->send(new BugForm($data["bug-name"], $data["bug-msg"])); 
+        }
+
+        return back(); 
     }
 }
