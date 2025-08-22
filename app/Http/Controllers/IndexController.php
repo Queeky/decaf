@@ -1,12 +1,15 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\BugForm; 
-use DB; 
+use DB;
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
+
+require '../vendor/autoload.php';
 
 class IndexController extends Controller {
     function get(Request $request) {
@@ -31,7 +34,30 @@ class IndexController extends Controller {
         if (!empty($data["website"]) || !empty($data["email"])) die(); // Quits if detects spam
 
         if (isset($data["bug-name"]) && isset($data["bug-msg"])) {
-            Mail::to("ieatbugs.decaf@gmail.com", "Queeky")->send(new BugForm($data["bug-name"], $data["bug-msg"])); 
+            $mail = new PHPMailer(true); // true enables exceptions
+
+            try {
+                //Server settings
+                $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
+                $mail->isSMTP();                                            //Send using SMTP
+                $mail->Host       = 'smtp.gmail.com';                       //Set the SMTP server to send through
+                $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
+                $mail->Username   = 'ieatbugs.decaf@gmail.com';             //SMTP username
+                $mail->Password   = 'pnbjvaviyviophap';                     //SMTP password
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            //Enable implicit TLS encryption
+                $mail->Port       = 465;    
+
+                //Recipients
+                $mail->setFrom('ieatbugs.decaf@gmail.com', 'Decaf');
+                $mail->addAddress('ieatbugs.decaf@gmail.com');     
+            
+                $mail->Subject = "{$data["bug-name"]} sent you a bug";
+                $mail->Body    = "{$data["bug-msg"]}";
+
+                $mail->send();
+            } catch(Exception $e) {
+                Log::info("Message could not be sent. Mailer Error: {$mail->ErrorInfo}"); 
+            }
         }
 
         return back(); 

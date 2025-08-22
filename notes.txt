@@ -1,4 +1,3 @@
-
 CAN'T REPLACE STORY_ID with GAME_ID because when building storyComplete the GAME
 will be deleted and STORY will have the default GAME_ID instead
 
