@@ -37,17 +37,6 @@ class IndexController extends Controller {
             $mail = new PHPMailer(true); // true enables exceptions
 
             try {
-                //Server settings
-                $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
-                $mail->isSMTP();                                            //Send using SMTP
-                $mail->Host       = 'smtp.gmail.com';                       //Set the SMTP server to send through
-                $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
-                $mail->Username   = 'ieatbugs.decaf@gmail.com';             //SMTP username
-                $mail->Password   = 'pnbjvaviyviophap';                     //SMTP password
-                $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            //Enable implicit TLS encryption
-                $mail->Port       = 465;    
-
-                //Recipients
                 $mail->setFrom('ieatbugs.decaf@gmail.com', 'Decaf');
                 $mail->addAddress('ieatbugs.decaf@gmail.com');     
             
