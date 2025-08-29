@@ -31,24 +31,6 @@ class IndexController extends Controller {
     function post(Request $request) {
         $data = $request->post(); 
 
-        if (!empty($data["website"]) || !empty($data["email"])) die(); // Quits if detects spam
-
-        if (isset($data["bug-name"]) && isset($data["bug-msg"])) {
-            $mail = new PHPMailer(true); // true enables exceptions
-
-            try {
-                $mail->setFrom('ieatbugs.decaf@gmail.com', 'Decaf');
-                $mail->addAddress('ieatbugs.decaf@gmail.com');     
-            
-                $mail->Subject = "{$data["bug-name"]} sent you a bug";
-                $mail->Body    = "{$data["bug-msg"]}";
-
-                $mail->send();
-            } catch(Exception $e) {
-                Log::info("Message could not be sent. Mailer Error: {$mail->ErrorInfo}"); 
-            }
-        }
-
         return back(); 
     }
 }
