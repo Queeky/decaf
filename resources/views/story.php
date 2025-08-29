@@ -69,7 +69,7 @@ if (isset($err)) {
                                         echo csrf_field(); 
                                         ?>
                                             <?php if (session("PLAYER.HOST")) { ?>
-                                                    <button type='submit' name='delete-story' value=<?php echo session("STORY_COMPLETE.STORY_ID"); ?>>Delete</button>
+                                                    <button type='submit' name='leave-story-result' value=true>Delete</button>
                                                     <button type='submit' name='publish-story' value=<?php echo session("STORY_COMPLETE.STORY_ID"); ?>>Publish</button>
                                                     <p>Want your story on the home page? <strong>Click "Publish" to show off your masterpiece.</strong></p>
                                             <?php } else { ?>

@@ -8,9 +8,9 @@ use Illuminate\Database\QueryException;
 use DB; 
 
 class StoryPostController extends Controller {
-    function collectStory($gameId) { // Collects finished story
+    function collectStory($id) { // Collects finished story
         // Collecting finished story
-        $storyComplete = DB::select("SELECT STORY_ID, STORY_TITLE, STORY_TEXT FROM STORY WHERE GAME_ID = ?", [$gameId]); 
+        $storyComplete = DB::select("SELECT STORY_ID, STORY_TITLE, STORY_TEXT FROM STORY WHERE STORY_ID = ?", [$id]); 
         $storyComplete = json_decode(json_encode($storyComplete, true), true)[0];
         session(["STORY_COMPLETE" => $storyComplete]); 
     }
@@ -62,9 +62,17 @@ class StoryPostController extends Controller {
                 Log::info("GAME #{$id}: Game ended, player kicked");
 
                 $err = ["errCode" => "JP", "errMsg" => "Host has left the game."]; 
-                $storyComplete = false; 
 
-                if ($waitTurn) $this->collectStory($id); 
+                DB::delete("DELETE FROM PLAYER WHERE PLAY_USER = ? AND PLAY_SESSION = ? AND GAME_ID = ?", [session("PLAYER.NAME"), session("PLAYER.SESSION"), $id]); 
+
+                unset($_GET["join"]); 
+                session()->forget(["GAME"]); 
+
+                if ($waitTurn) {
+                    $this->collectStory(session("STORY.ID")); 
+                } else {
+                    session()->forget(["PLAYER", "STORY"]); 
+                }
 
                 return response()->json([
                     'html' => view('story', compact("err"))->render()
@@ -73,7 +81,7 @@ class StoryPostController extends Controller {
         }
 
         // 2. Appends new text to story
-        if (isset($data["new-text"]) && !isset($data["leave"])) {
+        if (isset($data["new-text"]) && !isset($data["leave"]) && !isset($data["redo"])) {
             // Checks if text is too long
             $spaces = substr_count($data["new-text"], " "); 
             $underscores = substr_count($data["new-text"], "_"); 
@@ -110,8 +118,14 @@ class StoryPostController extends Controller {
             } else {
                 Log::info("GAME #" . session("GAME.ID") . ": Player attempted to submit turn on game that no longer exists");
 
+                DB::delete("DELETE FROM PLAYER WHERE PLAY_USER = ? AND PLAY_SESSION = ? AND GAME_ID = ?", [session("PLAYER.NAME"), session("PLAYER.SESSION"), session("GAME.ID")]); 
+
+                unset($_GET["join"]); 
+                session()->forget(["GAME"]); 
+
                 $err = ["errCode" => " ", "errMsg" => "Host has left the game."];
-                $this->collectStory(session("GAME.ID")); 
+                Log::info("\n\n" . serialize(session("STORY"))); 
+                $this->collectStory(session("STORY.ID")); 
 
                 return view('story')->with(compact("err")); 
             }
@@ -187,7 +201,7 @@ class StoryPostController extends Controller {
         if (isset($data["leave"])) {
             // Collecting finished story
             $gameId = $data["leave"]; 
-            $this->collectStory($gameId); 
+            $this->collectStory(session("STORY.ID")); 
 
             if (session("PLAYER.HOST")) {
                 // Host left, remove game
@@ -299,8 +313,8 @@ class StoryPostController extends Controller {
             return view('story'); 
         } 
 
-        // 9. Host or admin deletes story
-        if (isset($data["delete-story"]) || isset($data["admin-delete"])) {
+        // 9. Admin deletes story
+        if (isset($data["admin-delete"])) {
             $id = isset($data["delete-story"]) ? [$data["delete-story"], "host"] : [$data["admin-delete"], "admin"]; 
 
             DB::delete("DELETE FROM STORY WHERE STORY_ID = ?", [$id[0]]); 

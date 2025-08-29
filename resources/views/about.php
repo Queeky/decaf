@@ -46,8 +46,8 @@ use Illuminate\Support\Facades\Log;
                                 gotten me more familiar with the LEMP stack.
                             </p><br>
                             <p>
-                                <strong>I'm currently looking for a job!</strong> So if you or a company you know of 
-                                is in need of someone super rad (me), please reach out!
+                                <strong>I'm currently looking for a job!</strong> So if you or a company 
+                                you know of is in need of someone super rad (me), please reach out!
                             </p><br>
                             <p><a href="https://github.com/Queeky" target="_blank">https://github.com/Queeky</a></p>
                             <p><a href="http://www.linkedin.com/in/quinn-miersma" target="_blank">http://www.linkedin.com/in/quinn-miersma</a></p>
