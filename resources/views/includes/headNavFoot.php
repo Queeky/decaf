@@ -21,6 +21,7 @@ function showNav() {
             <li><a href='<?php echo route('about'); ?>'>ABOUT</a></li>
             <!-- <li><a href='index.php'>MADLIBS</a></li> -->
             <li><a href='<?php echo route('storyGet'); ?>'>RUN-AWAY</a></li>
+            <li><a href='<?php echo route('garden'); ?>'>PIXEL GARDEN</a></li>
         </ul>
     </nav>
     <?php

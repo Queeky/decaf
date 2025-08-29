@@ -73,7 +73,7 @@ body {
 /* HEADER */
 header {
     width: 100%; 
-    height: 6vw;  
+    height: 5vw;  
     display: flex; 
     align-items: end; 
     justify-content: flex-end; 
@@ -84,7 +84,7 @@ header > img {
     position: absolute; 
     left: 2%;  
     margin-bottom: 0.5%; 
-    width: 12%; 
+    width: 10%; 
 }
 
 .header-triangle {
@@ -504,6 +504,44 @@ form.read-more.index-read button {
 .synonyms > li:first-child, .antonyms > li:first-child {
     list-style: none; 
     margin-left: 0; 
+}
+
+/* ABOUT PAGE */
+.inner-content.about {
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    padding-top: 5%; 
+    padding-bottom: 5%; 
+    background-color: var(--yellow2); 
+}
+
+.about-block {
+    display: block; 
+    width: 70%; 
+    background-color: white; 
+    padding: 2%; 
+    /* border: 1px solid red;  */
+}
+
+.about-block .about-img {
+    display: flex; 
+    justify-content: center; 
+}
+
+.about img {
+    width: 50%; 
+}
+
+.about-text {
+    text-align: center; 
+}
+
+.about-img-label {
+    margin-bottom: 5%; 
+    margin-top: 1%; 
+    font-size: 0.8vw; 
+    color: var(--blue3); 
 }
 
 /* 1-WORD PAGE  */

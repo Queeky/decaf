@@ -72,6 +72,13 @@ SPLASH IDEAS:
 - I put the hippo in Hippocratic Oath
 
 
+PIXEL GARDEN: 
+- Not really a game
+- Bunch of random small divs randomly placed absolute position
+- Random color schemes
+- But it's your key art and you can save it? PK
+
+
 PICTIONARY-ISH GAME: 
 - Host writes prompt, other players draw prompt
 - Host guesses who's is who's 
