@@ -33,6 +33,9 @@ function showFoot() {
         <div id='bug-form'>
             <p>
                 <strong>Bugs? In <i>my</i> website? It's more likely than you think!</strong><br>
+                Hey beta testers -- if you find the site behaving strangely or flat out breaking, please let me know! Send an email describing the issue and any steps I may need to replicate the problem. Muchas gracias.
+                <br><br>
+                <a href="mailto:ieatbugs.decaf@gmail.com">ieatbugs.decaf@gmail.com</a>
             </p>
         </div>
         <div id='icons'>
