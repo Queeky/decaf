@@ -1,5 +1,6 @@
 <?php 
 use Illuminate\Support\Facades\Log;
+if (!session("KEY") && isset($_COOKIE["key"])) session(["KEY" => $_COOKIE["key"]]); 
 ?>
 <!DOCTYPE html>
 <html>
@@ -15,7 +16,7 @@ use Illuminate\Support\Facades\Log;
         include_once("includes/bars.php"); 
         include_once("includes/garden.php");
 
-        showHead(); 
+        showHead('$n .= ($x + $y);'); 
         showNav(); 
         ?>
         <div class='full-page'>
@@ -30,12 +31,12 @@ use Illuminate\Support\Facades\Log;
                 ?>
                 <div class="inner-content garden">
                     <div class="garden-wrapper">
-                        <script type="text/javascript" src="js/generate-garden.js"></script>
                     </div>
                 </div>
             </div>
             <?php showRight(); ?>
         </div>
         <?php showFoot(); ?>
+        <script type="text/javascript" src="js/generate-garden.js"></script>
     </body>
 </html>

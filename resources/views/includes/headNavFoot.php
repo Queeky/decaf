@@ -1,12 +1,12 @@
 <?php
-function showHead() {
+function showHead($msg = "") {
     if (!session("SESSION_ID")) session(["SESSION_ID" => session()->getId()]); 
     ?>
     <header>
         <img src='images/logoBlue.png'>
         <div class='header-triangle'></div>
         <form action='<?php echo route('index'); ?>' method='GET'>
-            <input class='search-bar' type='text'>
+            <input class='search-bar' type='text' value="<?php echo $msg; ?>">
             <a type='submit'><img src='images/search-icon.png'></a>
         </form>
     </header>

@@ -32,24 +32,30 @@ function getScheme(lodestone) {
 
 async function generateGarden() {
     let squares = []; 
+    let key = ""; 
 
     const amount = getRand(100, 2000); 
     const lodestone = [getRand(0, 255), getRand(0, 255), getRand(0, 255)];
 
     for (let i = 0; i < amount; i++) {
+        const x = getRand(0, 95); 
+        const y = getRand(0, 95); 
+
+        key += `${x + y}`; 
 
         const square = {
-            x: getRand(0, 95), 
-            y: getRand(0, 95), 
+            x: x, 
+            y: y, 
             size: getRand(5, 50) * 0.02, 
             color: getScheme(lodestone)
         }
 
         squares.push(square); 
-    } 
+    }
+
+    document.cookie = `key=${key}`; 
 
     const squaresString = JSON.stringify(squares); 
-    console.log(squaresString); 
     sessionStorage.setItem("pixelGarden", squaresString); 
 }
 
@@ -73,14 +79,9 @@ async function showGarden(squares) {
     }
 }
 
-if (!sessionStorage.getItem("pixelGarden")) {
-    console.log("unset"); 
-    generateGarden(); 
-} 
+if (!sessionStorage.getItem("pixelGarden")) generateGarden(); 
 
 let squares = sessionStorage.getItem("pixelGarden");
 squares = JSON.parse(squares); 
-
-console.log(squares); 
 
 showGarden(squares); 
