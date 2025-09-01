@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
         <?php 
         include_once("includes/headNavFoot.php"); 
         include_once("includes/bars.php"); 
+        include_once("includes/garden.php");
 
         showHead(); 
         showNav(); 
@@ -28,7 +29,9 @@ use Illuminate\Support\Facades\Log;
                 }
                 ?>
                 <div class="inner-content garden">
-                    // Add content here
+                    <div class="garden-wrapper">
+                        <script type="text/javascript" src="js/generate-garden.js"></script>
+                    </div>
                 </div>
             </div>
             <?php showRight(); ?>
