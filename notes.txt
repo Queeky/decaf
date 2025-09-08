@@ -4,6 +4,7 @@ will be deleted and STORY will have the default GAME_ID instead
 
 TODO to rule them all:
 - ** Make censor file (or plugin, look into later)
+- ** Add /images to gitignore
 - WRITE UNIT TESTS & add more robust error messages
 - Eventually add a delete confirm message (for admin)
 
@@ -24,6 +25,13 @@ NOTE: Writing collab mode! Authors can see the entire story and
 NOTE: left bar will be a button grid wall that randomly spawns different 
 puzzles, like correctly putting together a poem or something. 
 Only a 10% chance of seeing the puzzle, otherwise a carbonation gif. 
+
+
+
+CLUSTERS algo
+Set up a random amount of "hotspots" 5-30
+Squares will congregate around these hotspots with rand distance between them
+
 
 
 SPEND A DAY writing error messages -- because they ARE NECESSARY! Your code 

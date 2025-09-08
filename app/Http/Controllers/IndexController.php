@@ -25,6 +25,11 @@ class IndexController extends Controller {
     function post(Request $request) {
         $data = $request->post(); 
 
+        if (isset($data["search-input"])) {
+            if (session("KEY.VALUE") != "" && $data["search-input"] == session("KEY.VALUE")) session(["KEY.ACTIVATED" => true]); 
+            Log::info("Searching for --> {$data["search-input"]}"); 
+        }
+
         return back(); 
     }
 }
