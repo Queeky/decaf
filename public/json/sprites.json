@@ -1,0 +1,28 @@
+{
+    "sprites": [
+        {
+            "name": "Shrieker", 
+            "text": "Do you hear the whistling?", 
+            "url": "#",
+            "alt": ""
+        }, 
+        {
+            "name": "Turnip Head", 
+            "text": "", 
+            "url": "#",
+            "alt": ""
+        }, 
+        {
+            "name": "Shadow Man", 
+            "text": "", 
+            "url": "#", 
+            "alt": ""
+        }, 
+        {
+            "name": "Goldfish", 
+            "text": "", 
+            "url": "#",
+            "alt": ""
+        }
+    ]
+}

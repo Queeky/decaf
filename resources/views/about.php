@@ -31,7 +31,7 @@ use Illuminate\Support\Facades\Log;
                 <div class="inner-content about">
                     <div class="about-block">
                         <?php 
-                        session("KEY.ACTIVATED") ? showCharacter() : showAbout();
+                        session("SPRITE") ? showCharacter(session("SPRITE")) : showAbout();
                         ?>
                     </div>
                 </div>

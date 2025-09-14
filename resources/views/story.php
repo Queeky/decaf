@@ -71,6 +71,7 @@ if (isset($err)) {
                                             <?php if (session("PLAYER.HOST")) { ?>
                                                     <button type='submit' name='leave-story-result' value=true>Delete</button>
                                                     <button type='submit' name='publish-story' value=<?php echo session("STORY_COMPLETE.STORY_ID"); ?>>Publish</button>
+                                                    <button type='submit' name='file-download' value=true>Download</button>
                                                     <p>Want your story on the home page? <strong>Click "Publish" to show off your masterpiece.</strong></p>
                                             <?php } else { ?>
                                                 <!-- <a href="story.php">Leave</a> -->

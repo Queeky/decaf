@@ -4,7 +4,7 @@ will be deleted and STORY will have the default GAME_ID instead
 
 TODO to rule them all:
 - ** Make censor file (or plugin, look into later)
-- ** Add /images to gitignore
+- ** Add /images to gitignore (json too?)
 - WRITE UNIT TESTS & add more robust error messages
 - Eventually add a delete confirm message (for admin)
 
@@ -12,6 +12,7 @@ TODO to rule them all:
 - Maybe for player login, save query info for key until new key is used
     (Why? Because then multiple attempts for one key uses less db power. 
     Locks after certain amount of failed attempts.)
+    Actually I don't think this really matters because the key is just one extra parameter in a query, I don't think it'll affect performance that much to keep it in. 
 
 WHEN DECAF GOES LIVE 
 - Gather stats on which page users are at the most, then reorganize if statements 

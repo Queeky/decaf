@@ -27,15 +27,14 @@ function showAbout() {
     <?php
 }
 
-function showCharacter() {
+function showCharacter($sprite) {
     ?>
-    // Characters will be chosen at random
     <div class="about-img">
-        <img src="#" alt="#">
+        <img src="<?php echo $sprite["url"]; ?>" alt="<?php echo $sprite["alt"]; ?>">
     </div>
     <div class="about-text">
-        <p class="about-img-label">(I will put something here eventually)</p>
-        <p><strong>Character text</strong> right here.</p><br>
+        <p class="about-img-label"><?php echo $sprite["name"]; ?></p>
+        <p><strong><?php echo $sprite["text"]; ?></strong></p><br>
     </div>
     <?php
 }

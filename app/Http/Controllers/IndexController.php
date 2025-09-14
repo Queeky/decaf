@@ -19,14 +19,19 @@ class IndexController extends Controller {
             return view('index')->with("readText", $readData["STORY_TEXT"]); 
         }
 
-        return view('index'); 
+        return back(); 
     }
 
     function post(Request $request) {
         $data = $request->post(); 
 
         if (isset($data["search-input"])) {
-            if (session("KEY.VALUE") != "" && $data["search-input"] == session("KEY.VALUE")) session(["KEY.ACTIVATED" => true]); 
+            if (session("KEY.VALUE") != "" && $data["search-input"] == session("KEY.VALUE")) {
+                session(["KEY.ACTIVATED" => true]); 
+
+                $json = json_decode(file_get_contents("json/sprites.json"), true); 
+                session(["SPRITE" => array_rand($json["sprites"])]); 
+            } 
             Log::info("Searching for --> {$data["search-input"]}"); 
         }
 
