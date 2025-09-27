@@ -76,6 +76,7 @@ if (isset($err)) {
                                             <?php } else { ?>
                                                 <!-- <a href="story.php">Leave</a> -->
                                                 <button type='submit' name='leave-story-result' value=true>Leave</button>
+                                                <button type='submit' name='file-download' value=true>Download</button>
                                             <?php } ?>
                                         </form>
                                     </div>

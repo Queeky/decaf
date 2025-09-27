@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\QueryException;
@@ -233,13 +234,16 @@ class StoryPostController extends Controller {
             $title = session("STORY_COMPLETE.STORY_TITLE"); 
             $text = session("STORY_COMPLETE.STORY_TEXT"); 
 
-            $temp = tmpfile(); 
-            fwrite($temp, "{$title}\n\n{$text}"); 
-
-            $path = stream_get_meta_data($temp); 
-            Storage::download("{$path}", "{$title}.txt", ['Content-Type' => 'text/plain']);
-
-            return back(); 
+            return Response::streamDownload(
+                function() use ($title, $text) {
+                    echo "{$title}\n\n{$text}"; 
+                }, 
+                "{$title}.txt", 
+                [
+                    'Content-Type' => 'text/plain', 
+                    'Content-Disposition' => 'attachment; filename="' . $title . '"'
+                ]
+            ); 
         }
 
         // 8. Host creates a new story

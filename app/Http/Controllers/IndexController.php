@@ -19,7 +19,7 @@ class IndexController extends Controller {
             return view('index')->with("readText", $readData["STORY_TEXT"]); 
         }
 
-        return back(); 
+        return view('index'); 
     }
 
     function post(Request $request) {
@@ -30,7 +30,7 @@ class IndexController extends Controller {
                 session(["KEY.ACTIVATED" => true]); 
 
                 $json = json_decode(file_get_contents("json/sprites.json"), true); 
-                session(["SPRITE" => array_rand($json["sprites"])]); 
+                session(["SPRITE" => $json["sprites"][array_rand($json["sprites"])]]); 
             } 
             Log::info("Searching for --> {$data["search-input"]}"); 
         }

@@ -5,6 +5,7 @@ will be deleted and STORY will have the default GAME_ID instead
 TODO to rule them all:
 - ** Make censor file (or plugin, look into later)
 - ** Add /images to gitignore (json too?)
+- ** Split logs by game session, if possible -- easier to keep track of everything
 - WRITE UNIT TESTS & add more robust error messages
 - Eventually add a delete confirm message (for admin)
 
@@ -17,6 +18,7 @@ TODO to rule them all:
 WHEN DECAF GOES LIVE 
 - Gather stats on which page users are at the most, then reorganize if statements 
     to reflect this
+
 
 
 NOTE: Writing collab mode! Authors can see the entire story and 

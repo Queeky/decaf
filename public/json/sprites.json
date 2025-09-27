@@ -1,28 +1,10 @@
 {
     "sprites": [
         {
-            "name": "Shrieker", 
-            "text": "Do you hear the whistling?", 
-            "url": "#",
-            "alt": ""
-        }, 
-        {
-            "name": "Turnip Head", 
-            "text": "", 
-            "url": "#",
-            "alt": ""
-        }, 
-        {
-            "name": "Shadow Man", 
-            "text": "", 
-            "url": "#", 
-            "alt": ""
-        }, 
-        {
             "name": "Goldfish", 
-            "text": "", 
-            "url": "#",
-            "alt": ""
+            "text": "I like sticks.", 
+            "url": "images/goldfish-man.png",
+            "alt": "A drawing of a creature with the head of a balding man and the body of a goldfish."
         }
     ]
 }
