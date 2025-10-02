@@ -19,7 +19,7 @@ class IndexController extends Controller {
             return view('index')->with("readText", $readData["STORY_TEXT"]); 
         }
 
-        return back(); 
+        return view('index'); 
     }
 
     function post(Request $request) {
@@ -35,6 +35,6 @@ class IndexController extends Controller {
             Log::info("Searching for --> {$data["search-input"]}"); 
         }
 
-        return back(); 
+        return view('index'); 
     }
 }

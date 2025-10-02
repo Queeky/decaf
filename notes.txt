@@ -5,6 +5,7 @@ will be deleted and STORY will have the default GAME_ID instead
 TODO to rule them all:
 - ** Make censor file (or plugin, look into later)
 - ** Add /images to gitignore (json too?)
+- ** Add timer option!
 - WRITE UNIT TESTS & add more robust error messages
 - Eventually add a delete confirm message (for admin)
 
@@ -90,9 +91,10 @@ PIXEL GARDEN:
 
 
 
-PICTIONARY-ISH GAME: 
+PICTION-ISH GAME: 
 - Host writes prompt, other players draw prompt
 - Host guesses who's is who's 
+- All artists vote on which drawing most resembles the prompt
 - Most points wins
 
 CHARACTER CREATION: 
@@ -109,8 +111,40 @@ CHARACTER CREATION:
 - NOTE: Winner only wrote the name so that would not be fair? Think about
 
 
-RNG GAME: 
-It requires about as much technical skill as winning at UNO. 
+RNG GAME (CONSEQUENCES): 
+It requires about as much technical skill as UNO. 
+
+Has some pre-made events and consequences, but players should be writing most of it.
+Pre-made are "prompts" or examples. 
+
+Deducts or adds randomly-generated point types
+
+TURN 1
+Create event and 2 responses
+
+TURN 2
+For different event, create positive consequence for option 1 
+and negative consequence for option 2
+
+TURN 3
+For different event, create negative consequence for option 1
+and positive consequence for option 2
+
+The lowest value someone can earn: -(event amount)
+The highest value someone can earn: event amount
+
+Super Speedy    = 1 round
+Speedy          = 2 rounds
+Average         = 3 rounds
+Flowstate       = 5 rounds
+Marathon        = 10 rounds
+
+IMPORTANT! Each round takes 3 turns to complete, so speed in creating events is
+consistent. HOWEVER, the amount of events grows much faster. 
+turns = rounds x 3
+events = rounds x players 
+So if you're doing a flowstate game (5 rounds) with 12 people, the game will take 15 turns
+and will end up creating 60 events. 
 
 - "Someone is calling your phone" 
     :Answer it
