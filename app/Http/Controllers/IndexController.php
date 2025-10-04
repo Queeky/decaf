@@ -35,6 +35,6 @@ class IndexController extends Controller {
             Log::info("Searching for --> {$data["search-input"]}"); 
         }
 
-        return back(); 
+        return view('index'); 
     }
 }
