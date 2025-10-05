@@ -2,9 +2,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Database\QueryException; 
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Storage; 
 use DB; 
 
 class StoryPostController extends Controller {
@@ -227,7 +229,24 @@ class StoryPostController extends Controller {
             return view('story'); 
         }
 
-        // 7. Host creates a new story
+        // 7. Player downloads story as .txt file
+        if (isset($data["file-download"])) { 
+            $title = session("STORY_COMPLETE.STORY_TITLE"); 
+            $text = session("STORY_COMPLETE.STORY_TEXT"); 
+
+            return Response::streamDownload(
+                function() use ($title, $text) {
+                    echo "{$title}\n\n{$text}"; 
+                }, 
+                "{$title}.txt", 
+                [
+                    'Content-Type' => 'text/plain', 
+                    'Content-Disposition' => 'attachment; filename="' . $title . '"'
+                ]
+            ); 
+        }
+
+        // 8. Host creates a new story
         if (isset($data["host-user"]) || isset($data["host-key"]) || isset($data["host-pass"]) || isset($data["make-public"]) || isset($data["host-title"]) || isset($data["host-limit"]) || isset($data["starter-text"])) {
             if (isset($data["host-user"]) && isset($data["make-public"]) && isset($data["host-title"]) && isset($data["host-limit"]) && isset($data["starter-text"])) {
                 // Check if key is valid
@@ -290,7 +309,7 @@ class StoryPostController extends Controller {
             return view('story'); 
         }
 
-        // 8. Host starts game
+        // 9. Host starts game
         if (isset($data["start-game"])) {
             // Starting game
             Log::info("GAME #{$data["start-game"]}: Assigning player turns"); 
@@ -313,7 +332,7 @@ class StoryPostController extends Controller {
             return view('story'); 
         } 
 
-        // 9. Admin deletes story
+        // 10. Admin deletes story
         if (isset($data["admin-delete"])) {
             $id = isset($data["delete-story"]) ? [$data["delete-story"], "host"] : [$data["admin-delete"], "admin"]; 
 
@@ -324,7 +343,7 @@ class StoryPostController extends Controller {
             return view('story'); 
         }
 
-        // 10. Host publishes story
+        // 11. Host publishes story
         if (isset($data["publish-story"])) {
             DB::update("UPDATE STORY SET STORY_PUBLISH = 1 WHERE STORY_ID = ?", [$data["publish-story"]]); 
 

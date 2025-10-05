@@ -1,0 +1,10 @@
+{
+    "sprites": [
+        {
+            "name": "Goldfish", 
+            "text": "I like sticks.", 
+            "url": "images/goldfish-man.png",
+            "alt": "A drawing of a creature with the head of a balding man and the body of a goldfish."
+        }
+    ]
+}

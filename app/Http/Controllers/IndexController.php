@@ -25,6 +25,16 @@ class IndexController extends Controller {
     function post(Request $request) {
         $data = $request->post(); 
 
-        return back(); 
+        if (isset($data["search-input"])) {
+            if (session("KEY.VALUE") != "" && $data["search-input"] == session("KEY.VALUE")) {
+                session(["KEY.ACTIVATED" => true]); 
+
+                $json = json_decode(file_get_contents("json/sprites.json"), true); 
+                session(["SPRITE" => $json["sprites"][array_rand($json["sprites"])]]); 
+            } 
+            Log::info("Searching for --> {$data["search-input"]}"); 
+        }
+
+        return view('index'); 
     }
 }

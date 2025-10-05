@@ -1,12 +1,14 @@
 <?php
 function showHead($msg = "") {
     if (!session("SESSION_ID")) session(["SESSION_ID" => session()->getId()]); 
+    if (!session("KEY")) session(["KEY" => ["VALUE" => "", "ACTIVATED" => false]]); 
     ?>
     <header>
         <img src='images/logoBlue.png'>
         <div class='header-triangle'></div>
-        <form action='<?php echo route('index'); ?>' method='GET'>
-            <input class='search-bar' type='text' value="<?php echo $msg; ?>">
+        <form action='<?php echo route('index'); ?>' method='POST'>
+            <?php echo csrf_field(); ?>
+            <input class='search-bar' name='search-input' type='text' value="<?php echo $msg; ?>">
             <a type='submit'><img src='images/search-icon.png'></a>
         </form>
     </header>

@@ -1,6 +1,6 @@
 <?php 
 use Illuminate\Support\Facades\Log;
-if (!session("KEY") && isset($_COOKIE["key"])) session(["KEY" => $_COOKIE["key"]]); 
+if (session("KEY.VALUE") == "" && isset($_COOKIE["key"])) session(["KEY.VALUE" => $_COOKIE["key"]]); 
 ?>
 <!DOCTYPE html>
 <html>
