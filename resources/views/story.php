@@ -1,6 +1,5 @@
 <?php 
 use Illuminate\Support\Facades\Log;
-// var_dump(session("GAME")); 
 
 if (isset($err)) {
     switch ($err["errCode"]) {
@@ -32,7 +31,10 @@ if (isset($err)) {
         <?php 
         include_once("includes/headNavFoot.php"); 
         include_once("includes/bars.php"); 
+        include_once("includes/game.php"); 
         include_once("includes/story.blade.php");  
+
+        $game = new Game("story", $hostFormData); 
 
         showHead(); 
         showNav(); 
@@ -49,15 +51,15 @@ if (isset($err)) {
                 ?>
                 <div class='upper-content' style='border-bottom: 0.2vw solid var(--blue1); padding: 0;'>
                     <?php
-                    !(session("GAME.KEY") && session("GAME.PASS")) ? showJoinOptions() : showGameInfo(); 
+                    !(session("GAME.KEY") && session("GAME.PASS")) ? $game->showJoinOptions() : $game->showGameInfo(); 
                     ?>
                 </div>
                 <div class='inner-content story-content'>
                     <?php 
                         if (session("GAME.KEY") && session("GAME.PASS")) {
-                            showGameMain(); 
+                            $game->showGameMain(); 
                         } else if (isset($_GET["join"])) {
-                            showJoinForm(); 
+                            $game->showJoinForm(); 
                         } else if (session("STORY_COMPLETE")) { ?>
                             <div class='story-complete'>
                                 <div>

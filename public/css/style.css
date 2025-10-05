@@ -633,19 +633,19 @@ form.read-more.index-read button {
     width: 60%;
 }
 
-.join-form .public-private {
+.join-form .host-form-radio {
     width: 35%; 
     float: right; 
 }
 
-.join-form .public-private > div {
+.join-form .host-form-radio > div {
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: row;
 }
 
-.join-form .inner-div .public-private input, .join-form .inner-div .public-private input {
+.join-form .inner-div .host-form-radio input, .join-form .inner-div .host-form-radio input {
     display: inline-flex; 
 }
 
@@ -713,12 +713,12 @@ form.read-more.index-read button {
     overflow: none; 
 }
 
-.game-info > .word-limit {
+.game-info > .word-limit, .game-info > .event-counter {
     grid-column-start: 1; 
     grid-column-end: 2; 
 }
 
-.game-info > .word-limit > div, .game-info > .room-key > div {
+.game-info > .word-limit > div, .game-info > .room-key > div, .game-info > .event-counter > div {
     display: flex; 
     align-items: center; 
     justify-content: center; 
@@ -1030,3 +1030,6 @@ form.read-more.index-read button {
     height: 100%; 
     position: relative; 
 }
+
+
+/* CONSEQUENCES */
