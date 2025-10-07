@@ -1,12 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UserController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\StoryPostController;
 use App\Http\Controllers\StoryGetController;
 use App\Http\Controllers\IndexController;
-use App\Http\Controllers\AjaxController;
+use App\Http\Controllers\ConsequencesPostController;
+use App\Http\Controllers\ConsequencesGetController;
 use Illuminate\Support\Facades\Log;
 
 use App\Http\Middleware\CheckBetaPass;
@@ -32,6 +32,8 @@ Route::middleware([RedirectLogin::class])->group(function() {
     Route::view('/garden', 'garden')->name('garden'); 
     Route::post('/story', [StoryPostController::class, 'main'])->name("storyPost"); 
     Route::get('/story', [StoryGetController::class, 'main'])->name("storyGet"); 
+    Route::post('/consequences', [ConsequencesPostController::class, 'main'])->name("consequencesPost"); 
+    Route::get('/consequences', [ConsequencesGetController::class, 'main'])->name("consequencesGet"); 
     Route::get('/{slug?}', [IndexController::class, 'get'])->name("index"); 
     Route::post('/{slug?}', [IndexController::class, 'post'])->name("indexPost");
     // Route::view('/{slug?}', 'index')->name('index'); 

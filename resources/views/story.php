@@ -32,9 +32,9 @@ if (isset($err)) {
         include_once("includes/headNavFoot.php"); 
         include_once("includes/bars.php"); 
         include_once("includes/game.php"); 
-        include_once("includes/story.blade.php");  
+        include_once("includes/story.php");  
 
-        $game = new Game("story", $hostFormData); 
+        $game = new Game("story", $hostFormData, $playTurn, $viewAdmin); 
 
         showHead(); 
         showNav(); 

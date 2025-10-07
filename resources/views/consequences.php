@@ -1,30 +1,5 @@
 <?php 
 use Illuminate\Support\Facades\Log;
-
-$hostFormData = function() { ?>
-    <div class="host-form-radio">
-    <div>
-        <input type="radio" name="conseq-round-length" id="choice-super-speedy" value="1">
-        <label for="choice-super-speedy">Super Speedy (1 Round)</label>
-    </div>
-    <div>
-        <input type="radio" name="conseq-round-length" id="choice-speedy" value="2">
-        <label for="choice-speedy">Speedy (2 Rounds)</label>
-    </div>
-    <div>
-        <input type="radio" name="conseq-round-length" id="choice-average" value="3">
-        <label for="choice-super-speedy">Average (3 Rounds)</label>
-    </div>
-    <div>
-        <input type="radio" name="conseq-round-length" id="choice-flowstate" value="5">
-        <label for="choice-flowstate">Flowstate (5 Rounds)</label>
-    </div>
-    <div>
-        <input type="radio" name="conseq-round-length" id="choice-marathon" value="10">
-        <label for="choice-marathon">Marathon (10 Rounds)</label>
-    </div>
-    </div>
-<?php }
 ?>
 <!DOCTYPE html>
 <html>
@@ -40,6 +15,10 @@ $hostFormData = function() { ?>
         <?php 
         include_once("includes/headNavFoot.php"); 
         include_once("includes/bars.php");
+        include_once("includes/game.php");
+        include_once("includes/consequences.php");
+
+        $game = new Game("consequences", $hostFormData); 
 
         showHead(); 
         showNav(); 
@@ -56,11 +35,11 @@ $hostFormData = function() { ?>
                 ?>
                 <div class='upper-content' style='border-bottom: 0.2vw solid var(--blue1); padding: 0;'>
                     <?php
-                    !(session("GAME.KEY") && session("GAME.PASS")) ? showJoinOptions() : showGameInfo(); 
+                    !(session("GAME.KEY") && session("GAME.PASS")) ? $game->showJoinOptions() : $game->showGameInfo(); 
                     ?>
                 </div>
             </div>
-
+            <?php showRight(); ?>
         </div>
         
     </body>

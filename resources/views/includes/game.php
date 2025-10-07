@@ -4,14 +4,18 @@ class Game {
     public $getUrl; 
     public $postUrl; 
     public $scriptUrl; 
-    public $hostFormData; 
+    private $hostFormData; 
+    private $playTurn; 
+    private $viewAdmin; 
 
-    public function __construct($type, $hostFormData = null) {
+    public function __construct($type, $hostFormData = null, $playTurn = null, $viewAdmin = null) {
         $this->type = $type; 
         $this->getUrl = "{$type}Get"; 
         $this->postUrl = "{$type}Post"; 
         $this->scriptUrl = "<script> var url = '{$type}'; </script>";
         $this->hostFormData = $hostFormData; 
+        $this->playTurn = $playTurn; 
+        $this->viewAdmin = $viewAdmin; 
     }
 
     public function showJoinOptions() { ?>
@@ -90,7 +94,8 @@ class Game {
                             <p class='radio-msg'>
                                 Making your game public will allow random players to join. If you choose public, <strong>your game will not have a room key or password.</strong>
                             </p>
-                            <?php if ($this->hostFormData) $this->hostFormData(); ?>
+                            <?php if ($this->hostFormData) ($this->hostFormData)(); 
+                            ?>
                         </div>
                     </div>
                 </div>
@@ -168,11 +173,11 @@ class Game {
             // Game is running
             if (session("PLAYER.TURN") != session("GAME.TURN")) {
                 $this->waitTurn(); 
-            } else if ($this->type == "story") { 
-                $this->playTurnStory(); 
+            } else if ($this->playTurn) { 
+                ($this->playTurn)(); 
             }
-        } else if ($this->type == "story" && !isset($readText) && session("GAME.KEY") == env("ADMIN_KEY")) {
-            $this->viewAdminStory(); 
+        } else if ($this->viewAdmin && !isset($readText) && session("GAME.KEY") == env("ADMIN_KEY")) {
+            ($this->viewAdmin)(); 
         } else if (isset($readText) && session("GAME.ID") == 1) { ?>
             <div class='admin-view read'>
                 <p><?php echo $readText; //Intelliphense is mad but it works I swear ?></p>
@@ -248,80 +253,6 @@ class Game {
             var errorMsg = "wait-turn polling has failed"; 
         </script>
         <script type="text/javascript" src="js/game-poll.js"></script>
-    <?php }
-
-    // Active game, player's turn
-    private function playTurnStory() {
-        $text = DB::select("SELECT SUBSTRING_INDEX((SELECT STORY_TEXT FROM STORY WHERE GAME_ID = ?), ' ', -?) AS STORY_TEXT; ", [session("GAME.ID"), session("STORY.TURN_LIMIT")]);
-        $text = json_decode(json_encode($text, true), true)[0];
-
-        // Setting up a random placeholder (suggestion text)
-        $json = json_decode(file_get_contents("json/placeholder.json"), true); 
-        $range1 = count($json["placeholder"]["first"]) - 1; 
-        $range2 = count($json["placeholder"]["second"]) - 1; 
-
-        $placeholder = $json["placeholder"]["first"][rand(0, $range1)] . $json["placeholder"]["second"][rand(0, $range2)]; ?>
-        <div class='story-says'>
-            <p><strong>The story says: </strong><?php echo $text["STORY_TEXT"]; ?></p>
-            <form action="<?php route("{$this->postUrl}") ?>" method='POST'>
-                <?php echo csrf_field(); ?>
-                <textarea name='new-text'><?php echo $placeholder; ?></textarea>
-                <button type='submit' name='game-id' value=<?php echo session("GAME.ID"); ?>>Submit</button>
-                <button type='submit' name='redo' value=true>Redo</button>
-                <button type='submit' class='leave-button' name='leave' value='<?php echo session("GAME.ID") ?>'>Leave Game</button>
-            </form>
-        </div>
-    <?php }
-
-    private function viewAdminStory() {
-        $completed = DB::select("SELECT STORY_ID, LEFT(STORY_TITLE, 30) AS STORY_TITLE, LEFT(STORY_TEXT, 90) AS STORY_TEXT, STORY_TURN_LIMIT FROM STORY WHERE GAME_ID = 1 ORDER BY STORY_ID DESC"); 
-        $completed = json_decode(json_encode($completed, true), true);
-
-        $active = DB::select("SELECT STORY_ID, LEFT(STORY_TITLE, 30) AS STORY_TITLE, LEFT(STORY_TEXT, 90) AS STORY_TEXT, STORY_TURN_LIMIT FROM STORY WHERE GAME_ID != 1 ORDER BY STORY_ID DESC"); 
-        $active = json_decode(json_encode($active, true), true);
-        ?>
-        <div class='admin-stories'>
-            <div class='completed'>
-                <h3>COMPLETED STORIES</h3>
-                <?php foreach ($completed as $c) { ?>
-                    <div>
-                        <form class='delete' action="<?php route("{$this->postUrl}") ?>" method="POST">
-                            <?php echo csrf_field(); ?>
-                            <button type='submit' name='admin-delete' value=<?php echo $c["STORY_ID"]; ?>>DEL</button>
-                        </form>
-                        <p class='title'><?php echo $c["STORY_TITLE"]; ?></p>
-                        <p class='limit'><?php echo $c["STORY_TURN_LIMIT"]; ?></p>
-                        <p class='text'><?php echo $c["STORY_TEXT"]; ?></p>
-                        <form class='read-more' action="<?php route("{$this->getUrl}") ?>" method="GET">
-                            <button type='submit' name='read-more' value=<?php echo $c["STORY_ID"]; ?>>READ</button>
-                        </form>
-                    </div>
-                <?php } ?>
-            </div>
-            <div class='active'>
-                <h3>ACTIVE STORIES</h3>
-                <?php foreach ($active as $a) { ?>
-                    <div>
-                        <form class='delete' action="<?php route("{$this->postUrl}") ?>" method="POST">
-                            <?php echo csrf_field(); ?>
-                            <button type='button'>DEL</button>
-                        </form>
-                        <p class='title'><?php echo $a["STORY_TITLE"]; ?></p>
-                        <p class='limit'><?php echo $a["STORY_TURN_LIMIT"]; ?></p>
-                        <p class='text'><?php echo $a["STORY_TEXT"]; ?></p>
-                        <form class='read-more' action="<?php route("{$this->getUrl}") ?>" method="GET">
-                            <button type='submit' name='read-more' value=<?php echo $a["STORY_ID"]; ?>>READ</button>
-                        </form>
-                    </div>
-                <?php } ?>
-            </div>
-            <div class='story-says admin'>
-                <form action="<?php route("{$this->postUrl}") ?>" method='POST'>
-                    <?php echo csrf_field(); ?>
-                    <button type='submit' class='leave-button' name='leave' value='<?php echo session("GAME.ID"); ?>'>Leave Admin View</button>
-                </form>
-            </div>
-        </div>
     <?php }
 }
 ?>
