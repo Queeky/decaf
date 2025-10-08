@@ -81,7 +81,7 @@ class Game {
                             <input type='text' name='host-key' value='<?php echo $keyDefault; ?>'> 
                             <label class='host-pass-label' for='host-pass'>Set Password:</label>
                             <input class='host-pass' type='password' name='host-pass'> 
-                            <div class='host-form-radio'>
+                            <div class='host-form-radio public-private-radio'>
                                 <div>
                                     <input type="radio" id='choice-public' name='make-public' value='y'>
                                     <label for="choice-public">Public</label>

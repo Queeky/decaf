@@ -12,8 +12,6 @@ if (isset($err)) {
         case "JR": 
             $_GET["join"] = "random"; 
             break; 
-        default: 
-            break; 
     }
 }
 ?>

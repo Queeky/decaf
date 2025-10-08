@@ -633,9 +633,17 @@ form.read-more.index-read button {
     width: 60%;
 }
 
-.join-form .host-form-radio {
+.join-form .public-private-radio {
     width: 35%; 
     float: right; 
+}
+
+.join-form .conseq-round-radio {
+    width: 50%; 
+}
+
+.join-form .host-form-radio.conseq-round-radio > div {
+    margin-bottom: 5%; 
 }
 
 .join-form .host-form-radio > div {
@@ -645,7 +653,14 @@ form.read-more.index-read button {
     flex-direction: row;
 }
 
-.join-form .inner-div .host-form-radio input, .join-form .inner-div .host-form-radio input {
+.join-form .inner-div .host-form-radio input {
+    display: inline-flex; 
+    width: auto; 
+    justify-self: left; 
+    margin-right: 5%; 
+}
+
+.join-form .inner-div .host-form-radio label {
     display: inline-flex; 
 }
 

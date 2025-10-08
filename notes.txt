@@ -158,6 +158,16 @@ and will end up creating 60 events.
 
 - NOTE: Negative points kill you?
 
+CONSEQUENCES = [
+    CONSEQ_ID,
+    GAME_ID,
+    ROUNDS_TOTAL, 
+    ROUNDS_CURRENT, // if turns_current > 3, ++rounds_current
+    TURNS_TOTAL, // rounds_total x 3
+    TURNS_CURRENT, // [1, 2, 3]
+    TRANSCRIPT ?
+]
+
 
 
 

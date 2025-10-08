@@ -1,5 +1,19 @@
 <?php 
 use Illuminate\Support\Facades\Log;
+
+if (isset($err)) {
+    switch ($err["errCode"]) {
+        case "JP": 
+            $_GET["join"] = "private"; 
+            break; 
+        case "JH": 
+            $_GET["join"] = "host"; 
+            break; 
+        case "JR": 
+            $_GET["join"] = "random"; 
+            break; 
+    }
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -37,6 +51,17 @@ use Illuminate\Support\Facades\Log;
                     <?php
                     !(session("GAME.KEY") && session("GAME.PASS")) ? $game->showJoinOptions() : $game->showGameInfo(); 
                     ?>
+                </div>
+                <div class='inner-content consequences-content'>
+                    <?php if (session("GAME.KEY") && session("GAME.PASS")) {
+                        $game->showGameMain(); 
+                    } else if (isset($_GET["join"])) {
+                        $game->showJoinForm(); 
+                    } else { ?>
+                        <div class='game-instruct'>
+                            <p>Put something here.</p>
+                        </div>
+                   <?php } ?>
                 </div>
             </div>
             <?php showRight(); ?>
