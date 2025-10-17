@@ -20,7 +20,7 @@ if (isset($err)) {
     <head>
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Run-Away Story</title>
+        <title>Freewrite</title>
         <link rel="stylesheet" href="css/style.css">
         <meta name="csrf-token" content="<?php echo csrf_token(); ?>">
         <script type="text/javascript" src="js/jquery-3.7.1.min.js"></script>
@@ -85,15 +85,15 @@ if (isset($err)) {
                         <?php } else { ?>
                             <div class='game-instruct'>
                                 <p>
-                                    <strong>First time playing Run-Away Story?</strong><br><br>
-                                    The goal is for you and your team to collaborate on a story. The catch is that, each turn, you can only see the story's final few words and must add more based on the limited amount you know. <br><br>
-                                    Freewrite with friends (or strangers), build a cohesive storyline, or create something really stupid. 
+                                    <strong>First time playing Freewrite?</strong><br><br>
+                                    Everyone in a Freewrite game helps build a story. The catch is, each turn, you can only see the story's final few words and must add more based on limited context.<br><br>
+                                    Want to tag-team smash poetry with your mom? You can do that. Want to write fanfiction with strangers on the internet? Even better. You don't even have to be literate, all you need is a keyboard and a dream. 
                                 </p>
                                 <div class='wrapper-1'>
                                     <p>
                                         Every game begins with some starter text and a word limit of the host's choosing. Here's what a few turns may look like. -->
                                     </p>
-                                    <div class='wrapper-2'>
+                                    <div class='wrapper-2 wrapper-right'>
                                         <p>
                                             <strong>Word Limit: </strong>
                                             3 <br>

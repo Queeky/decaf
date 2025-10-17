@@ -156,7 +156,9 @@ and will end up creating 60 events.
     :Ignore it
         1. 
 
-- NOTE: Negative points kill you?
+Setting up turns, how to switch events to new person
+- Host gets 1, each new person to join gets incremented value (done in SQL)
+- Each event has an id 
 
 CONSEQUENCES = [
     CONSEQ_ID,
@@ -165,8 +167,37 @@ CONSEQUENCES = [
     ROUNDS_CURRENT, // if turns_current > 3, ++rounds_current
     TURNS_TOTAL, // rounds_total x 3
     TURNS_CURRENT, // [1, 2, 3]
-    TRANSCRIPT ?
+    EVENTS = [
+        1 = [ // Keys are the values the players are assigned at game start
+            {
+                PROMPT, 
+                CHOICE_1 = {
+                    CONSEQUENCE_POS, 
+                    CONSEQUENCE_NEG
+                },
+                CHOICE_2 = {
+                    CONSEQUENCE_POS, 
+                    CONSEQUENCE_NEG
+                }
+            },
+        ], 
+        2 = [ 
+
+        ]
+    ],
+    EVENT_INDEX, // if !index -> player's value++, if index++ == player's value, index += 2
+    TRANSCRIPT, ? (or maybe highlights, creates a brief paragraph story from a few random events)
 ]
+
+1   2   3   4
+2   3   4   1
+3   4   1   2
+
+4   1   2   3
+1   2   3   4
+2   3   4   1
+
+
 
 
 

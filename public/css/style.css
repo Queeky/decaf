@@ -808,9 +808,16 @@ form.read-more.index-read button {
 .game-instruct > .wrapper-1 > .wrapper-2 {
     display: inline-block; 
     width: 65%; 
-    border-left: 0.2vw solid var(--blue1);
     padding: 2%; 
     background-color: white; 
+}
+
+.game-instruct .wrapper-left {
+    border-right: 0.2vw solid var(--blue1);
+}
+
+.game-instruct .wrapper-right {
+    border-left: 0.2vw solid var(--blue1);
 }
 
 .game-instruct .wrapper-2 > p:nth-child(2) { 
