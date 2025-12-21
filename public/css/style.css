@@ -633,19 +633,34 @@ form.read-more.index-read button {
     width: 60%;
 }
 
-.join-form .public-private {
+.join-form .public-private-radio {
     width: 35%; 
     float: right; 
 }
 
-.join-form .public-private > div {
+.join-form .conseq-round-radio {
+    width: 50%; 
+}
+
+.join-form .host-form-radio.conseq-round-radio > div {
+    margin-bottom: 5%; 
+}
+
+.join-form .host-form-radio > div {
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: row;
 }
 
-.join-form .inner-div .public-private input, .join-form .inner-div .public-private input {
+.join-form .inner-div .host-form-radio input {
+    display: inline-flex; 
+    width: auto; 
+    justify-self: left; 
+    margin-right: 5%; 
+}
+
+.join-form .inner-div .host-form-radio label {
     display: inline-flex; 
 }
 
@@ -713,12 +728,12 @@ form.read-more.index-read button {
     overflow: none; 
 }
 
-.game-info > .word-limit {
+.game-info > .word-limit, .game-info > .event-counter {
     grid-column-start: 1; 
     grid-column-end: 2; 
 }
 
-.game-info > .word-limit > div, .game-info > .room-key > div {
+.game-info > .word-limit > div, .game-info > .room-key > div, .game-info > .event-counter > div {
     display: flex; 
     align-items: center; 
     justify-content: center; 
@@ -793,9 +808,16 @@ form.read-more.index-read button {
 .game-instruct > .wrapper-1 > .wrapper-2 {
     display: inline-block; 
     width: 65%; 
-    border-left: 0.2vw solid var(--blue1);
     padding: 2%; 
     background-color: white; 
+}
+
+.game-instruct .wrapper-left {
+    border-right: 0.2vw solid var(--blue1);
+}
+
+.game-instruct .wrapper-right {
+    border-left: 0.2vw solid var(--blue1);
 }
 
 .game-instruct .wrapper-2 > p:nth-child(2) { 
@@ -1030,3 +1052,6 @@ form.read-more.index-read button {
     height: 100%; 
     position: relative; 
 }
+
+
+/* CONSEQUENCES */
