@@ -6,6 +6,9 @@ TODO to rule them all:
 - ** Make censor file (or plugin, look into later)
 - ** Add /images to gitignore (json too?)
 - ** Add timer option!
+- ** If public, disable password field 
+- ** Control read and input limit (separate)
+- ** Admin readmore doesn't work
 - WRITE UNIT TESTS & add more robust error messages
 - Eventually add a delete confirm message (for admin)
 

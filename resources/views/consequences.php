@@ -73,6 +73,12 @@ if (isset($err)) {
                                         <strong>Write response #2:</strong> Ignore it<br><br>
 
                                         The event is then passed off to another player, and <i>you</i> get someone else's prompt and responses. Now you can add a <strong>positive</strong> consequence to response #1 and a <strong>negative</strong> consequence to response #2.<br><br>
+
+                                        <strong><u>Response #1: Answer it</u></strong><br>
+                                        <strong>Write a positive consequence:</strong><br><br>
+
+                                        <strong><u>Response #2: Ignore it</u></strong><br>
+                                        <strong>Write a negative consequence:</strong>
                                     </p>
                                 </div>
                                 <p>
