@@ -25,6 +25,12 @@ body {
     height: 100%; 
 }
 
+input[type=text], input[type=password], input[type=number], textarea {
+    border: 1px solid var(--blue2); 
+    border-radius: 5px; 
+    padding: 1.2%; 
+}
+
 .web-login {
     width: 100%; 
     height: 100vh; 
@@ -410,12 +416,16 @@ footer #icons, footer #icons a {
 .completed > div, .active > div {
     display: grid; 
     width: 100%; 
-    grid-template-columns: 5% 25% 5% 60% 5%;
+    grid-template-columns: 5% 25% 8% 57% 5%;
     margin-top: 0.5%; 
 }
 
 .completed > div > form, .active > div > form {
     text-align: center; 
+}
+
+.admin-stories > div > div > p {
+    overflow: hidden; 
 }
 
 .completed button, .active button {
@@ -709,9 +719,16 @@ form.read-more.index-read button {
 
 .game-info { 
     display: grid; 
-    grid-template-columns: 25% 25% 50%;
     width: 100%; 
     overflow: none; 
+}
+
+.story-upper-content .game-info {
+    grid-template-columns: 12.5% 12.5% 25% 50%;
+}
+
+.consequences-upper-content .game-info {
+    grid-template-columns: 25% 25% 50%;
 }
 
 .game-info > div {
@@ -728,9 +745,14 @@ form.read-more.index-read button {
     overflow: none; 
 }
 
-.game-info > .word-limit, .game-info > .event-counter {
+.game-info > .word-limit.view-limit, .game-info > .event-counter {
     grid-column-start: 1; 
     grid-column-end: 2; 
+}
+
+.game-info > .word-limit.input-limit {
+    grid-column-start: 2; 
+    grid-column-end: 3;
 }
 
 .game-info > .word-limit > div, .game-info > .room-key > div, .game-info > .event-counter > div {
@@ -740,8 +762,6 @@ form.read-more.index-read button {
 }
 
 .game-info > .users-connected {
-    grid-column-start: 3; 
-    grid-column-end: 4; 
     text-align: left; 
     padding-left: 2%; 
     padding-right: 2%; 
@@ -749,8 +769,23 @@ form.read-more.index-read button {
     padding-bottom: 1.5%; 
 }
 
-.game-info > .room-key {
+.story-upper-content .game-info > .users-connected {
+    grid-column-start: 4; 
+    grid-column-end: 5; 
+}
+
+.consequences-upper-content .game-info > .users-connected {
+    grid-column-start: 3; 
+    grid-column-end: 4; 
+}
+
+.story-upper-content .game-info > .room-key {
     /* width: 25%;  */
+    grid-column-start: 3; 
+    grid-column-end: 4; 
+}
+
+.consequences-upper-content .game-info > .room-key {
     grid-column-start: 2; 
     grid-column-end: 3; 
 }
@@ -759,7 +794,7 @@ form.read-more.index-read button {
     /* display: block;  */
     display: inline-grid; 
     grid-column-start: 1; 
-    grid-column-end: 4; 
+    grid-column-end: 5; 
     width: 100%; 
     background-color: var(--blue1); 
     color: white; 
@@ -879,6 +914,16 @@ form.read-more.index-read button {
 
 .story-says > form > button:hover {
     background-color: var(--blue2); 
+}
+
+.story-says.admin {
+    display: block; 
+    width: 100%; 
+    border: 1px solid var(--yellow2); 
+}
+
+.story-says.admin.top-btn {
+    margin-bottom: 5%; 
 }
 
 .story-wait { 

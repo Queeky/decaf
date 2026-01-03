@@ -77,17 +77,17 @@ class Game {
                     </div>
                     <div class='outer-div'>
                         <div class='inner-div'>
-                            <label for='host-key'>Set Room Key: <br><span style='color: var(--blue3);'>(You can change the preset key.)</span></label>
-                            <input type='text' name='host-key' value='<?php echo $keyDefault; ?>'> 
+                            <label for='host-key' class='host-key-label'>Set Room Key: <br><span style='color: var(--blue3);'>(You can change the preset key.)</span></label>
+                            <input type='text' name='host-key' id='host-key' value='<?php echo $keyDefault; ?>'> 
                             <label class='host-pass-label' for='host-pass'>Set Password:</label>
-                            <input class='host-pass' type='password' name='host-pass'> 
+                            <input class='host-pass' type='password' name='host-pass' id='host-pass'> 
                             <div class='host-form-radio public-private-radio'>
                                 <div>
-                                    <input type="radio" id='choice-public' name='make-public' value='y'>
+                                    <input type="radio" id='choice-public' name='make-public' value='y' onclick="toggleKeyPass()">
                                     <label for="choice-public">Public</label>
                                 </div>
                                 <div>
-                                    <input type="radio" id='choice-private' name='make-public' value='n'>
+                                    <input type="radio" id='choice-private' name='make-public' value='n' onclick="toggleKeyPass()">
                                     <label for="choice-private">Private</label>
                                 </div>
                             </div>
@@ -100,6 +100,7 @@ class Game {
                     </div>
                 </div>
             </form>
+            <script type="text/javascript" src="js/game-join-form.js"></script>
         <?php }
     }
 
@@ -110,9 +111,14 @@ class Game {
         ?>
         <div class='game-info'>
             <?php if ($this->type == "story") { ?>
-                <div class='word-limit'>
+                <div class='word-limit view-limit'>
                     <div>
-                        <p><strong>Word Limit: </strong><?php echo session("STORY.TURN_LIMIT"); ?></p>
+                        <p><strong>View: </strong><?php echo session("STORY.TURN_VIEW_LIMIT"); ?></p>
+                    </div>
+                </div>
+                <div class='word-limit input-limit'>
+                    <div>
+                        <p><strong>Input: </strong><?php echo session("STORY.TURN_INPUT_LIMIT"); ?></p>
                     </div>
                 </div>
             <?php } else if ($this->type == "consequences") { ?>

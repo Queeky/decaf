@@ -47,18 +47,14 @@ if (isset($err)) {
                     showError($err["errMsg"]); 
                 }
                 ?>
-                <div class='upper-content' style='border-bottom: 0.2vw solid var(--blue1); padding: 0;'>
+                <div class='upper-content story-upper-content' style='border-bottom: 0.2vw solid var(--blue1); padding: 0;'>
                     <?php
-                    !(session("GAME.KEY") && session("GAME.PASS")) ? $game->showJoinOptions() : $game->showGameInfo(); 
+                    !(session("STORY.ID")) ? $game->showJoinOptions() : $game->showGameInfo(); 
                     ?>
                 </div>
                 <div class='inner-content story-content'>
                     <?php 
-                        if (session("GAME.KEY") && session("GAME.PASS")) {
-                            $game->showGameMain(); 
-                        } else if (isset($_GET["join"])) {
-                            $game->showJoinForm(); 
-                        } else if (session("STORY_COMPLETE")) { ?>
+                        if (session("STORY_COMPLETE")) { ?>
                             <div class='story-complete'>
                                 <div>
                                     <h3><?php echo session("STORY_COMPLETE.STORY_TITLE"); ?></h3>
@@ -82,7 +78,11 @@ if (isset($err)) {
                                     </div>
                                 </div>
                             </div>
-                        <?php } else { ?>
+                        <?php } else if (session("STORY.ID")) {
+                            $game->showGameMain(); 
+                        } else if (isset($_GET["join"])) {
+                            $game->showJoinForm(); 
+                        } else { ?>
                             <div class='game-instruct'>
                                 <p>
                                     <strong>First time playing Freewrite?</strong><br><br>

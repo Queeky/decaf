@@ -87,7 +87,7 @@ class StoryPostController extends Controller {
             $spaces = substr_count($data["new-text"], " "); 
             $underscores = substr_count($data["new-text"], "_"); 
             $wordCount = $spaces + $underscores + 1;
-            $limit = session("STORY.TURN_LIMIT"); 
+            $limit = session("STORY.TURN_INPUT_LIMIT"); 
 
             if ($wordCount > $limit) {
                 Log::info("GAME #" . session("GAME.ID") . ": Message is too long"); 
@@ -140,12 +140,12 @@ class StoryPostController extends Controller {
             if (isset($data["join-key"]) && isset($data["join-pass"]) && isset($data["join-user"])) {
                 $data["join-key"] = strtoupper($data["join-key"]); 
                 
-                $checkPass = DB::select("SELECT GAME.GAME_ID, GAME.GAME_KEY, GAME.GAME_PASS, GAME.GAME_RUN, GAME.GAME_TURN, STORY.STORY_ID, STORY.STORY_TITLE, STORY.STORY_TEXT, STORY.STORY_TURN_LIMIT FROM GAME JOIN STORY ON GAME.GAME_ID = STORY.GAME_ID WHERE GAME_KEY = ? LIMIT 1", [$data["join-key"]]);
+                $checkPass = DB::select("SELECT GAME.GAME_ID, GAME.GAME_KEY, GAME.GAME_PASS, GAME.GAME_RUN, GAME.GAME_TURN, STORY.STORY_ID, STORY.STORY_TITLE, STORY.STORY_TEXT, STORY.STORY_TURN_VIEW_LIMIT, STORY.STORY_TURN_INPUT_LIMIT FROM GAME JOIN STORY ON GAME.GAME_ID = STORY.GAME_ID WHERE GAME_KEY = ? LIMIT 1", [$data["join-key"]]);
                 $checkPass = json_decode(json_encode($checkPass, true), true);
 
                 if ($checkPass) $avail = Hash::check($data["join-pass"], $checkPass[0]["GAME_PASS"]) ? $checkPass : null; 
             } else if (isset($data["join-user"]) && isset($data["join-public"])) {
-                $avail = DB::select("SELECT GAME.GAME_ID, GAME.GAME_KEY, GAME.GAME_PASS, GAME.GAME_RUN, GAME.GAME_TURN, STORY.STORY_ID, STORY.STORY_TITLE, STORY.STORY_TEXT, STORY.STORY_TURN_LIMIT FROM GAME JOIN STORY ON GAME.GAME_ID = STORY.GAME_ID WHERE GAME_KEY = ? AND GAME_PASS IS NULL AND GAME_RUN = 0 ORDER BY RAND() LIMIT 1", ["RANDOM"]);
+                $avail = DB::select("SELECT GAME.GAME_ID, GAME.GAME_KEY, GAME.GAME_PASS, GAME.GAME_RUN, GAME.GAME_TURN, STORY.STORY_ID, STORY.STORY_TITLE, STORY.STORY_TEXT, STORY.STORY_TURN_VIEW_LIMIT, STORY.STORY_TURN_INPUT_LIMIT FROM GAME JOIN STORY ON GAME.GAME_ID = STORY.GAME_ID WHERE GAME_KEY = ? AND GAME_PASS IS NULL AND GAME_RUN = 0 ORDER BY RAND() LIMIT 1", ["RANDOM"]);
 
                 $avail = isset($avail) ? json_decode(json_encode($avail, true), true) : null; 
             } else {
@@ -168,7 +168,8 @@ class StoryPostController extends Controller {
                     $storyData = [
                         "ID" => $avail["STORY_ID"], 
                         "TITLE" => $avail["STORY_TITLE"], 
-                        "TURN_LIMIT" => $avail["STORY_TURN_LIMIT"]
+                        "TURN_VIEW_LIMIT" => $avail["STORY_TURN_VIEW_LIMIT"], 
+                        "TURN_INPUT_LIMIT" => $avail["STORY_TURN_INPUT_LIMIT"]
                     ]; 
                     $playerData = [
                         "NAME" => $data["join-user"], 
@@ -246,8 +247,8 @@ class StoryPostController extends Controller {
         }
 
         // 8. Host creates a new story
-        if (isset($data["host-user"]) || isset($data["host-key"]) || isset($data["host-pass"]) || isset($data["make-public"]) || isset($data["host-title"]) || isset($data["host-limit"]) || isset($data["starter-text"])) {
-            if (isset($data["host-user"]) && isset($data["make-public"]) && isset($data["host-title"]) && isset($data["host-limit"]) && isset($data["starter-text"])) {
+        if (isset($data["host-user"]) || isset($data["host-key"]) || isset($data["host-pass"]) || isset($data["make-public"]) || isset($data["host-title"]) || isset($data["host-view-limit"]) || isset($data["host-input-limit"]) || isset($data["starter-text"])) {
+            if (isset($data["host-user"]) && isset($data["make-public"]) && isset($data["host-title"]) && isset($data["host-view-limit"]) && isset($data["host-input-limit"]) && isset($data["starter-text"])) {
                 // Check if key is valid
                 if (array_intersect(str_split("!@#$%^&*()-_+={}[]|\\/<>,.;:\"'~`"), str_split($data["host-key"]))) {
                     $err = ["errCode" => "JH", "errMsg" => "Your room key cannot include special characters."]; 
@@ -255,8 +256,8 @@ class StoryPostController extends Controller {
                     $err = ["errCode" => "JH", "errMsg" => "Private games must have a room key."]; 
                 } else if ($data["make-public"] == "n" && !isset($data["host-pass"])) {
                     $err = ["errCode" => "JH", "errMsg" => "Private games must have a password."]; 
-                } else if ($data["host-limit"] < 1) {
-                    $err = ["errCode" => "JH", "errMsg" => "Your word limit cannot be less than 1."]; 
+                } else if ($data["host-view-limit"] < 1 || $data["host-input-limit"] < 1) {
+                    $err = ["errCode" => "JH", "errMsg" => "Your view/input limit cannot be less than 1."]; 
                 } 
 
                 // Checks if any errors were set above
@@ -269,7 +270,7 @@ class StoryPostController extends Controller {
                 $data["host-key"] = ($data["make-public"] == "n") ? strtoupper($data["host-key"]) : "RANDOM";
 
                 try {
-                    $results = DB::select("CALL createStory(:key, :pass, :user, :session, :title, :text, :limit, @gameId, @storyId)", ["key" => $data["host-key"], "pass" => $data["host-pass"], "user" => $data["host-user"], "session" => $data["session"], "title" => $data["host-title"], "text" => $data["starter-text"], "limit" => $data["host-limit"]]);
+                    $results = DB::select("CALL createStory(:key, :pass, :user, :session, :title, :text, :viewLimit, :inputLimit, @gameId, @storyId)", ["key" => $data["host-key"], "pass" => $data["host-pass"], "user" => $data["host-user"], "session" => $data["session"], "title" => $data["host-title"], "text" => $data["starter-text"], "viewLimit" => $data["host-view-limit"], "inputLimit" => $data["host-input-limit"]]);
                     $results = json_decode(json_encode($results, true), true)[0];
                 } catch(QueryException $e) {
                     $err = ["errCode" => "JH", "errMsg" => "This key already exists."];
@@ -286,7 +287,8 @@ class StoryPostController extends Controller {
                 $storyData = [
                     "ID" => $results["@storyId"], 
                     "TITLE" => $data["host-title"], 
-                    "TURN_LIMIT" => $data["host-limit"]
+                    "TURN_VIEW_LIMIT" => $data["host-view-limit"], 
+                    "TURN_INPUT_LIMIT" => $data["host-input-limit"]
                 ]; 
                 $playerData = [
                     "NAME" => $data["host-user"], 

@@ -15,6 +15,7 @@ class IndexController extends Controller {
             $readData = json_decode(json_encode($readData, true), true)[0];
 
             session(["STORY.TITLE" => $readData["STORY_TITLE"]]); 
+            Log::info("DEBUG hey"); 
 
             return view('index')->with("readText", $readData["STORY_TEXT"]); 
         }

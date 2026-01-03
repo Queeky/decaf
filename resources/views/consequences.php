@@ -47,13 +47,15 @@ if (isset($err)) {
                     showError($err["errMsg"]); 
                 }
                 ?>
-                <div class='upper-content' style='border-bottom: 0.2vw solid var(--blue1); padding: 0;'>
+                <div class='upper-content consequences-upper-content' style='border-bottom: 0.2vw solid var(--blue1); padding: 0;'>
                     <?php
-                    !(session("GAME.KEY") && session("GAME.PASS")) ? $game->showJoinOptions() : $game->showGameInfo(); 
+                    !(session("CONSEQUENCES.ID")) ? $game->showJoinOptions() : $game->showGameInfo(); 
                     ?>
                 </div>
                 <div class='inner-content consequences-content'>
-                    <?php if (session("GAME.KEY") && session("GAME.PASS")) {
+                    <?php 
+                    // if consequences complete should go on top
+                    if (session("CONSEQUENCES.ID")) {
                         $game->showGameMain(); 
                     } else if (isset($_GET["join"])) {
                         $game->showJoinForm(); 
